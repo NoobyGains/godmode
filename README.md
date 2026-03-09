@@ -5,7 +5,7 @@
 <p align="center">
   <a href="#install"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
-  <img src="https://img.shields.io/badge/skills-35-orange" alt="Skills">
+  <img src="https://img.shields.io/badge/skills-36-orange" alt="Skills">
   <img src="https://img.shields.io/badge/platforms-4-purple" alt="Platforms">
 </p>
 
@@ -179,7 +179,7 @@ Before declaring anything "done," the agent must produce fresh terminal output p
 
 Hedging language like "should work" or "probably passes" is prohibited.
 
-## The 32 Skills
+## The 36 Skills
 
 Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps** (rationalizations to watch for), and **Guardrails** (what's prohibited). They compose for full workflows or fire independently.
 
@@ -261,12 +261,13 @@ Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps
 </details>
 
 <details>
-<summary><strong>Infrastructure and Operations</strong> (4 skills)</summary>
+<summary><strong>Infrastructure and Operations</strong> (5 skills)</summary>
 
 | Skill | Prime Directive |
 |---|---|
 | `project-bootstrap` | No feature code before project structure is established |
 | `environment-awareness` | No shell commands without knowing the target environment |
+| `deployment-advisor` | No technology recommendation without checking what the user already has |
 | `performance-tuning` | No optimization without measurement proving the problem |
 | `security-protocol` | No external data reaches system call/query/output without validation |
 

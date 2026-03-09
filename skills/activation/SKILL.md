@@ -93,7 +93,7 @@ When several skills might be relevant, follow this sequence:
 
 1. **Challenge skills first** (rationale) - question whether the work is worth doing before committing
 2. **Process skills second** (intent-discovery, fault-diagnosis) - establish the approach
-3. **Reference skills third** (reference-engine routes to: ux-patterns, design-research, github-search, codebase-research, system-design) - locate proven solutions before designing
+3. **Reference skills third** (reference-engine routes to: ux-patterns, design-research, github-search, codebase-research, system-design, deployment-advisor) - locate proven solutions before designing
 4. **Design skills fourth** (ui-engineering, design-integration, specification-first) - apply references to guide decisions
 5. **Implementation skills fifth** (test-first, project-bootstrap, pattern-matching, environment-awareness) - drive execution
 6. **Quality skills sixth** (quality-enforcement, security-protocol, completion-gate, comprehension-check, error-recovery) - enforce standards
@@ -104,6 +104,7 @@ When several skills might be relevant, follow this sequence:
 "Fix this bug" -> fault-diagnosis first, then domain-appropriate skills. (rationale skipped for bugs)
 "Big project" -> rationale -> intent-discovery -> reference-engine -> task-planning -> team-orchestration (when warranted).
 "Agent is stuck" -> error-recovery activates proactively based on failure count detection.
+"What database/hosting should I use?" -> environment-awareness -> deployment-advisor -> system-design.
 
 ## Execution Mode Guidance
 

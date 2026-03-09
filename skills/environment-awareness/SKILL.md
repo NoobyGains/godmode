@@ -165,6 +165,79 @@ ruby --version      # Ruby
 | `$container` env var is set | Podman |
 | `printenv KUBERNETES_SERVICE_HOST` | Kubernetes pod |
 
+## System Inventory
+
+After confirming the platform and shell, discover what tools, databases, cloud CLIs, and services the user has installed. This inventory feeds directly into planning -- if the user has SQLite but not PostgreSQL, or Docker but not Podman, downstream skills like `deployment-advisor` and `task-planning` can make smarter recommendations instead of guessing.
+
+### When to Run
+
+- **Always:** Git, GitHub CLI (needed by many GodMode skills)
+- **If the project touches data:** Database CLIs
+- **If the project will be deployed:** Cloud and container tools
+- **If the project processes media or structured data:** ffmpeg, jq, curl
+- **Never run the full list blindly.** Match checks to project type. A static site does not need a MongoDB probe.
+
+### Inventory Checks
+
+Run each relevant check silently, redirecting stderr so missing tools do not produce noise:
+
+**Databases:**
+
+| Tool | Check | Notes |
+|------|-------|-------|
+| PostgreSQL | `psql --version 2>/dev/null` | Check for `pg_dump` too if backups matter |
+| MySQL / MariaDB | `mysql --version 2>/dev/null` | MariaDB identifies itself in the version string |
+| SQLite | `sqlite3 --version 2>/dev/null` | Often pre-installed on macOS and Linux |
+| MongoDB | `mongod --version 2>/dev/null` | Also check `mongosh` for the modern shell |
+| Redis | `redis-server --version 2>/dev/null` | Also check `redis-cli` |
+
+**Cloud & Hosting CLIs:**
+
+| Tool | Check |
+|------|-------|
+| AWS CLI | `aws --version 2>/dev/null` |
+| Google Cloud | `gcloud --version 2>/dev/null` |
+| Azure CLI | `az --version 2>/dev/null` |
+| Vercel | `vercel --version 2>/dev/null` |
+| Supabase | `supabase --version 2>/dev/null` |
+| Fly.io | `fly version 2>/dev/null` |
+| Netlify | `netlify --version 2>/dev/null` |
+| Railway | `railway --version 2>/dev/null` |
+
+**Container Tools:**
+
+| Tool | Check |
+|------|-------|
+| Docker | `docker --version 2>/dev/null` |
+| Docker Compose | `docker compose version 2>/dev/null` |
+| Podman | `podman --version 2>/dev/null` |
+
+**Developer Tools:**
+
+| Tool | Check |
+|------|-------|
+| Git | `git --version 2>/dev/null` |
+| GitHub CLI | `gh --version 2>/dev/null` |
+| curl | `curl --version 2>/dev/null` |
+| jq | `jq --version 2>/dev/null` |
+| ffmpeg | `ffmpeg -version 2>/dev/null` |
+
+### Reporting Format
+
+Report findings concisely. Do not dump raw version output -- extract the version number and summarize:
+
+```
+Available: PostgreSQL 16.2, Docker 27.1, gh 2.45, SQLite 3.43
+Not found: Redis, AWS CLI, Podman
+```
+
+### Principles
+
+1. **Silence errors.** Always redirect stderr to `/dev/null` (or the platform equivalent from the detection above). A missing tool is information, not a failure.
+2. **Scope to project.** Only check categories relevant to the codebase. Read the project's config files, Dockerfile, CI config, or deployment manifests to decide what matters.
+3. **Check once, reference often.** Store results in your working context. Do not re-probe mid-session unless the user installs something new.
+4. **Feed downstream skills.** The inventory directly informs `deployment-advisor` (what can we deploy to?), `task-planning` (what constraints exist?), and `project-bootstrap` (what do we need to install?).
+
 ## Platform-Specific Command Mappings
 
 Use the correct command for the detected environment:
@@ -223,6 +296,7 @@ Stop and run detection if you catch yourself:
 - **godmode:project-bootstrap** -- Environment detection runs during project setup
 - **godmode:fault-diagnosis** -- Environment mismatch is a common root cause of mysterious failures
 - **godmode:workspace-isolation** -- Worktree and container setup needs correct platform commands
+- **godmode:deployment-advisor** -- System inventory results feed directly into deployment recommendations and platform selection
 
 ## The Bottom Line
 
