@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/assets/hero.svg" alt="GodMode" width="830">
+  <img src=".github/assets/hero.svg" alt="GodMode" width="830" height="400">
 </p>
 
 <p align="center">
@@ -25,7 +25,7 @@ That's it. Start your next conversation — GodMode activates automatically.
 ---
 
 <p align="center">
-  <img src=".github/assets/demo.svg" alt="GodMode Demo" width="830">
+  <img src=".github/assets/demo.svg" alt="GodMode Demo" width="830" height="540">
 </p>
 
 ## The Problem
@@ -33,7 +33,7 @@ That's it. Start your next conversation — GodMode activates automatically.
 AI coding agents have a predictable failure mode: you ask for a feature, and they immediately start writing code. No questions about requirements. No check for existing patterns. No tests. No spec. Just a wall of generated files and a "let me know if you need changes."
 
 <p align="center">
-  <img src=".github/assets/comparison.svg" alt="Without GodMode vs With GodMode" width="830">
+  <img src=".github/assets/comparison.svg" alt="Without GodMode vs With GodMode" width="830" height="520">
 </p>
 
 The result is code that works in isolation but clashes with everything around it. Inconsistent naming. Duplicated logic. Tests bolted on after the fact. Entire components built from scratch when a solid open-source solution already exists. You end up spending more time fixing the agent's output than you would have spent writing it yourself.
@@ -45,7 +45,7 @@ GodMode fixes this. It is a 36-skill system that activates automatically and gov
 GodMode operates as a five-phase gated pipeline. The agent cannot advance until each phase meets its exit criteria.
 
 <p align="center">
-  <img src=".github/assets/pipeline.svg" alt="GodMode Pipeline" width="830">
+  <img src=".github/assets/pipeline.svg" alt="GodMode Pipeline" width="830" height="280">
 </p>
 
 **DEFINE** — The agent interrogates the problem space. It asks targeted questions one at a time, surfaces trade-offs, researches proven references, presents 2-3 approaches with rationale, and produces a spec document. Nothing moves forward until you approve it.
