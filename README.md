@@ -21,7 +21,7 @@ claude plugin marketplace add NoobyGains/godmode
 claude plugin install godmode
 ```
 
-That's it. Start your next conversation — GodMode activates automatically.
+That's it. mention Godmode — GodMode activates automatically.
 
 ---
 
