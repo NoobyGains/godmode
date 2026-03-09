@@ -145,16 +145,18 @@ Sample entry:
 
 ## Storage Mechanism
 
+**REQUIRED:** Route all captures through godmode:memory-manager instead of writing directly to memory files.
+
 Leverage Claude Code's memory system: `~/.claude/projects/[project]/memory/`
 
-### Memory File Taxonomy
+### Memory Type Mapping
 
-| File | Purpose | Example Entry |
+| Old File | Memory Type | Stored Via |
 |---|---|---|
-| `effective-patterns.md` | Code approaches and strategies that produced clean outcomes | "Zod schemas at API boundaries catch malformed data before it propagates" |
-| `failure-analysis.md` | Root-cause patterns and diagnostic techniques | "Tests passing locally but failing in CI usually indicate timezone or locale assumptions" |
-| `project-map.md` | Architecture, key files, and codebase conventions | "Database migrations reside in db/migrations/ and execute via `pnpm db:migrate`" |
-| `human-preferences.md` | Stylistic choices, tooling preferences, and conventions the user enforces | "User demands explicit error types; string-based errors are rejected" |
+| `effective-patterns.md` | `pattern` | memory-manager.store() |
+| `failure-analysis.md` | `gotcha` | memory-manager.store() |
+| `project-map.md` | `architecture` | memory-manager.store() |
+| `human-preferences.md` | `preference` | memory-manager.store() |
 
 ### Entry Structure
 
@@ -263,6 +265,7 @@ When beginning a new session on a project:
 - **godmode:test-first** -- Past test failures shape future test strategy
 - **godmode:task-planning** -- Past plan failures prevent repeating misjudgments
 - **godmode:quality-enforcement** -- Captured quality patterns elevate the baseline
+- **godmode:memory-manager** -- All captured insights route through memory-manager for persistence, deduplication, and confidence tracking
 
 **This skill is fed BY other skills:**
 
