@@ -38,7 +38,7 @@ AI coding agents have a predictable failure mode: you ask for a feature, and the
 
 The result is code that works in isolation but clashes with everything around it. Inconsistent naming. Duplicated logic. Tests bolted on after the fact. Entire components built from scratch when a solid open-source solution already exists. You end up spending more time fixing the agent's output than you would have spent writing it yourself.
 
-GodMode fixes this. It is a 35-skill system that activates automatically and governs the full development lifecycle — from the first question about requirements through to a merged pull request.
+GodMode fixes this. It is a 36-skill system that activates automatically and governs the full development lifecycle — from the first question about requirements through to a merged pull request.
 
 ## How It Works
 
@@ -323,7 +323,7 @@ Every skill is machine-validated on every change:
 npm run validate
 ```
 
-Checks all 35 skills for structural correctness, required frontmatter fields, cross-references, and internal consistency. Runs automatically in CI.
+Checks all 36 skills for structural correctness, required frontmatter fields, cross-references, and internal consistency. Runs automatically in CI.
 
 ## How This README Was Built
 
