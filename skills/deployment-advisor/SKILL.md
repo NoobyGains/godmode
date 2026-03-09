@@ -105,7 +105,7 @@ For each infrastructure need, present honest trade-offs.
 
 ### Step 4: Present the Recommendation
 
-Format your output using the structure in the output section below.
+Format your output using the structure in the "Presenting the Recommendation" section below.
 
 ## Stack Decision Matrix
 

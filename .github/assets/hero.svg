@@ -41,7 +41,7 @@
     <tspan fill="rgba(255,255,255,0.44)">&gt; </tspan><tspan fill="#0099ff">/godmode</tspan>
   </text>
   <text x="184" y="228" font-family="Monaco,Menlo,'Courier New',monospace" font-size="13">
-    <tspan fill="#00b848">&#x2713; </tspan><tspan fill="rgba(255,255,255,0.9)">32 skills loaded</tspan>
+    <tspan fill="#00b848">&#x2713; </tspan><tspan fill="rgba(255,255,255,0.9)">36 skills loaded</tspan>
   </text>
   <text x="184" y="252" font-family="Monaco,Menlo,'Courier New',monospace" font-size="13">
     <tspan fill="#00b848">&#x2713; </tspan><tspan fill="rgba(255,255,255,0.9)">Pipeline: DEFINE &#x2192; PLAN &#x2192; EXECUTE &#x2192; REVIEW &#x2192; SHIP</tspan>
@@ -59,6 +59,6 @@
     <rect x="363" y="348" width="104" height="28" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
     <text x="415" y="366" text-anchor="middle" fill="rgba(255,255,255,0.44)">MIT License</text>
     <rect x="483" y="348" width="80" height="28" rx="8" fill="none" stroke="#b090f8" stroke-width="1"/>
-    <text x="523" y="366" text-anchor="middle" fill="#b090f8">32 Skills</text>
+    <text x="523" y="366" text-anchor="middle" fill="#b090f8">36 Skills</text>
   </g>
 </svg>

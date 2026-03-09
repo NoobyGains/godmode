@@ -233,7 +233,14 @@ Not found: Redis, AWS CLI, Podman
 
 ### Principles
 
-1. **Silence errors.** Always redirect stderr to `/dev/null` (or the platform equivalent from the detection above). A missing tool is information, not a failure.
+1. **Silence errors and force exit code 0.** Always redirect stderr to `/dev/null` AND append `; true` at the end of chained version checks. Missing tools produce non-zero exit codes that surface as red errors in Claude Code. A missing tool is information, not a failure — the output must never show red.
+   ```bash
+   # WRONG: last missing tool causes exit 127 (red error in Claude Code)
+   psql --version 2>/dev/null; redis-server --version 2>/dev/null; mongod --version 2>/dev/null
+
+   # RIGHT: force clean exit regardless of which tools are missing
+   psql --version 2>/dev/null; redis-server --version 2>/dev/null; mongod --version 2>/dev/null; true
+   ```
 2. **Scope to project.** Only check categories relevant to the codebase. Read the project's config files, Dockerfile, CI config, or deployment manifests to decide what matters.
 3. **Check once, reference often.** Store results in your working context. Do not re-probe mid-session unless the user installs something new.
 4. **Feed downstream skills.** The inventory directly informs `deployment-advisor` (what can we deploy to?), `task-planning` (what constraints exist?), and `project-bootstrap` (what do we need to install?).
