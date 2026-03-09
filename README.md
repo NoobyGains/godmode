@@ -5,7 +5,7 @@
 <p align="center">
   <a href="#install"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
-  <img src="https://img.shields.io/badge/skills-32-orange" alt="Skills">
+  <img src="https://img.shields.io/badge/skills-35-orange" alt="Skills">
   <img src="https://img.shields.io/badge/platforms-4-purple" alt="Platforms">
 </p>
 
@@ -38,7 +38,7 @@ AI coding agents have a predictable failure mode: you ask for a feature, and the
 
 The result is code that works in isolation but clashes with everything around it. Inconsistent naming. Duplicated logic. Tests bolted on after the fact. Entire components built from scratch when a solid open-source solution already exists. You end up spending more time fixing the agent's output than you would have spent writing it yourself.
 
-GodMode fixes this. It is a 32-skill system that activates automatically and governs the full development lifecycle — from the first question about requirements through to a merged pull request.
+GodMode fixes this. It is a 35-skill system that activates automatically and governs the full development lifecycle — from the first question about requirements through to a merged pull request.
 
 ## How It Works
 
@@ -184,11 +184,12 @@ Hedging language like "should work" or "probably passes" is prohibited.
 Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps** (rationalizations to watch for), and **Guardrails** (what's prohibited). They compose for full workflows or fire independently.
 
 <details>
-<summary><strong>Core Workflow</strong> (5 skills)</summary>
+<summary><strong>Core Workflow</strong> (6 skills)</summary>
 
 | Skill | Prime Directive |
 |---|---|
 | `activation` | Invoke applicable skills before generating any response |
+| `rationale` | No work without questioning whether the work is worth doing |
 | `intent-discovery` | No implementation without validated design first |
 | `task-planning` | No implementation without a plan first |
 | `task-runner` | No plan execution without critical review of each task |
@@ -234,13 +235,14 @@ Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps
 </details>
 
 <details>
-<summary><strong>Development Practices</strong> (5 skills)</summary>
+<summary><strong>Development Practices</strong> (6 skills)</summary>
 
 | Skill | Prime Directive |
 |---|---|
 | `test-first` | No production code without failing test first |
 | `specification-first` | No implementation without specification first |
 | `fault-diagnosis` | No fixes without root cause investigation first |
+| `error-recovery` | No continued attempts without acknowledging failure count |
 | `merge-protocol` | No integration without passing tests |
 | `pattern-matching` | Every addition must mirror an existing precedent |
 
@@ -259,11 +261,12 @@ Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps
 </details>
 
 <details>
-<summary><strong>Infrastructure and Operations</strong> (3 skills)</summary>
+<summary><strong>Infrastructure and Operations</strong> (4 skills)</summary>
 
 | Skill | Prime Directive |
 |---|---|
 | `project-bootstrap` | No feature code before project structure is established |
+| `environment-awareness` | No shell commands without knowing the target environment |
 | `performance-tuning` | No optimization without measurement proving the problem |
 | `security-protocol` | No external data reaches system call/query/output without validation |
 
@@ -319,7 +322,7 @@ Every skill is machine-validated on every change:
 npm run validate
 ```
 
-Checks all 32 skills for structural correctness, required frontmatter fields, cross-references, and internal consistency. Runs automatically in CI.
+Checks all 35 skills for structural correctness, required frontmatter fields, cross-references, and internal consistency. Runs automatically in CI.
 
 ## How This README Was Built
 

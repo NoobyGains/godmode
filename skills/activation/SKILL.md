@@ -91,17 +91,19 @@ These internal thoughts are warning signs that you are rationalizing:
 
 When several skills might be relevant, follow this sequence:
 
-1. **Process skills first** (intent-discovery, fault-diagnosis) - establish the approach
-2. **Reference skills second** (reference-engine routes to: ux-patterns, design-research, github-search, codebase-research, system-design) - locate proven solutions before designing
-3. **Design skills third** (ui-engineering, design-integration, specification-first) - apply references to guide decisions
-4. **Implementation skills fourth** (test-first, project-bootstrap, pattern-matching) - drive execution
-5. **Quality skills fifth** (quality-enforcement, security-protocol, completion-gate, comprehension-check) - enforce standards
-6. **Orchestration skills** (team-orchestration, delegated-execution) - leverage parallelism
+1. **Challenge skills first** (rationale) - question whether the work is worth doing before committing
+2. **Process skills second** (intent-discovery, fault-diagnosis) - establish the approach
+3. **Reference skills third** (reference-engine routes to: ux-patterns, design-research, github-search, codebase-research, system-design) - locate proven solutions before designing
+4. **Design skills fourth** (ui-engineering, design-integration, specification-first) - apply references to guide decisions
+5. **Implementation skills fifth** (test-first, project-bootstrap, pattern-matching, environment-awareness) - drive execution
+6. **Quality skills sixth** (quality-enforcement, security-protocol, completion-gate, comprehension-check, error-recovery) - enforce standards
+7. **Orchestration skills** (team-orchestration, delegated-execution) - leverage parallelism
 
-"Let's build X" -> intent-discovery -> reference-engine (routes to appropriate references) -> design skills -> implementation skills.
-"Build a website" -> intent-discovery -> reference-engine -> design-research + ux-patterns -> ui-engineering -> implementation.
-"Fix this bug" -> fault-diagnosis first, then domain-appropriate skills.
-"Big project" -> intent-discovery -> reference-engine -> task-planning -> team-orchestration (when warranted).
+"Let's build X" -> rationale -> intent-discovery -> reference-engine (routes to appropriate references) -> design skills -> implementation skills.
+"Build a website" -> rationale -> intent-discovery -> reference-engine -> design-research + ux-patterns -> ui-engineering -> implementation.
+"Fix this bug" -> fault-diagnosis first, then domain-appropriate skills. (rationale skipped for bugs)
+"Big project" -> rationale -> intent-discovery -> reference-engine -> task-planning -> team-orchestration (when warranted).
+"Agent is stuck" -> error-recovery activates proactively based on failure count detection.
 
 ## Execution Mode Guidance
 
