@@ -17,17 +17,22 @@ This creates several challenges:
 
 ## The Solution: Polyglot `.cmd` Wrapper
 
-A polyglot script is valid syntax in multiple languages simultaneously. Our wrapper is valid in both CMD and bash:
+A polyglot script is valid syntax in multiple languages simultaneously. Our wrapper (`run-hook.cmd`) is valid in both CMD and bash. It takes a script name argument and runs it in the correct shell:
 
 ```cmd
 : << 'CMDBLOCK'
 @echo off
-"C:\Program Files\Git\bin\bash.exe" -l -c "\"$(cygpath -u \"$CLAUDE_PLUGIN_ROOT\")/hooks/session-start.sh\""
+set "SCRIPT_DIR=%~dp0"
+set "SCRIPT_NAME=%~1"
+"C:\Program Files\Git\bin\bash.exe" -l -c "cd \"$(cygpath -u \"%SCRIPT_DIR%\")\" && \"./%SCRIPT_NAME%\""
 exit /b
 CMDBLOCK
 
 # Unix shell runs from here
-"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+SCRIPT_NAME="$1"
+shift
+"${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"
 ```
 
 ### How It Works
@@ -54,8 +59,8 @@ CMDBLOCK
 ```
 hooks/
 ├── hooks.json           # Points to the .cmd wrapper
-├── session-start.cmd    # Polyglot wrapper (cross-platform entry point)
-└── session-start.sh     # Actual hook logic (bash script)
+├── run-hook.cmd         # Polyglot wrapper (cross-platform entry point)
+└── session-start        # Actual hook logic (bash script, no extension)
 ```
 
 ### hooks.json
@@ -69,7 +74,8 @@ hooks/
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.cmd\""
+            "command": "'${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd' session-start",
+            "async": false
           }
         ]
       }
@@ -78,7 +84,7 @@ hooks/
 }
 ```
 
-Note: The path must be quoted because `${CLAUDE_PLUGIN_ROOT}` may contain spaces on Windows (e.g., `C:\Program Files\...`).
+Note: The path must be quoted because `${CLAUDE_PLUGIN_ROOT}` may contain spaces on Windows (e.g., `C:\Program Files\...`). The `run-hook.cmd` wrapper takes the script name as an argument, making it reusable for multiple hooks.
 
 ## Requirements
 

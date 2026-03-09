@@ -7,12 +7,8 @@ set -euo pipefail
 HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 PLUGIN_BASE="$(cd "${HOOK_DIR}/.." && pwd)"
 
-# Detect deprecated skills directory and prepare migration notice
+# Migration notice placeholder (reserved for future use)
 migration_notice=""
-old_skills_path="${HOME}/.config/godmode/skills"
-if [ -d "$old_skills_path" ]; then
-    migration_notice="\n\n<important-reminder>IN YOUR FIRST REPLY AFTER SEEING THIS MESSAGE YOU MUST TELL THE USER:⚠️ **WARNING:** GodMode now uses Claude Code's skills system. Custom skills in ~/.config/godmode/skills will not be read. Move custom skills to ~/.claude/skills instead. To make this message go away, remove ~/.config/godmode/skills</important-reminder>"
-fi
 
 # Load the activation protocol content
 activation_content=$(cat "${PLUGIN_BASE}/skills/activation/SKILL.md" 2>&1 || echo "Error loading activation protocol")
