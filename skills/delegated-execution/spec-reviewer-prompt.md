@@ -5,7 +5,7 @@ Use this template when dispatching a spec compliance auditor subagent.
 **Purpose:** Verify the builder constructed what was requested (nothing more, nothing less)
 
 ```
-Task tool (general-purpose):
+Agent tool (general-purpose):
   description: "Audit spec compliance for Task N"
   prompt: |
     You are auditing whether an implementation matches its specification.

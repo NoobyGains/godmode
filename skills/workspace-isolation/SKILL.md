@@ -240,9 +240,9 @@ Ready to implement auth feature
 ## Connections
 
 **Called by:**
-- **intent-discovery** (Phase 4) - REQUIRED when design is approved and implementation follows
 - **delegated-execution** - REQUIRED before executing any tasks
 - **task-runner** - REQUIRED before executing any tasks
+- **task-planning** - Plan assumes worktree is active
 - Any skill needing isolated workspace
 
 **Pairs with:**

@@ -15,7 +15,7 @@ You are evaluating code changes for production readiness.
 
 ## Specification / Plan
 
-{PLAN_REFERENCE}
+{PLAN_OR_REQUIREMENTS}
 
 ## Commit Range Under Review
 

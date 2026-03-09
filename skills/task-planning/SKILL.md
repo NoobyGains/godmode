@@ -154,7 +154,7 @@ git commit -m "feat: add specific feature"
 - Exact file paths in every step
 - Complete code in the plan (not "add validation")
 - Exact commands with expected output
-- Reference relevant skills with @ syntax
+- Reference relevant skills by name (e.g., `godmode:test-first`)
 - DRY, YAGNI, TDD, frequent commits
 
 ## Execution Handoff

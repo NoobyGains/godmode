@@ -84,7 +84,7 @@ digraph intent_discovery {
 }
 ```
 
-**The terminal state is invoking task-planning.** Do NOT invoke ui-engineering, mcp-builder, or any other implementation skill. The ONLY skill you invoke after intent-discovery is task-planning.
+**The terminal state is invoking task-planning.** Do NOT invoke ui-engineering or any other implementation skill. The ONLY skill you invoke after intent-discovery is task-planning.
 
 ## Detailed Process
 

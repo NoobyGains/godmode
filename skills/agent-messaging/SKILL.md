@@ -22,7 +22,7 @@ If you have not organized the context, the agent will burn tokens deciphering yo
 ## When to Use
 
 **Apply to:**
-- Composing prompts for subagents (Task tool dispatches)
+- Composing prompts for subagents (Agent tool dispatches)
 - Sending messages to team members (SendMessage)
 - Structuring reports back to callers or team leads
 - Handing off work between agents (implementer to reviewer, researcher to lead)
