@@ -57,8 +57,8 @@ You MUST create a task for each of these items and complete them sequentially:
 1. **Survey project landscape** -- examine files, documentation, recent commits
 2. **Locate reference material** -- invoke reference-engine skill to route to the appropriate reference system (github-search for external repos and libraries, codebase-research for internal patterns, design-research for visual themes, ux-patterns for UI, or built-in libraries for APIs/schemas/testing/infrastructure)
 3. **Ask clarifying questions** -- one per message, understand purpose/constraints/success criteria
-4. **Present 2-3 approaches** -- with trade-offs, your recommendation, and relevant references
-5. **Present design** -- in sections proportional to complexity, get user confirmation after each section
+4. **Present 2-3 approaches** -- as labeled options (A/B/C) with trade-offs, star the recommendation
+5. **Present design** -- in sections proportional to complexity, get user confirmation after each section (YoloMode: present and proceed)
 6. **Record design document** -- save to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Hand off to implementation** -- invoke task-planning skill to build the implementation plan
 
@@ -102,10 +102,11 @@ digraph intent_discovery {
 - Incorporate into proposals: which references to build on, extract from, or study
 
 **Evaluating approaches:**
-- Propose 2-3 distinct approaches with trade-offs
-- Present options conversationally with your recommendation and reasoning
+- Propose 2-3 distinct approaches as labeled options (A, B, C) with trade-offs
+- Mark the recommended option with a star (⭐)
 - Lead with the recommended option and explain the rationale
 - Reference findings: "Approach A is inspired by github.com/x/y (5k stars, MIT license)"
+- **If YoloMode is active:** Still present all options and wait for user selection. Approach selection is never auto-picked.
 
 **Presenting the design:**
 - Once you believe the design is clear, present it
@@ -113,6 +114,7 @@ digraph intent_discovery {
 - Ask after each section whether it looks correct so far
 - Cover: architecture, components, data flow, error handling, testing strategy
 - Be prepared to revisit and clarify if something is unclear
+- **If YoloMode is active:** Present the full design in one pass and proceed to recording, without per-section confirmation. The user trusts the recommendation.
 
 ## After Design Approval
 

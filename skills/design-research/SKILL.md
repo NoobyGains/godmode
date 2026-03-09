@@ -158,27 +158,41 @@ Distinctive elements: [what differentiates this niche from generic sites]
 
 ### Phase 5: Present to the User
 
+Present discoveries as labeled options with clickable demo links. Mark the recommendation with a star.
+
 ```
-I surveyed [niche] website templates across [N] marketplaces. Here are my findings:
+I surveyed [niche] website templates across [N] marketplaces. Here are the strongest candidates:
 
-**Top 3 references:**
-1. [Template A] (rating 4.8, 5k sales) -- [demo link] -- Standout: [what makes it excellent]
-2. [Template B] (rating 4.7, 3k sales) -- [demo link] -- Standout: [what makes it excellent]
-3. [Template C] (rating 4.9, 8k sales) -- [demo link] -- Standout: [what makes it excellent]
+**A)** [Template Name] — [rating], [sales/downloads]
+   Demo: [clickable URL]
+   Strengths: [what makes it excellent]
+   Palette: [primary color approach] · Typography: [font approach]
 
-**Recurring patterns in [niche] websites:**
+**B)** [Template Name] — [rating], [sales/downloads]
+   Demo: [clickable URL]
+   Strengths: [what makes it excellent]
+   Palette: [primary color approach] · Typography: [font approach]
+
+**C)** [Template Name] — [rating], [sales/downloads]
+   Demo: [clickable URL]
+   Strengths: [what makes it excellent]
+   Palette: [primary color approach] · Typography: [font approach]
+
+**D) Hybrid blueprint** — Cherry-picked from all three ⭐ Recommended
+   Sections: [synthesized section sequence from the strongest elements of A, B, C]
+   Palette: [synthesized]
+   Typography: [synthesized]
+   Why: Combines [specific strength from A], [specific strength from B], [specific strength from C]
+
+**Recurring patterns across all [niche] templates:**
 - Every site includes: [section list]
 - Color convention: [pattern]
 - Typography: [pattern]
 
-**Recommended blueprint:**
-- Section sequence: [ordered list derived from best practices across templates]
-- Color palette: [synthesized from top templates]
-- Typography: [synthesized from top templates]
-- Distinctive touches: [cherry-picked from the strongest templates]
-
-Shall I proceed with this blueprint?
+Check out the demos and pick A, B, C, or D.
 ```
+
+**YoloMode exception:** Reference and template selection is ALWAYS interactive — even in YoloMode, present the options and let the user pick. These choices are too impactful to auto-select.
 
 ## Multi-Template Synthesis
 

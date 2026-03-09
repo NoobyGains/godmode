@@ -158,6 +158,42 @@ Shall I proceed this way, or do you prefer a different approach?
 
 The skill definition itself indicates which category applies.
 
+## YoloMode
+
+When the user signals they want autonomous execution, skip all confirmation prompts and compress workflows — but never auto-pick labeled options.
+
+**Trigger phrases (case-insensitive):**
+- "yolo", "yolomode", "yolo mode"
+- "just go", "just do it", "go for it"
+- "skip the questions", "don't ask"
+- "auto-pick", "you decide"
+
+**Behavior when active:**
+- Skills that present A/B/C/D options ALWAYS pause for user selection — no exceptions
+- Intent-discovery compresses: survey + research + present recommended approach, skip per-section confirmation
+- Rationale analysis still runs (safety check) but is compressed — present analysis and options concisely
+- Completion-gate and test verification are NEVER skipped (quality is non-negotiable)
+
+**How skills reference YoloMode:**
+```
+If YoloMode is active:
+  -> State: "YoloMode active — proceeding with recommendation [X] because [reason]"
+  -> Execute immediately
+  -> Log which option was auto-selected
+
+If YoloMode is NOT active:
+  -> Present options with labels and recommendation
+  -> Wait for user selection
+```
+
+**YoloMode does NOT bypass:**
+- Test execution (completion-gate)
+- Security checks (security-protocol)
+- Destructive operations (merge-protocol abandon confirmation)
+- Quality enforcement (quality-enforcement)
+
+YoloMode is about speed, not recklessness. It trusts the agent's recommendation for design choices, not for safety checks.
+
 ## User Directives
 
 User directives specify WHAT needs to happen, not HOW. "Add X" or "Fix Y" does not mean bypass established workflows.

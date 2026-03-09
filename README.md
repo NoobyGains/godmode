@@ -17,7 +17,7 @@
 ## Quick Start
 
 ```bash
-claude plugin add NoobyGains/godmode
+claude plugin install NoobyGains/godmode
 ```
 
 That's it. Start your next conversation — GodMode activates automatically.
@@ -300,7 +300,7 @@ Your codebase conventions always win. If your project has a custom `authenticati
 ### Claude Code
 
 ```bash
-claude plugin add NoobyGains/godmode
+claude plugin install NoobyGains/godmode
 ```
 
 Then start any conversation. GodMode activates automatically via the SessionStart hook. Run `/godmode` to explicitly invoke it, or just start working — the activation skill detects relevant context and fires the right skills.

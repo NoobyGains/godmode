@@ -236,17 +236,38 @@ each designed by specialists in their domain.
 ```
 
 **Report to the user:**
+
+Present discoveries as labeled options with links. Mark the recommendation with a star.
+
 ```
-I identified 3 relevant repositories and will harvest their strongest patterns:
+I found [N] relevant repositories. Here are the top candidates:
 
-1. [repo-1] (2.3k stars, MIT) - Extracting: editor initialization and schema approach
-2. [repo-2] (890 stars, Apache 2.0) - Extracting: CRDT conflict resolution logic
-3. [repo-3] (1.5k stars, MIT) - Extracting: WebSocket room lifecycle management
+**A)** [repo-name] — [stars] stars, [license]
+   Link: [GitHub URL]
+   Extractable: [specific patterns/code worth harvesting]
+   Fit: [what percentage of your need it covers]
 
-Building from scratch: [what is unique to this project]
+**B)** [repo-name] — [stars] stars, [license]
+   Link: [GitHub URL]
+   Extractable: [specific patterns/code worth harvesting]
+   Fit: [what percentage of your need it covers]
 
-This approach saves substantial development effort versus building everything from zero.
+**C)** [repo-name] — [stars] stars, [license]
+   Link: [GitHub URL]
+   Extractable: [specific patterns/code worth harvesting]
+   Fit: [what percentage of your need it covers]
+
+**D) Multi-source harvest** — Best patterns from all three ⭐ Recommended
+   From A: [what to extract]
+   From B: [what to extract]
+   From C: [what to extract]
+   Build from scratch: [what is unique to this project]
+   Why: Combines battle-tested patterns from [N] production systems
+
+Check out the repos and pick A, B, C, or D.
 ```
+
+**YoloMode exception:** Reference and repository selection is ALWAYS interactive — even in YoloMode, present the options and let the user pick. These choices are too impactful to auto-select.
 
 ## Cognitive Traps
 
