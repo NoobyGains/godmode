@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 830 400" width="830" height="400">
+  <defs>
+    <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0099ff"/>
+      <stop offset="50%" stop-color="#b090f8"/>
+      <stop offset="100%" stop-color="#0099ff"/>
+      <animateTransform attributeName="gradientTransform" type="translate" values="-0.5 0;0.5 0;-0.5 0" dur="10s" repeatCount="indefinite"/>
+    </linearGradient>
+    <clipPath id="tr"><rect x="165" y="136" width="500" height="8" rx="0"/></clipPath>
+  </defs>
+  <style>
+    @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  </style>
+
+  <!-- Background -->
+  <rect width="830" height="400" rx="12" fill="#0f0f0f"/>
+  <rect x="0.5" y="0.5" width="829" height="399" rx="12" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+
+  <!-- Title -->
+  <text x="415" y="68" text-anchor="middle" font-family="'Segoe UI',system-ui,-apple-system,sans-serif" font-weight="700" font-size="44" fill="url(#tg)">GodMode</text>
+
+  <!-- Subtitle -->
+  <text x="415" y="96" text-anchor="middle" font-family="'Segoe UI',system-ui,-apple-system,sans-serif" font-weight="400" font-size="16" fill="rgba(255,255,255,0.62)">The AI development framework that thinks before it builds</text>
+
+  <!-- Terminal window -->
+  <rect x="165" y="124" width="500" height="204" rx="8" fill="#111111" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <!-- Title bar -->
+  <rect x="165" y="124" width="500" height="32" rx="8" fill="#1a1a1a"/>
+  <rect x="165" y="148" width="500" height="8" fill="#1a1a1a" clip-path="url(#tr)"/>
+  <!-- Traffic lights -->
+  <circle cx="184" cy="140" r="6" fill="#ff5f56"/>
+  <circle cx="204" cy="140" r="6" fill="#ffbd2e"/>
+  <circle cx="224" cy="140" r="6" fill="#27c93f"/>
+  <text x="415" y="144" text-anchor="middle" font-family="Monaco,Menlo,'Courier New',monospace" font-size="12" fill="rgba(255,255,255,0.3)">terminal</text>
+
+  <!-- Terminal lines -->
+  <text x="184" y="180" font-family="Monaco,Menlo,'Courier New',monospace" font-size="13">
+    <tspan fill="rgba(255,255,255,0.44)">$ </tspan><tspan fill="rgba(255,255,255,0.9)">claude</tspan>
+  </text>
+  <text x="184" y="202" font-family="Monaco,Menlo,'Courier New',monospace" font-size="13">
+    <tspan fill="rgba(255,255,255,0.44)">&gt; </tspan><tspan fill="#0099ff">/godmode</tspan>
+  </text>
+  <text x="184" y="228" font-family="Monaco,Menlo,'Courier New',monospace" font-size="13">
+    <tspan fill="#00b848">&#x2713; </tspan><tspan fill="rgba(255,255,255,0.9)">32 skills loaded</tspan>
+  </text>
+  <text x="184" y="252" font-family="Monaco,Menlo,'Courier New',monospace" font-size="13">
+    <tspan fill="#00b848">&#x2713; </tspan><tspan fill="rgba(255,255,255,0.9)">Pipeline: DEFINE &#x2192; PLAN &#x2192; EXECUTE &#x2192; REVIEW &#x2192; SHIP</tspan>
+  </text>
+  <text x="184" y="276" font-family="Monaco,Menlo,'Courier New',monospace" font-size="13">
+    <tspan fill="#00b848">&#x2713; </tspan><tspan fill="rgba(255,255,255,0.9)">Agent Teams ready</tspan>
+  </text>
+  <!-- Cursor -->
+  <rect x="184" y="288" width="7" height="14" rx="1" fill="#0099ff" style="animation:blink 1s step-end infinite"/>
+
+  <!-- Badges -->
+  <g font-family="Monaco,Menlo,'Courier New',monospace" font-size="11" letter-spacing="0.5">
+    <rect x="275" y="348" width="72" height="28" rx="8" fill="none" stroke="#0099ff" stroke-width="1"/>
+    <text x="311" y="366" text-anchor="middle" fill="#0099ff">v1.0.0</text>
+    <rect x="363" y="348" width="104" height="28" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="415" y="366" text-anchor="middle" fill="rgba(255,255,255,0.44)">MIT License</text>
+    <rect x="483" y="348" width="80" height="28" rx="8" fill="none" stroke="#b090f8" stroke-width="1"/>
+    <text x="523" y="366" text-anchor="middle" fill="#b090f8">32 Skills</text>
+  </g>
+</svg>

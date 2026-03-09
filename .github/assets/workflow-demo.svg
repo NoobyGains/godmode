@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" width="900" height="500">
+  <defs>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6">
+        <animate attributeName="stop-color" values="#3b82f6;#8b5cf6;#22c55e;#3b82f6" dur="6s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#22c55e">
+        <animate attributeName="stop-color" values="#22c55e;#3b82f6;#8b5cf6;#22c55e" dur="6s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+  </defs>
+
+  <style>
+    @keyframes cardGlow { 0%, 100% { opacity: 0.92; } 50% { opacity: 1; } }
+    .card1, .card2, .card3, .card4 { animation: cardGlow 4s ease-in-out infinite; }
+
+    @keyframes titleGlow { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
+    .titleGlow { animation: titleGlow 3s ease-in-out infinite; }
+
+    @keyframes bar1 { 0%, 30% { width: 0; } 60%, 100% { width: 90; } }
+    @keyframes bar2 { 0%, 35% { width: 0; } 65%, 100% { width: 90; } }
+    @keyframes bar3 { 0%, 40% { width: 0; } 70%, 100% { width: 90; } }
+    .bar1 { animation: bar1 3s ease-out forwards; }
+    .bar2 { animation: bar2 3s ease-out forwards; }
+    .bar3 { animation: bar3 3s ease-out forwards; }
+
+    @keyframes dotPulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.7; } }
+    .dot { animation: dotPulse 2s ease-in-out infinite; }
+    .dot2 { animation: dotPulse 2s ease-in-out 0.4s infinite; }
+    .dot3 { animation: dotPulse 2s ease-in-out 0.8s infinite; }
+  </style>
+
+  <!-- Background -->
+  <rect width="900" height="500" rx="0" fill="#0a0a0f"/>
+
+  <!-- Title -->
+  <text x="450" y="36" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-weight="bold" font-size="22" fill="url(#titleGrad)" class="titleGlow">GodMode in Action</text>
+  <text x="450" y="56" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="11.5" fill="#888" letter-spacing="0.3">From idea to shipped site — one conversation, zero guesswork</text>
+
+  <!-- Connector dots -->
+  <circle cx="443" cy="175" r="2" fill="#3b82f6" class="dot"/>
+  <circle cx="449" cy="175" r="2" fill="#6366f1" class="dot2"/>
+  <circle cx="455" cy="175" r="2" fill="#6366f1" class="dot3"/>
+  <circle cx="230" cy="272" r="2" fill="#3b82f6" class="dot"/>
+  <circle cx="230" cy="278" r="2" fill="#8b5cf6" class="dot2"/>
+  <circle cx="230" cy="284" r="2" fill="#8b5cf6" class="dot3"/>
+  <circle cx="670" cy="272" r="2" fill="#6366f1" class="dot"/>
+  <circle cx="670" cy="278" r="2" fill="#8b5cf6" class="dot2"/>
+  <circle cx="670" cy="284" r="2" fill="#22c55e" class="dot3"/>
+  <circle cx="443" cy="385" r="2" fill="#8b5cf6" class="dot3"/>
+  <circle cx="449" cy="385" r="2" fill="#22c55e" class="dot2"/>
+  <circle cx="455" cy="385" r="2" fill="#22c55e" class="dot"/>
+
+  <!-- ====== CARD 1: Intent Discovery (top-left) ====== -->
+  <g class="card1">
+    <rect x="20" y="78" width="420" height="185" rx="8" fill="#141420" stroke="#333" stroke-width="1"/>
+    <rect x="20" y="78" width="4" height="185" rx="2" fill="#3b82f6"/>
+    <text x="44" y="100" font-family="'Segoe UI',system-ui,sans-serif" font-weight="bold" font-size="10" fill="#3b82f6" letter-spacing="1.5">01</text>
+    <text x="64" y="100" font-family="'Segoe UI',system-ui,sans-serif" font-weight="700" font-size="12" fill="#3b82f6">Intent Discovery</text>
+
+    <text x="44" y="125" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#9ca3af">&gt; Build me a landing page</text>
+    <text x="44" y="143" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#aaa">  What audience?</text>
+    <text x="175" y="143" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#4ade80">Developers</text>
+    <text x="44" y="161" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#aaa">  What tone?</text>
+    <text x="152" y="161" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#4ade80">Premium dev-tool</text>
+    <text x="44" y="179" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#aaa">  What sections?</text>
+    <text x="187" y="179" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#4ade80">Hero, features</text>
+    <text x="44" y="200" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#22c55e" font-weight="bold">✓ Spec approved</text>
+  </g>
+
+  <!-- ====== CARD 2: Reference Research (top-right) ====== -->
+  <g class="card2">
+    <rect x="460" y="78" width="420" height="185" rx="8" fill="#141420" stroke="#333" stroke-width="1"/>
+    <rect x="460" y="78" width="4" height="185" rx="2" fill="#6366f1"/>
+    <text x="484" y="100" font-family="'Segoe UI',system-ui,sans-serif" font-weight="bold" font-size="10" fill="#6366f1" letter-spacing="1.5">02</text>
+    <text x="504" y="100" font-family="'Segoe UI',system-ui,sans-serif" font-weight="700" font-size="12" fill="#6366f1">Reference Research</text>
+
+    <text x="484" y="128" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#22c55e">✓</text>
+    <text x="499" y="128" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#a78bfa">github-search:</text>
+    <text x="610" y="128" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#aaa">12 repos found</text>
+    <text x="484" y="150" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#22c55e">✓</text>
+    <text x="499" y="150" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#a78bfa">design-research:</text>
+    <text x="628" y="150" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#aaa">Linear, Raycast</text>
+    <text x="484" y="172" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#22c55e">✓</text>
+    <text x="499" y="172" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#a78bfa">codebase-research:</text>
+    <text x="646" y="172" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#aaa">patterns mapped</text>
+    <text x="484" y="194" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#22c55e">✓</text>
+    <text x="499" y="194" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#a78bfa">reference-engine:</text>
+    <text x="634" y="194" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#aaa">3 selected</text>
+  </g>
+
+  <!-- ====== CARD 3: Agent Teams (bottom-left) ====== -->
+  <g class="card3">
+    <rect x="20" y="290" width="420" height="185" rx="8" fill="#141420" stroke="#333" stroke-width="1"/>
+    <rect x="20" y="290" width="4" height="185" rx="2" fill="#8b5cf6"/>
+    <text x="44" y="312" font-family="'Segoe UI',system-ui,sans-serif" font-weight="bold" font-size="10" fill="#8b5cf6" letter-spacing="1.5">03</text>
+    <text x="64" y="312" font-family="'Segoe UI',system-ui,sans-serif" font-weight="700" font-size="12" fill="#8b5cf6">Agent Teams</text>
+
+    <!-- Agent 1: README Writer -->
+    <rect x="44" y="328" width="370" height="40" rx="6" fill="#1a1a2e" stroke="#2a2a40" stroke-width="0.8"/>
+    <text x="58" y="346" font-family="'SF Mono',Consolas,monospace" font-size="10" fill="#c4b5fd">README Writer</text>
+    <rect x="200" y="340" width="100" height="6" rx="3" fill="#1e1e30"/>
+    <rect x="200" y="340" height="6" rx="3" fill="#8b5cf6" class="bar1"><animate attributeName="width" values="0;0;90;90" keyTimes="0;0.3;0.6;1" dur="3s" fill="freeze"/></rect>
+    <text x="310" y="347" font-family="'SF Mono',Consolas,monospace" font-size="9.5" fill="#4ade80">done</text>
+
+    <!-- Agent 2: React Builder -->
+    <rect x="44" y="376" width="370" height="40" rx="6" fill="#1a1a2e" stroke="#2a2a40" stroke-width="0.8"/>
+    <text x="58" y="394" font-family="'SF Mono',Consolas,monospace" font-size="10" fill="#c4b5fd">React Builder</text>
+    <rect x="200" y="388" width="100" height="6" rx="3" fill="#1e1e30"/>
+    <rect x="200" y="388" height="6" rx="3" fill="#a78bfa" class="bar2"><animate attributeName="width" values="0;0;90;90" keyTimes="0;0.35;0.65;1" dur="3s" fill="freeze"/></rect>
+    <text x="310" y="395" font-family="'SF Mono',Consolas,monospace" font-size="9.5" fill="#4ade80">done</text>
+
+    <!-- Agent 3: URL Updater -->
+    <rect x="44" y="424" width="370" height="40" rx="6" fill="#1a1a2e" stroke="#2a2a40" stroke-width="0.8"/>
+    <text x="58" y="442" font-family="'SF Mono',Consolas,monospace" font-size="10" fill="#c4b5fd">URL Updater</text>
+    <rect x="200" y="436" width="100" height="6" rx="3" fill="#1e1e30"/>
+    <rect x="200" y="436" height="6" rx="3" fill="#c4b5fd" class="bar3"><animate attributeName="width" values="0;0;90;90" keyTimes="0;0.4;0.7;1" dur="3s" fill="freeze"/></rect>
+    <text x="310" y="443" font-family="'SF Mono',Consolas,monospace" font-size="9.5" fill="#4ade80">done</text>
+  </g>
+
+  <!-- ====== CARD 4: Shipped (bottom-right) ====== -->
+  <g class="card4">
+    <rect x="460" y="290" width="420" height="185" rx="8" fill="#141420" stroke="#333" stroke-width="1"/>
+    <rect x="460" y="290" width="4" height="185" rx="2" fill="#22c55e"/>
+    <text x="484" y="312" font-family="'Segoe UI',system-ui,sans-serif" font-weight="bold" font-size="10" fill="#22c55e" letter-spacing="1.5">04</text>
+    <text x="504" y="312" font-family="'Segoe UI',system-ui,sans-serif" font-weight="700" font-size="12" fill="#22c55e">Shipped</text>
+
+    <text x="484" y="345" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#22c55e">✓</text>
+    <text x="499" y="345" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#4ade80">npm run build</text>
+    <text x="610" y="345" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#aaa">— 0 errors</text>
+    <text x="484" y="370" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#22c55e">✓</text>
+    <text x="499" y="370" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#4ade80">git push origin master</text>
+    <text x="484" y="395" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#22c55e">✓</text>
+    <text x="499" y="395" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#818cf8">github.com/</text>
+    <text x="592" y="395" font-family="'SF Mono',Consolas,monospace" font-size="10.5" fill="#c4b5fd">NoobyGains/godmode</text>
+
+    <!-- Completion badge -->
+    <circle cx="670" cy="445" r="14" fill="#141420" stroke="#22c55e" stroke-width="1.5">
+      <animate attributeName="stroke-width" values="1.5;2.5;1.5" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <path d="M662 445 L667 450 L678 440" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="670" y="468" text-anchor="middle" font-family="'Segoe UI',system-ui,sans-serif" font-size="8" fill="#22c55e" font-weight="600" letter-spacing="1">COMPLETE</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="450" y="494" text-anchor="middle" font-family="'SF Mono',Consolas,monospace" font-size="8.5" fill="#444" letter-spacing="0.5">powered by 32 skills · agent teams · zero guesswork</text>
+</svg>

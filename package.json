@@ -1,0 +1,18 @@
+{
+  "name": "godmode",
+  "version": "1.0.0",
+  "description": "Advanced AI protocol framework: structured workflows, multi-agent coordination, automated quality enforcement, and production-grade development patterns",
+  "type": "module",
+  "author": "David",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NoobyGains/godmode.git"
+  },
+  "homepage": "https://github.com/NoobyGains/godmode",
+  "scripts": {
+    "validate": "node scripts/validate-skills.js",
+    "validate:ci": "node scripts/validate-skills.js --ci",
+    "test": "node scripts/validate-skills.js"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "godmode",
+  "description": "Elite AI development framework: reference-first design, agent orchestration, automated quality gates, and battle-tested engineering workflows",
+  "version": "1.0.0",
+  "author": {
+    "name": "David"
+  },
+  "license": "MIT",
+  "keywords": ["skills", "godmode", "ai-development", "agent-orchestration", "reference-first", "ux-design", "blueprints", "code-quality", "tdd", "debugging", "frontend", "architecture", "security", "scaffolding"]
+}

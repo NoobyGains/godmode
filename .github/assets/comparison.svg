@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 830 520" width="830" height="520">
+  <style><![CDATA[
+    @keyframes pulse { 0%,100% { stroke-opacity: 0.7; } 50% { stroke-opacity: 1; } }
+    .gPulse { animation: pulse 4s ease-in-out infinite; }
+  ]]></style>
+  <defs>
+    <rect id="card" width="391" height="230" rx="8"/>
+    <clipPath id="cl"><use href="#card"/></clipPath>
+    <clipPath id="cr"><use href="#card"/></clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="830" height="520" rx="12" fill="#0f0f0f"/>
+
+  <!-- Title block -->
+  <text x="415" y="32" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'Segoe UI',system-ui,sans-serif" font-size="21" font-weight="700">Why GodMode?</text>
+  <text x="415" y="48" text-anchor="middle" fill="rgba(255,255,255,0.44)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Same prompt. Radically different engineering outcomes.</text>
+
+  <!-- ===== LEFT COLUMN — Without GodMode ===== -->
+  <!-- Header -->
+  <circle cx="28" cy="72" r="9" fill="none" stroke="#fe1d2c" stroke-width="1.5"/>
+  <line x1="24" y1="68" x2="32" y2="76" stroke="#fe1d2c" stroke-width="1.5"/><line x1="32" y1="68" x2="24" y2="76" stroke="#fe1d2c" stroke-width="1.5"/>
+  <text x="44" y="76" fill="#fe1d2c" font-family="'Segoe UI',system-ui,sans-serif" font-size="14" font-weight="600" letter-spacing="1">WITHOUT GODMODE</text>
+  <text x="44" y="90" fill="rgba(255,255,255,0.44)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">The usual AI experience</text>
+
+  <!-- Left terminal card -->
+  <rect x="12" y="102" width="391" height="230" rx="8" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <circle cx="28" cy="116" r="4" fill="#ff5f56"/><circle cx="40" cy="116" r="4" fill="#ffbd2e"/><circle cx="52" cy="116" r="4" fill="#27c93f"/>
+  <line x1="12" y1="126" x2="403" y2="126" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+
+  <!-- Left terminal text -->
+  <text x="24" y="142" fill="rgba(255,255,255,0.9)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="11">&gt; Build me a dashboard</text>
+  <text x="24" y="157" fill="rgba(255,255,255,0.44)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="11">Sure! Here's your dashboard.</text>
+  <text x="24" y="174" fill="rgba(255,255,255,0.3)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">// API keys stored at once</text>
+  <text x="24" y="187" fill="rgba(255,255,255,0.3)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">// No tests written</text>
+  <text x="24" y="202" fill="#fe1d2c" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">const API_KEY = "sk-1234567890"</text>
+  <text x="24" y="215" fill="#fe1d2c" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">const info = await fetch("hardcoded-url")</text>
+  <text x="24" y="230" fill="rgba(255,255,255,0.3)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">// 500 lines of spaghetti...</text>
+  <text x="24" y="245" fill="#fe1d2c" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">function handleEverything(x: any) {</text>
+  <text x="24" y="258" fill="rgba(255,255,255,0.3)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">  // 100 lines of spaghetti...</text>
+
+  <!-- Left checklist -->
+  <text x="22" y="352" fill="#fe1d2c" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2717;</text><text x="36" y="352" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">No requirements gathered</text>
+  <text x="22" y="368" fill="#fe1d2c" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2717;</text><text x="36" y="368" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">No existing patterns checked</text>
+  <text x="22" y="384" fill="#fe1d2c" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2717;</text><text x="36" y="384" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">No tests written</text>
+  <text x="22" y="400" fill="#fe1d2c" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2717;</text><text x="36" y="400" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">No code diagnostic</text>
+  <text x="22" y="416" fill="#fe1d2c" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2717;</text><text x="36" y="416" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Hardcoded secrets in source</text>
+  <text x="22" y="432" fill="#fe1d2c" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2717;</text><text x="36" y="432" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Inconsistent with codebase</text>
+  <text x="22" y="448" fill="#fe1d2c" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2717;</text><text x="36" y="448" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-style="italic">"Let me know if you need changes"</text>
+
+  <!-- ===== RIGHT COLUMN — With GodMode ===== -->
+  <!-- Header -->
+  <circle cx="435" cy="72" r="9" fill="none" stroke="#00b848" stroke-width="1.5"/>
+  <polyline points="430,72 433,76 440,68" fill="none" stroke="#00b848" stroke-width="1.5"/>
+  <text x="451" y="76" fill="#00b848" font-family="'Segoe UI',system-ui,sans-serif" font-size="14" font-weight="600" letter-spacing="1">WITH GODMODE</text>
+  <text x="451" y="90" fill="rgba(255,255,255,0.44)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Structured engineering pipeline</text>
+
+  <!-- Right terminal card with pulse -->
+  <rect x="427" y="102" width="391" height="230" rx="8" fill="#1a1a1a" stroke="#00b848" stroke-width="1" class="gPulse"/>
+  <circle cx="443" cy="116" r="4" fill="#ff5f56"/><circle cx="455" cy="116" r="4" fill="#ffbd2e"/><circle cx="467" cy="116" r="4" fill="#27c93f"/>
+  <line x1="427" y1="126" x2="818" y2="126" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+
+  <!-- Right terminal text -->
+  <text x="439" y="142" fill="rgba(255,255,255,0.9)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="11">&gt; Build me a dashboard</text>
+  <text x="439" y="157" fill="#b090f8" font-family="Monaco,Menlo,'Courier New',monospace" font-size="11">Activating intent-discovery...</text>
+  <text x="439" y="174" fill="rgba(255,255,255,0.62)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">&#x2022; What data sources?</text>
+  <text x="439" y="187" fill="rgba(255,255,255,0.62)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">&#x2022; Who are the users?</text>
+  <text x="439" y="200" fill="rgba(255,255,255,0.62)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">&#x2022; What existing patterns?</text>
+  <text x="439" y="217" fill="#00b848" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">&#x2713; Spec approved</text>
+  <text x="439" y="230" fill="#00b848" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">&#x2713; 5 tasks decomposed</text>
+  <text x="439" y="243" fill="#00b848" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">&#x2713; References: Found 3 repos</text>
+  <text x="439" y="260" fill="rgba(255,255,255,0.3)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">// Task 1/5: Auth middleware</text>
+  <text x="439" y="273" fill="rgba(255,255,255,0.3)" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">// Based on existing codebase</text>
+  <text x="439" y="288" fill="#b090f8" font-family="Monaco,Menlo,'Courier New',monospace" font-size="10">export function withAuth(handler) {</text>
+
+  <!-- Right checklist -->
+  <text x="437" y="352" fill="#00b848" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2713;</text><text x="451" y="352" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Requirements gathered first</text>
+  <text x="437" y="368" fill="#00b848" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2713;</text><text x="451" y="368" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Existing patterns matched</text>
+  <text x="437" y="384" fill="#00b848" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2713;</text><text x="451" y="384" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">TDD: tests before code</text>
+  <text x="437" y="400" fill="#00b848" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2713;</text><text x="451" y="400" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Spec-driven implementation</text>
+  <text x="437" y="416" fill="#00b848" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2713;</text><text x="451" y="416" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Secrets in env vars</text>
+  <text x="437" y="432" fill="#00b848" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2713;</text><text x="451" y="432" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Consistent naming &amp; style</text>
+  <text x="437" y="448" fill="#00b848" font-family="'Segoe UI',system-ui,sans-serif" font-size="12" font-weight="600">&#x2713;</text><text x="451" y="448" fill="rgba(255,255,255,0.62)" font-family="'Segoe UI',system-ui,sans-serif" font-size="12">Quality gates passed</text>
+
+  <!-- Footer -->
+  <text x="415" y="504" text-anchor="middle" fill="rgba(255,255,255,0.44)" font-family="'Segoe UI',system-ui,sans-serif" font-size="11">Same AI. Same prompt. The difference is the framework.</text>
+</svg>

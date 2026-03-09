@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Bootstrap hook for godmode plugin session initialization
+
+set -euo pipefail
+
+# Resolve the plugin installation directory
+HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+PLUGIN_BASE="$(cd "${HOOK_DIR}/.." && pwd)"
+
+# Detect deprecated skills directory and prepare migration notice
+migration_notice=""
+old_skills_path="${HOME}/.config/godmode/skills"
+if [ -d "$old_skills_path" ]; then
+    migration_notice="\n\n<important-reminder>IN YOUR FIRST REPLY AFTER SEEING THIS MESSAGE YOU MUST TELL THE USER:⚠️ **WARNING:** GodMode now uses Claude Code's skills system. Custom skills in ~/.config/godmode/skills will not be read. Move custom skills to ~/.claude/skills instead. To make this message go away, remove ~/.config/godmode/skills</important-reminder>"
+fi
+
+# Load the activation protocol content
+activation_content=$(cat "${PLUGIN_BASE}/skills/activation/SKILL.md" 2>&1 || echo "Error loading activation protocol")
+
+# Safely encode content for JSON transport using parameter expansion.
+# Each substitution is a single C-level pass - far faster than
+# iterating character by character.
+json_encode() {
+    local val="$1"
+    val="${val//\\/\\\\}"
+    val="${val//\"/\\\"}"
+    val="${val//$'\n'/\\n}"
+    val="${val//$'\r'/\\r}"
+    val="${val//$'\t'/\\t}"
+    printf '%s' "$val"
+}
+
+activation_encoded=$(json_encode "$activation_content")
+notice_encoded=$(json_encode "$migration_notice")
+bootstrap_payload="<CRITICAL_OVERRIDE>\nYou have GodMode activated.\n\n**Below is the full content of your 'godmode:activation' protocol - your guide to using skills. For all other skills, use the 'Skill' tool:**\n\n${activation_encoded}\n\n${notice_encoded}\n</CRITICAL_OVERRIDE>"
+
+# Emit context injection payload as JSON.
+# Dual format for cross-platform compatibility:
+# - additional_context: consumed by Cursor hooks
+# - hookSpecificOutput.additionalContext: consumed by Claude hooks
+cat <<EOF
+{
+  "additional_context": "${bootstrap_payload}",
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "${bootstrap_payload}"
+  }
+}
+EOF
+
+exit 0

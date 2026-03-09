@@ -1,0 +1,16 @@
+{
+  "name": "godmode",
+  "displayName": "GodMode",
+  "description": "Core skills library: TDD, debugging, collaboration patterns, and proven techniques",
+  "version": "1.0.0",
+  "author": {
+    "name": "David",
+    "email": ""
+  },
+  "license": "MIT",
+  "keywords": ["skills", "tdd", "debugging", "collaboration", "best-practices", "workflows"],
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks.json"
+}

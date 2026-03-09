@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 830 280" width="830" height="280">
+  <style>
+    @keyframes scan {
+      0%,19.9%  { --d:1; --p:0; --e:0; --r:0; --s:0 }
+      20%,39.9% { --d:0; --p:1; --e:0; --r:0; --s:0 }
+      40%,59.9% { --d:0; --p:0; --e:1; --r:0; --s:0 }
+      60%,79.9% { --d:0; --p:0; --e:0; --r:1; --s:0 }
+      80%,100%  { --d:0; --p:0; --e:0; --r:0; --s:1 }
+    }
+    /* Workaround: CSS custom properties in SVG animation are unreliable.
+       Use 5 separate keyframes toggling stroke-opacity on each card border. */
+    @keyframes hi-1 { 0%,19.9%{stroke-opacity:1} 20%,100%{stroke-opacity:0} }
+    @keyframes hi-2 { 0%,19.9%{stroke-opacity:0} 20%,39.9%{stroke-opacity:1} 40%,100%{stroke-opacity:0} }
+    @keyframes hi-3 { 0%,39.9%{stroke-opacity:0} 40%,59.9%{stroke-opacity:1} 60%,100%{stroke-opacity:0} }
+    @keyframes hi-4 { 0%,59.9%{stroke-opacity:0} 60%,79.9%{stroke-opacity:1} 80%,100%{stroke-opacity:0} }
+    @keyframes hi-5 { 0%,79.9%{stroke-opacity:0} 80%,100%{stroke-opacity:1} }
+    .hi-1 { animation: hi-1 10s steps(1) infinite }
+    .hi-2 { animation: hi-2 10s steps(1) infinite }
+    .hi-3 { animation: hi-3 10s steps(1) infinite }
+    .hi-4 { animation: hi-4 10s steps(1) infinite }
+    .hi-5 { animation: hi-5 10s steps(1) infinite }
+    text { font-family: 'Segoe UI', system-ui, sans-serif }
+  </style>
+  <defs>
+    <marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="rgba(255,255,255,0.44)" stroke-width="1.5"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="830" height="280" rx="12" fill="#0f0f0f"/>
+
+  <!-- Connectors -->
+  <g stroke="rgba(255,255,255,0.44)" stroke-width="2" fill="none" marker-end="url(#ah)">
+    <line x1="188" y1="120" x2="206" y2="120"/>
+    <line x1="348" y1="120" x2="366" y2="120"/>
+    <line x1="508" y1="120" x2="526" y2="120"/>
+    <line x1="668" y1="120" x2="686" y2="120"/>
+  </g>
+
+  <!-- DEFINE -->
+  <g>
+    <rect x="46" y="52" width="140" height="136" rx="8" fill="#1a1a1a"/>
+    <rect x="46" y="52" width="140" height="136" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <rect x="46" y="52" width="140" height="136" rx="8" fill="none" stroke="#0099ff" stroke-width="1.5" class="hi-1"/>
+    <text x="116" y="84" text-anchor="middle" fill="#0099ff" font-size="14" font-weight="700" letter-spacing="0.5">DEFINE</text>
+    <text x="116" y="108" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Question</text>
+    <text x="116" y="128" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Specify</text>
+    <text x="116" y="148" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Approve</text>
+    <text x="116" y="216" text-anchor="middle" fill="rgba(255,255,255,0.44)" font-size="10">scope</text>
+  </g>
+
+  <!-- PLAN -->
+  <g>
+    <rect x="206" y="52" width="140" height="136" rx="8" fill="#1a1a1a"/>
+    <rect x="206" y="52" width="140" height="136" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <rect x="206" y="52" width="140" height="136" rx="8" fill="none" stroke="#b090f8" stroke-width="1.5" class="hi-2"/>
+    <text x="276" y="84" text-anchor="middle" fill="#b090f8" font-size="14" font-weight="700" letter-spacing="0.5">PLAN</text>
+    <text x="276" y="108" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Decompose</text>
+    <text x="276" y="128" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Sequence</text>
+    <text x="276" y="148" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Size-check</text>
+    <text x="276" y="216" text-anchor="middle" fill="rgba(255,255,255,0.44)" font-size="10">strategy</text>
+  </g>
+
+  <!-- EXECUTE -->
+  <g>
+    <rect x="366" y="52" width="140" height="136" rx="8" fill="#1a1a1a"/>
+    <rect x="366" y="52" width="140" height="136" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <rect x="366" y="52" width="140" height="136" rx="8" fill="none" stroke="#dd922f" stroke-width="1.5" class="hi-3"/>
+    <text x="436" y="84" text-anchor="middle" fill="#dd922f" font-size="14" font-weight="700" letter-spacing="0.5">EXECUTE</text>
+    <text x="436" y="108" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Subagents</text>
+    <text x="436" y="128" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">TDD</text>
+    <text x="436" y="148" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Quality gates</text>
+    <text x="436" y="216" text-anchor="middle" fill="rgba(255,255,255,0.44)" font-size="10">build</text>
+  </g>
+
+  <!-- REVIEW -->
+  <g>
+    <rect x="526" y="52" width="140" height="136" rx="8" fill="#1a1a1a"/>
+    <rect x="526" y="52" width="140" height="136" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <rect x="526" y="52" width="140" height="136" rx="8" fill="none" stroke="#76aedf" stroke-width="1.5" class="hi-4"/>
+    <text x="596" y="84" text-anchor="middle" fill="#76aedf" font-size="14" font-weight="700" letter-spacing="0.5">REVIEW</text>
+    <text x="596" y="108" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Spec check</text>
+    <text x="596" y="128" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Code review</text>
+    <text x="596" y="148" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Fix</text>
+    <text x="596" y="216" text-anchor="middle" fill="rgba(255,255,255,0.44)" font-size="10">validate</text>
+  </g>
+
+  <!-- SHIP -->
+  <g>
+    <rect x="686" y="52" width="140" height="136" rx="8" fill="#1a1a1a"/>
+    <rect x="686" y="52" width="140" height="136" rx="8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <rect x="686" y="52" width="140" height="136" rx="8" fill="none" stroke="#00b848" stroke-width="1.5" class="hi-5"/>
+    <text x="756" y="84" text-anchor="middle" fill="#00b848" font-size="14" font-weight="700" letter-spacing="0.5">SHIP</text>
+    <text x="756" y="108" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Verify</text>
+    <text x="756" y="128" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Merge / PR</text>
+    <text x="756" y="148" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-size="11">Cleanup</text>
+    <text x="756" y="216" text-anchor="middle" fill="rgba(255,255,255,0.44)" font-size="10">deliver</text>
+  </g>
+</svg>
