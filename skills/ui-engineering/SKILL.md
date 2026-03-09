@@ -1,6 +1,6 @@
 ---
 name: ui-engineering
-description: Activate when constructing frontend components, selecting layout strategies, orchestrating state, or assembling interactive UI - spans component architecture, responsive adaptation, accessibility compliance, and rendering performance across any frontend framework
+description: Use when constructing frontend components, selecting layout strategies, orchestrating state, or assembling interactive UI - spans component architecture, responsive adaptation, accessibility compliance, and rendering performance across any frontend framework
 ---
 
 # UI Engineering

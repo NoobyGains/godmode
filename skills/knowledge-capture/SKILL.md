@@ -1,6 +1,6 @@
 ---
 name: knowledge-capture
-description: Activate after completing any meaningful task - distill patterns, lessons, and insights from the interaction and persist them for future sessions
+description: Use when completing any meaningful task - distill patterns, lessons, and insights from the interaction and persist them for future sessions
 ---
 
 # Knowledge Capture

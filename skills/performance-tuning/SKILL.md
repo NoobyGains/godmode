@@ -1,6 +1,6 @@
 ---
 name: performance-tuning
-description: Activate when performance is a concern - sluggish pages, slow queries, bloated bundles, high-latency APIs, or whenever someone says "optimize" or "make it faster"
+description: Use when performance is a concern - sluggish pages, slow queries, bloated bundles, high-latency APIs, or whenever someone says "optimize" or "make it faster"
 ---
 
 # Performance Tuning

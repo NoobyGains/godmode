@@ -1,6 +1,6 @@
 ---
 name: ux-patterns
-description: Activate when building ANY user interface - web app, game, CLI, dashboard, landing page, or component - ensures all UI output references documented UX patterns instead of generating from assumptions, preventing the amateur look of AI-generated UI
+description: Use when building ANY user interface - web app, game, CLI, dashboard, landing page, or component - ensures all UI output references documented UX patterns instead of generating from assumptions, preventing the amateur look of AI-generated UI
 ---
 
 # UX Patterns

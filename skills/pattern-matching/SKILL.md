@@ -1,6 +1,6 @@
 ---
 name: pattern-matching
-description: Activate whenever contributing code to an existing project - guarantees that every new line mirrors the established conventions, naming schemes, architectural layering, directory layout, and stylistic choices already present in the codebase rather than drifting toward generic AI defaults
+description: Use when contributing code to an existing project - guarantees that every new line mirrors the established conventions, naming schemes, architectural layering, directory layout, and stylistic choices already present in the codebase rather than drifting toward generic AI defaults
 ---
 
 # Pattern Matching

@@ -1,6 +1,6 @@
 ---
 name: codebase-research
-description: Activate when building ANY feature within an existing project - search the current codebase for existing patterns, conventions, similar implementations, and established approaches before writing new code
+description: Use when building ANY feature within an existing project - search the current codebase for existing patterns, conventions, similar implementations, and established approaches before writing new code
 ---
 
 # Codebase Research

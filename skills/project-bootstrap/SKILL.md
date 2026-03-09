@@ -1,6 +1,6 @@
 ---
 name: project-bootstrap
-description: Activate when launching a new project, initializing a repository, or building a codebase from the ground up - addresses directory structure, tooling configuration, linting, testing infrastructure, CI/CD pipelines, and version control setup
+description: Use when launching a new project, initializing a repository, or building a codebase from the ground up - addresses directory structure, tooling configuration, linting, testing infrastructure, CI/CD pipelines, and version control setup
 ---
 
 # Project Bootstrap

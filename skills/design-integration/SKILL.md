@@ -1,6 +1,6 @@
 ---
 name: design-integration
-description: Activate when operating in a codebase that employs an existing design system (shadcn/ui, Material UI, Ant Design, Chakra, etc.), when you need to identify which system a project uses, or when setting up a design system for a project that lacks one
+description: Use when operating in a codebase that employs an existing design system (shadcn/ui, Material UI, Ant Design, Chakra, etc.), when you need to identify which system a project uses, or when setting up a design system for a project that lacks one
 ---
 
 # Design Integration

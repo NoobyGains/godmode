@@ -1,6 +1,6 @@
 ---
 name: design-research
-description: Activate when building ANY website, web app, landing page, or web-based UI - searches real template marketplaces for professionally designed layouts in the user's industry or niche, then extracts layout structure, color palettes, typography choices, and section sequences as the design blueprint instead of generating from assumptions
+description: Use when building ANY website, web app, landing page, or web-based UI - searches real template marketplaces for professionally designed layouts in the user's industry or niche, then extracts layout structure, color palettes, typography choices, and section sequences as the design blueprint instead of generating from assumptions
 ---
 
 # Design Research

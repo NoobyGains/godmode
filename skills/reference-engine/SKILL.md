@@ -1,6 +1,6 @@
 ---
 name: reference-engine
-description: Use before building ANYTHING - the universal reference-first system that routes every task to proven reference implementations instead of generating from assumptions. Covers API design, database schemas, testing strategies, CI/CD pipelines, code patterns, DevOps, and any other domain where professional reference implementations exist
+description: Use when building ANYTHING - the universal reference-first system that routes every task to proven reference implementations instead of generating from assumptions. Covers API design, database schemas, testing strategies, CI/CD pipelines, code patterns, DevOps, and any other domain where professional reference implementations exist
 ---
 
 <EXTREMELY-IMPORTANT>
