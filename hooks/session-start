@@ -30,6 +30,9 @@ activation_encoded=$(json_encode "$activation_content")
 notice_encoded=$(json_encode "$migration_notice")
 bootstrap_payload="<CRITICAL_OVERRIDE>\nYou have GodMode activated.\n\n**Below is the full content of your 'godmode:activation' protocol - your guide to using skills. For all other skills, use the 'Skill' tool:**\n\n${activation_encoded}\n\n${notice_encoded}\n</CRITICAL_OVERRIDE>"
 
+# Run memory maintenance (decay, evict, sync) — non-blocking, best-effort
+node "${PLUGIN_BASE}/hooks/memory-maintenance.js" 2>/dev/null || true
+
 # Emit context injection payload as JSON.
 # Dual format for cross-platform compatibility:
 # - additional_context: consumed by Cursor hooks
