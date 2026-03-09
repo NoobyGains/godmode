@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "godmode",
-      "description": "37 composable skills for disciplined AI development — intent discovery, spec-driven planning, parallel agent execution, automated quality gates, and reference-first design",
+      "description": "36 composable skills for disciplined AI development — intent discovery, spec-driven planning, parallel agent execution, automated quality gates, and reference-first design",
       "version": "1.0.0",
       "source": "./",
       "author": {

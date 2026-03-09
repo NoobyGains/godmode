@@ -26,8 +26,6 @@ async function run() {
   // Resolve project memory directory
   // Claude Code sets the project memory path based on the working directory
   const homeDir = process.env.HOME || process.env.USERPROFILE || '';
-  const cwd = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-
   // Attempt to find the project memory dir
   // Convention: ~/.claude/projects/<encoded-path>/memory/
   const claudeDir = path.join(homeDir, '.claude');
