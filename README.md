@@ -5,7 +5,7 @@
 <p align="center">
   <a href="#install"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
-  <img src="https://img.shields.io/badge/skills-36-orange" alt="Skills">
+  <img src="https://img.shields.io/badge/skills-37-orange" alt="Skills">
   <img src="https://img.shields.io/badge/platforms-4-purple" alt="Platforms">
 </p>
 
@@ -39,7 +39,7 @@ AI coding agents have a predictable failure mode: you ask for a feature, and the
 
 The result is code that works in isolation but clashes with everything around it. Inconsistent naming. Duplicated logic. Tests bolted on after the fact. Entire components built from scratch when a solid open-source solution already exists. You end up spending more time fixing the agent's output than you would have spent writing it yourself.
 
-GodMode fixes this. It is a 36-skill system that activates automatically and governs the full development lifecycle — from the first question about requirements through to a merged pull request.
+GodMode fixes this. It is a 37-skill system that activates automatically and governs the full development lifecycle — from the first question about requirements through to a merged pull request.
 
 ## How It Works
 
@@ -180,7 +180,7 @@ Before declaring anything "done," the agent must produce fresh terminal output p
 
 Hedging language like "should work" or "probably passes" is prohibited.
 
-## The 36 Skills
+## The 37 Skills
 
 Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps** (rationalizations to watch for), and **Guardrails** (what's prohibited). They compose for full workflows or fire independently.
 
@@ -262,7 +262,7 @@ Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps
 </details>
 
 <details>
-<summary><strong>Infrastructure and Operations</strong> (5 skills)</summary>
+<summary><strong>Infrastructure and Operations</strong> (6 skills)</summary>
 
 | Skill | Prime Directive |
 |---|---|
@@ -271,6 +271,7 @@ Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps
 | `deployment-advisor` | No technology recommendation without checking what the user already has |
 | `performance-tuning` | No optimization without measurement proving the problem |
 | `security-protocol` | No external data reaches system call/query/output without validation |
+| `memory-manager` | No memory storage without type, confidence, and tags |
 
 </details>
 
@@ -325,7 +326,7 @@ Every skill is machine-validated on every change:
 npm run validate
 ```
 
-Checks all 36 skills for structural correctness, required frontmatter fields, cross-references, and internal consistency. Runs automatically in CI.
+Checks all 37 skills for structural correctness, required frontmatter fields, cross-references, and internal consistency. Runs automatically in CI.
 
 ## How This README Was Built
 
