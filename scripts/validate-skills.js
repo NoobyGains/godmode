@@ -346,9 +346,7 @@ function run() {
 
   if (errorTotal > 0) {
     console.log(fmt.red(fmt.bold('  VALIDATION FAILED\n')));
-    if (ciMode) {
-      process.exit(1);
-    }
+    process.exit(1);
   } else {
     console.log(fmt.green(fmt.bold('  ALL PROTOCOLS VALID\n')));
   }
