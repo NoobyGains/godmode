@@ -26,7 +26,8 @@ check_json() {   # $1 label, $2 json text, $3 python expression that must be tru
 
 echo "hooks.json"
 if grep -q "'\${CLAUDE_PLUGIN_ROOT}" "$ROOT/hooks/hooks.json"; then fail "plugin root is single-quoted (never expands)"; else pass "plugin root is double-quoted"; fi
-if "$PY" -c "import json; json.load(open('$ROOT/hooks/hooks.json'))" 2>/dev/null; then pass "valid JSON"; else fail "hooks.json is not valid JSON"; fi
+# Read through stdin: a Windows Python cannot open Git Bash's /d/... path form.
+if "$PY" -c "import json,sys; json.load(sys.stdin)" < "$ROOT/hooks/hooks.json" 2>/dev/null; then pass "valid JSON"; else fail "hooks.json is not valid JSON"; fi
 
 echo "executable bits (git index)"
 for f in hooks/run-hook.cmd hooks/session-start; do

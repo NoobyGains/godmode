@@ -28,7 +28,7 @@ if grep -qi "godmode" "$LOG"; then pass "marketplace registered and plugin visib
 if command -v codex >/dev/null 2>&1; then
   WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT; cd "$WORK"
   echo "headless prompt (best effort):"
-  codex exec -s read-only -m gpt-6-sol "List the GodMode skills you can see and say which one you would use first for: Let's make a react todo list. Do not write code." > "$OUT_DIR/codex-$STAMP.prompt.txt" 2>&1
+  codex exec --skip-git-repo-check -s read-only -m gpt-6.1-sol "List the GodMode skills you can see and say which one you would use first for: Let's make a react todo list. Do not write code." > "$OUT_DIR/codex-$STAMP.prompt.txt" 2>&1
   if grep -qi "using-godmode\|intent-discovery\|rationale" "$OUT_DIR/codex-$STAMP.prompt.txt"; then pass "model sees GodMode skills"; else echo "  [INFO] headless prompt inconclusive; see $OUT_DIR/codex-$STAMP.prompt.txt"; fi
 fi
 

@@ -245,7 +245,7 @@ Every skill has a Prime Directive (the rule that cannot be broken), a Protocol, 
 |---|---|---|---|
 | Claude Code | one-step `/plugin install` line above | SessionStart hook | Verified: hook tested on sh, with an empty PATH, and through cmd.exe on Windows; `claude plugin validate` passes |
 | Antigravity CLI (`agy`) | `agy plugin install <repo url>` | Always-on plugin rule plus the skill index | Verified on agy 1.4.7 (Windows): installed as a native plugin, and a headless "Let's make a react todo list" answered with `intent-discovery` and a question, no code ([evidence](docs/verification/)) |
-| Codex CLI and App | `codex plugin marketplace add` + `codex plugin add` | Native skill discovery (`$godmode:using-godmode`) | Manifest and marketplace shipped; live install in progress |
+| Codex CLI and App | `codex plugin marketplace add` + `codex plugin add` | Native skill discovery (`$godmode:using-godmode`) | Verified on Codex CLI 0.163: marketplace registered from this repo and `godmode@godmode` 2.0.0 installed and enabled ([evidence](docs/verification/)) |
 | Gemini CLI | `gemini extensions install <repo url>` | Extension context file | Manifest shipped, untested |
 | Cursor | plugin from repository | `sessionStart` hook | Manifest shipped, untested |
 | OpenCode V1 and V2 | `opencode.json` plugin entry | Plugin injects into the first user message | Plugin shipped, syntax-checked, untested on a live install |

@@ -1,0 +1,14 @@
+marketplace add:
+Added marketplace `godmode` from \\?\D:\Projects\GodMode.
+Installed marketplace root: D:\Projects\GodMode
+marketplace list:
+godmode         D:\Projects\GodMode
+plugin list:
+Marketplace `godmode`
+godmode@godmode  not installed           D:\Projects\GodMode
+plugin add:
+Added plugin `godmode` from marketplace `godmode`.
+Installed plugin root: C:\Users\David\.codex\plugins\cache\godmode\godmode\2.0.0
+plugin list after:
+Marketplace `godmode`
+godmode@godmode  installed, enabled  2.0.0    D:\Projects\GodMode
