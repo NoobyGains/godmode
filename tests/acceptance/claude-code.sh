@@ -9,7 +9,8 @@
 # stream-json transcript to docs/verification/claude-code-<date>.jsonl.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-PROMPT="${PROMPT:-Let's make a react todo list}"
+DEFAULT_PROMPT=$'Let\'s make a react todo list'
+PROMPT="${PROMPT:-$DEFAULT_PROMPT}"
 MODEL="${MODEL:-sonnet}"
 MAX_TURNS="${MAX_TURNS:-6}"
 OUT_DIR="$ROOT/docs/verification"
