@@ -153,12 +153,17 @@ for (const name of skillNames) {
   if (lines > 350) err(rel, `${lines} lines; move reference material into references/ (limit 350)`);
   // Byte cap as well as a line cap: a skill is read whole on every invocation and
   // long skills are the first thing compaction loses.
-  if (content.length > 20000) err(rel, `${content.length} bytes; a skill is read whole on every invocation (limit 20,000)`);
+  const bytes = Buffer.byteLength(content, 'utf8');
+  if (bytes > 20000) err(rel, `${bytes} bytes; a skill is read whole on every invocation (limit 20,000)`);
   // Compaction keeps only the start of an invoked skill (Claude Code: the first
   // 5,000 tokens of each, 25,000 across all skills), so the rules that must
-  // survive the session sit near the top.
-  const protoIdx = body.search(/^## The Protocol/m);
-  if (protoIdx > 8000) err(rel, `"## The Protocol" starts at byte ${protoIdx}; keep the directive and protocol inside the first 8,000 bytes (compaction keeps only the start of a skill)`);
+  // survive the session sit near the top. Every skill has a Protocol section.
+  const protoIdx = body.search(/^## The Protocol\s*$/m);
+  if (protoIdx < 0) err(rel, 'missing section "## The Protocol"');
+  else {
+    const protoBytes = Buffer.byteLength(body.slice(0, protoIdx), 'utf8');
+    if (protoBytes > 8000) err(rel, `"## The Protocol" starts at byte ${protoBytes}; keep the directive and protocol inside the first 8,000 bytes (compaction keeps only the start of a skill)`);
+  }
   if (lines < 60) warn(rel, `${lines} lines; is this skill complete?`);
 
   // Cross-references.

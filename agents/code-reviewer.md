@@ -2,7 +2,8 @@
 name: code-reviewer
 description: "Use when a task, feature or bug fix has been implemented and needs an independent, read-only review against its requirements before it is committed or merged."
 model: inherit
-# Read-only by tool list (a YAML list: Antigravity's loader rejects the comma form).
+# Review tools only: Read, Grep, Glob, and Bash for git commands; the prose forbids writes.
+# A YAML list, because Antigravity's loader rejects the comma-separated form.
 tools:
   - Read
   - Grep

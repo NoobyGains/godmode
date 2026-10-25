@@ -2,6 +2,16 @@
 
 All notable changes to GodMode. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [Semantic Versioning](https://semver.org/).
 
+## [2.1.1] - 2026-10-25
+
+The one-round Codex review of the 2.1.0 diff (`docs/verification/codex-review-2.1.0.md`) found two validator bugs and five wording problems; all are fixed here.
+
+### Fixed
+- Validator: the 20,000-byte skill cap and the 8,000-byte protocol position are measured in UTF-8 bytes, not UTF-16 characters, and a skill without a `## The Protocol` section now fails instead of slipping past the position check.
+- `intent-discovery`: the one-question-per-message guardrail names the builder-check round as its single exception, and the flow graph sends a small change straight to approval, as step 9 says.
+- `tests/acceptance/claude-code-stop-check.sh`: a refusal that quotes the forbidden sentence at the end of the message no longer counts as making the claim.
+- Changelog and reference wording: an Interfaces block is required only when another task consumes or produces the names; the reviewer agent's tool list is `Read, Grep, Glob, Bash` with writes forbidden by its prose, not "read-only".
+
 ## [2.1.0] - 2026-10-25
 
 Seven months of Claude Code changes and a pass over nine peer projects, read from their source (research in `docs/research/2026-10-25-claude-code-and-peers-2-1.md`). The theme: rules that must hold every time move from prose into mechanisms the harness enforces, and plans and designs lean on what superpowers 7.0.1 learned the hard way.
@@ -9,7 +19,7 @@ Seven months of Claude Code changes and a pass over nine peer projects, read fro
 ### Added
 - `completion-gate` arms a one-shot stop check on Claude Code: a prompt-type `Stop` hook declared in the skill's frontmatter (`once: true`) re-reads the final message and sends an unsupported done/fixed/passing claim back for evidence, then removes itself. Verified end to end on Claude Code 2.1.310 (`tests/acceptance/claude-code-stop-check.sh`, `docs/verification/claude-code-stop-check-2026-10-25.md`). Other harnesses ignore the field.
 - `bin/godmode`: a plan-workspace helper (`workspace`, `brief`, `review-package`, `ledger`, `status`) on the shell PATH where the harness adds a plugin's `bin/` (Claude Code, Antigravity); `delegated-execution` and `inline-execution` prefer it and keep the plain-shell commands as the fallback. Tested by `tests/test-bin.sh`.
-- `task-planning`: every task carries an Interfaces block (what it consumes from earlier tasks, what later tasks rely on, exact signatures); the plan header gains a Review Focus section (the five input classes the design implies but no task tests); the self-review checks both.
+- `task-planning`: a task whose names another task consumes or produces carries an Interfaces block (what it consumes from earlier tasks, what later tasks rely on, exact signatures); the plan header gains a Review Focus section (the five input classes the design implies but no task tests); the self-review checks both.
 - `intent-discovery`: a builder-check prompt as a reference file, dispatched for projects only; the first message echoes a detailed request back with what the project survey found and asks the one open question; the offer to skip the questions appears only when the skill started on its own.
 - `test-first`: for a bug fix the reproducing test is its own commit before the fix, so the red evidence survives in history.
 - `fault-diagnosis` hands a verified non-obvious root cause to `knowledge-capture`.
@@ -18,7 +28,7 @@ Seven months of Claude Code changes and a pass over nine peer projects, read fro
 
 ### Changed
 - `task-planning` writes decisions, not transcripts: a test step carries the test as code with the design's values; a code step carries the exact signature, file and pinned values, and the builder writes the body unless the signature and tests do not determine it. A plan several times longer than its design is flagged by the self-review.
-- `code-review`: a finding that cannot quote the line it is about is at most Minor, and reviewer agreement does not raise a severity. The shipped `code-reviewer` agent is read-only by its tool list.
+- `code-review`: a finding that cannot quote the line it is about is at most Minor, and reviewer agreement does not raise a severity. The shipped `code-reviewer` agent lists only `Read`, `Grep`, `Glob` and `Bash` (for git commands); its prose forbids writes.
 - Codex manifest (`.codex-plugin/plugin.json`) keeps its metadata under `extensions.com.openai` as the Codex plugin docs specify, names `doctor` as the onboarding skill, and drops the empty `hooks` key (plugins with lifecycle hooks are not eligible for the public directory). Reinstall verified on Codex CLI 0.163.
 - `model-routing`: a scoped re-review runs on a mid-tier model at low effort, not the cheapest tier.
 - Acceptance scripts pre-allow the Skill tool: a skill that declares hooks asks for permission in the default permission mode, which a headless run auto-denies. Interactive users answer the prompt once.
@@ -58,6 +68,7 @@ A ground-up rebuild. GodMode 1.0 was a 36-skill derivative of superpowers whose 
 
 Initial release: 36 skills for Claude Code, Cursor, Codex and OpenCode.
 
+[2.1.1]: https://github.com/NoobyGains/godmode/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/NoobyGains/godmode/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/NoobyGains/godmode/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/NoobyGains/godmode/releases/tag/v1.0.0

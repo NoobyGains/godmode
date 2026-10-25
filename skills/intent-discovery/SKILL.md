@@ -65,7 +65,8 @@ digraph intent {
     "2-3 approaches" -> "Sectioned playback";
     "Sectioned playback" -> "Questions, one at a time" [label="gap found"];
     "Sectioned playback" -> "Spec + design doc";
-    "Spec + design doc" -> "Builder check";
+    "Spec + design doc" -> "Builder check" [label="project"];
+    "Spec + design doc" -> "User approves?" [label="small change"];
     "Builder check" -> "User approves?";
     "User approves?" -> "Sectioned playback" [label="no"];
     "User approves?" -> "godmode:task-planning" [label="yes"];
@@ -153,7 +154,7 @@ A criterion you cannot turn into a test is too vague. Rewrite it until you can.
 
 **Never:**
 - Write product code, scaffold, or install anything before approval.
-- Ask more than one question in a message.
+- Ask more than one question in a message. The one exception is the builder-check round in step 9, which is batched by design and happens once.
 - Ask a question the project, the spec or the conversation already answers.
 - Present a single approach, or choose an approach for the user.
 - Rest the design on an unverified version, API or limit.

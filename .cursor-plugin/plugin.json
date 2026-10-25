@@ -1,7 +1,7 @@
 {
   "name": "godmode",
   "description": "Engineering discipline for AI coding agents: question the request, verify against current docs instead of memory, plan, build test-first, review with a second model family, prove it before saying done",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": {
     "name": "David Innes",
     "url": "https://github.com/NoobyGains"
