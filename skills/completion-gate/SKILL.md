@@ -1,6 +1,25 @@
 ---
 name: completion-gate
 description: "Use when about to say that work is done, fixed, passing, working, deployed or ready, before committing, opening or merging a pull request, closing a task, moving to the next task, or reporting a subagent's result as finished."
+# Claude Code arms this one-shot stop check when the skill is invoked and removes it
+# after its first pass; other harnesses ignore the field.
+# https://code.claude.com/docs/en/hooks#hooks-in-skills-and-agents
+hooks:
+  Stop:
+    - hooks:
+        - type: prompt
+          once: true
+          timeout: 30
+          prompt: >-
+            The final assistant message passes the GodMode completion gate. It passes when it
+            makes no claim that work is done, fixed, passing, working, complete, deployed,
+            ready or verified; or when every such claim sits next to fresh evidence in that
+            same message (the command or check that was run and its actual result: test
+            counts, exit code, build output, response status, a diff, a screenshot); or when
+            it says plainly what was not verified. It also passes whenever stop_hook_active is
+            true. It fails only when a claim of that kind stands without evidence; then the
+            reason must name the unsupported claim and tell the assistant to run the check
+            that proves it now and show the output, or to restate exactly what is unverified.
 ---
 
 # Completion Gate
@@ -132,6 +151,7 @@ If you cannot run a browser in this environment, say so and list what the user s
 - Put the evidence next to the claim, in a table when there is more than one.
 - Lead with what could not be verified.
 - Say plainly when something is done and verified, without hedging.
+- Expect to be checked: on a harness with skill-scoped stop hooks, invoking this skill arms a one-shot check that reads your final message and sends an unsupported claim back to you.
 
 ## Connections
 

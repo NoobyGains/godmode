@@ -133,8 +133,9 @@ for (const name of skillNames) {
     if (WORKFLOW_WORDS.test(data.description)) warn(rel, 'description looks like a workflow summary; keep it to triggering conditions');
     if (/\b(I|me|my)\b/.test(data.description)) err(rel, 'description must be in the third person');
   }
-  // Claude Code honours these two; other harnesses ignore them, which is harmless.
-  const extra = Object.keys(data).filter((k) => !['name', 'description', 'disable-model-invocation', 'allowed-tools'].includes(k));
+  // Claude Code honours these; other harnesses ignore them, which is harmless.
+  // `hooks` is the skill-scoped hook block (completion-gate arms a one-shot Stop check).
+  const extra = Object.keys(data).filter((k) => !['name', 'description', 'disable-model-invocation', 'allowed-tools', 'hooks'].includes(k));
   if (extra.length) warn(rel, `frontmatter fields beyond name/description are not honoured on every harness: ${extra.join(', ')}`);
 
   if (!/^# /m.test(body)) err(rel, 'body needs an H1 title');
@@ -153,6 +154,11 @@ for (const name of skillNames) {
   // Byte cap as well as a line cap: a skill is read whole on every invocation and
   // long skills are the first thing compaction loses.
   if (content.length > 20000) err(rel, `${content.length} bytes; a skill is read whole on every invocation (limit 20,000)`);
+  // Compaction keeps only the start of an invoked skill (Claude Code: the first
+  // 5,000 tokens of each, 25,000 across all skills), so the rules that must
+  // survive the session sit near the top.
+  const protoIdx = body.search(/^## The Protocol/m);
+  if (protoIdx > 8000) err(rel, `"## The Protocol" starts at byte ${protoIdx}; keep the directive and protocol inside the first 8,000 bytes (compaction keeps only the start of a skill)`);
   if (lines < 60) warn(rel, `${lines} lines; is this skill complete?`);
 
   // Cross-references.

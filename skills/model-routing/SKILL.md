@@ -45,7 +45,7 @@ This skill speaks in three tiers. Each harness reference maps them to that harne
 
 | Seat | Default | Move up when | Move down when |
 |---|---|---|---|
-| Implementer, plan contains the complete code | Cheap, low | the task touches several files or tests are non-trivial | (already lowest) |
+| Implementer, plan pins the signature and the test | Cheap, low | the task touches several files or tests are non-trivial | (already lowest) |
 | Implementer, task described in prose | Mid, medium | it needs design judgment or broad codebase understanding | it is one file with an exact spec |
 | Batched same-shape edits | Cheap, low | the edits are not truly identical in shape | |
 | Task reviewer | Mid, medium (the floor for reviewers) | the diff is subtle: concurrency, security, data migration | never below mid |

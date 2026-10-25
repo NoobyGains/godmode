@@ -59,7 +59,7 @@ No exceptions. No workarounds. No shortcuts.
 - `godmode:ui-engineering` - components inside the project's design system.
 
 **Plan and run**
-- `godmode:task-planning` - atomic tasks with paths, code and commands.
+- `godmode:task-planning` - atomic tasks with paths, tests, signatures and commands.
 - `godmode:inline-execution` - run a plan in one context, one final review.
 - `godmode:delegated-execution` - a fresh subagent per task, reviews between.
 - `godmode:parallel-execution` - independent tasks at the same time.

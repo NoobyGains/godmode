@@ -3,6 +3,7 @@
 <!-- Sources (fetched 2026-10-25): docs/research/2026-10-25-claude-code-plugin-spec.md;
 https://code.claude.com/docs/en/plugins-reference ; https://code.claude.com/docs/en/skills ;
 https://code.claude.com/docs/en/sub-agents ; https://code.claude.com/docs/en/agent-teams ;
+https://code.claude.com/docs/en/hooks (skill hooks, Stop decision control, re-read 2026-10-25) ;
 https://code.claude.com/docs/en/memory ; tool names and parameters checked against the live
 tool list of Claude Code 2.1.310 on 2026-10-25 (`claude --version`, `claude --help`). -->
 
@@ -26,6 +27,8 @@ GodMode skills speak in actions. On Claude Code they resolve to these tools.
 | Fetch library docs | the Context7 MCP server when installed (`resolve-library-id`, then `query-docs`); otherwise `WebFetch` on the official docs |
 | Ask the user a question | `AskUserQuestion` in the main session; a subagent cannot reach the user and reports the question back instead |
 | Load a deferred tool | `ToolSearch` with `select:<name>` before the first call |
+| Arm a stop check | a `Stop` hook in a skill's frontmatter (`hooks:`), armed when the skill is invoked; `/goal <condition>` arms a session-scoped one by hand |
+| Run a skill in a fresh context | `context: fork` plus `agent:` in skill frontmatter; the subagent gets the skill body as its prompt and none of the conversation |
 
 ## Invoking GodMode skills
 
@@ -34,6 +37,13 @@ GodMode skills speak in actions. On Claude Code they resolve to these tools.
 - User: `/godmode:<skill>`.
 - Fallback: read `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/SKILL.md`. The variable is substituted inside skill bodies but is not set in Bash-tool commands, so take the install path from `/plugin` if you need it in the shell.
 - The SessionStart hook injects `using-godmode`. Injected text is capped at 10,000 characters; overflow is replaced by a file path the model is not told to read.
+
+## Skill and agent frontmatter (for `godmode:writing-skills`)
+
+- Skill fields Claude Code honours: `name`, `description`, `when_to_use`, `argument-hint`, `arguments`, `disable-model-invocation`, `user-invocable`, `allowed-tools`, `disallowed-tools`, `model`, `effort`, `context: fork` with `agent` and `background`, `hooks`, `paths` (globs that limit automatic loading to matching files under the working directory), `shell` (`bash` or `powershell` for `!` blocks), `metadata`. Unknown fields are ignored without a message; malformed YAML loads the body with no fields.
+- Skill hooks take the same shape as `hooks.json`. They register when the skill is invoked and stay for the rest of the session; `once: true` removes a hook after its first successful run (a run that blocks, fails or times out stays). A `Stop` hook receives `last_assistant_message` and `stop_hook_active`; a prompt-type hook answers `{"ok": true | false, "reason": "..."}` and `ok: false` sends the reason back as the next instruction; eight consecutive continuations end the turn regardless (`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`). `godmode:completion-gate` ships one. Invoking a skill that declares hooks asks for permission in the default permission mode ("Execute skill: godmode:completion-gate"; answer once with "don't ask again", or add `Skill(godmode:completion-gate)` to the allow rules); a `-p` run auto-denies it unless `Skill` is in `--allowedTools`, and the eval cases pre-allow it.
+- Compaction keeps the most recent invocation of each skill, the first 5,000 tokens of each, 25,000 tokens across all skills, newest first. The skill listing (names and descriptions) has a budget of 1% of the context window; the least-used descriptions drop first (`/doctor` shows the cost, `skillListingBudgetFraction` raises it) and each description is cut at 1,536 characters.
+- Agent fields (`agents/*.md`): `name`, `description`, `tools`, `disallowedTools`, `model`, `effort`, `maxTurns`, `skills` (preloaded whole), `memory` (`user` | `project` | `local`; turns on the write tools), `isolation: worktree`, `omitClaudeMd`, `background`, `color`. Plugin agents ignore `hooks`, `mcpServers` and `permissionMode`. `godmode:code-reviewer` is read-only by its tool list (`Read, Grep, Glob, Bash`).
 
 ## Models and effort (for `godmode:model-routing`)
 

@@ -137,7 +137,7 @@ GodMode is a gated pipeline. The agent cannot move to the next phase until the c
 </p>
 
 1. **Define.** `rationale` challenges the request. `intent-discovery` asks one question at a time, presents two or three approaches, and writes the design document. `grounding` verifies every fact that can change.
-2. **Plan.** `reference-first` finds the proven implementation to build on. `task-planning` writes tasks of two to five minutes with exact files, complete code, commands and expected output.
+2. **Plan.** `reference-first` finds the proven implementation to build on. `task-planning` writes tasks of two to five minutes with exact files, signatures, the tests as code, commands and expected output, plus the interfaces each task consumes and produces.
 3. **Execute.** `delegated-execution` runs the plan with a fresh subagent per task, a ledger on disk that survives context loss, and a bounded fix loop; `inline-execution` is the cheap single-context mode; `parallel-execution` and `team-orchestration` cover independent and collaborating work. Every task is `test-first`.
 4. **Review.** `code-review` runs spec compliance then quality on each task; `cross-model-review` brings in another model family before landing; `review-response` handles feedback with evidence instead of reflexive agreement.
 5. **Ship.** `quality-gates` are machine-checked, `completion-gate` demands fresh output, `merge-protocol` lands the branch and cleans up the worktree.

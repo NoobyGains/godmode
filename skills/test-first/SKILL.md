@@ -73,7 +73,7 @@ digraph test_first {
 
 7. **REFACTOR.** Only on green. Remove duplication, improve names, extract helpers. Run the suite after every edit. Refactoring adds no behaviour; a new behaviour needs a new failing test.
 
-8. **Repeat** from step 1 for the next behaviour. Commit at green points so every commit has passing tests.
+8. **Repeat** from step 1 for the next behaviour. Commit at green points so every commit has passing tests. For a bug fix, commit the reproducing test on its own first (`test: reproduce <bug>`), then the fix (`fix: ...`): the red evidence then survives in history, and a reviewer can check out the first commit and watch it fail.
 
 ## Bug Fixes
 

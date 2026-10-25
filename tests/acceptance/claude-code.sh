@@ -33,11 +33,14 @@ echo "prompt:     $PROMPT"
 # Default permission mode (plan mode makes the model write a plan file instead
 # of invoking skills). Write, edit and shell tools are disallowed so the only
 # way to make progress on the request is a skill or a question to the user.
+# The Skill tool is pre-allowed because a skill that declares hooks (completion-gate)
+# otherwise needs an interactive approval, which a -p run auto-denies.
 claude -p "$PROMPT" \
   --plugin-dir "$ROOT" \
   --model "$MODEL" \
   --max-turns "$MAX_TURNS" \
   --permission-mode default \
+  --allowedTools Skill \
   --disallowedTools Write Edit MultiEdit NotebookEdit Bash \
   --output-format stream-json --verbose \
   > "$TRANSCRIPT" 2> "$OUT_DIR/claude-code-$STAMP.stderr.log"

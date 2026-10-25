@@ -45,13 +45,13 @@ Create one task per step and track them.
    | Project | `docs/plans/YYYY-MM-DD-<topic>-design.md` | `godmode:task-planning` |
 
    If the request is really several independent projects, say so, agree an order, and run this skill on one at a time.
-3. **Ask, one question per message.** Start open ("Walk me through the moment you wish this existed"); offer a short multiple-choice menu only when the user is stuck. Cover purpose, users, success, constraints, non-goals, and what they already have. A guess they can correct often beats a question. Stop asking when another answer would not change the design.
+3. **Ask, one question per message, starting from what you already know.** When the user has said what they want (a detailed request, a spec, a plan), open by echoing it back in your own words in about 200 words: what they want, who it is for and why, plus what the survey found that bears on it (how the relevant parts work today, what the change touches, any constraint, conflict or cheaper path they may not have seen). Invite corrections, then ask the one question whose answer would most change what gets built. When they have not said much, ask one open question in their own terms about the biggest thing the request leaves unsettled, and say what the answer would change. Build each later question on their last answer or on something you found. Cover purpose, users, success, constraints, non-goals and what they already have, but never ask what the project or the conversation already answers. Offer a short menu only when the user is stuck; a guess they can correct often beats a question. Stop asking when another answer would not change the design. If this skill started on its own rather than at the user's request, end the first message with a one-line offer to just get going instead; if they take it, state any significant choice you are making in one line and proceed.
 4. **Look for prior art.** Invoke `godmode:reference-first` for proven implementations and `godmode:codebase-conventions` for in-repo precedent. Invoke `godmode:grounding` for every library, API, version or platform rule the design will rest on. Evidence: the sources you will build on, with links.
 5. **Propose 2-3 approaches.** Label them A, B, C, lead with your recommendation, and give each its trade-offs in two or three lines. Cite the references that inspired each. The user chooses; never auto-pick.
 6. **Play the design back in sections.** Describe each part (what it is for, how it behaves, what it touches) in up to 200-300 words, mark your own guesses as guesses, and ask what is wrong or missing before the next section. Cover architecture, components, data flow, error handling and testing.
 7. **Write the specification section** (template below), scaled to the work.
 8. **Write the design document** to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit it. For a small change, the chat summary is the design.
-9. **Check it as the builder would.** Dispatch a fresh subagent with the document and the question "What would you need to ask before you could plan this?", or read it yourself in that role if dispatch is unavailable. Answer what the conversation already settled; settle minor points yourself and mark them as your call; bring the rest to the user in one message, most important first.
+9. **Check it as the builder would** (projects only; a small change goes straight to the user). Tell the user a reviewer reads the document first and you may come back once with questions. Dispatch a fresh subagent with [the builder-check prompt](references/builder-check-prompt.md) and the document path, or read the document in that role yourself when dispatch is unavailable. Sort what comes back into three piles: answered already by the conversation or the project (write the answer into the document); minor, where a sensible builder could settle it without changing what gets built (settle it and mark it as your call); theirs, where only the user can answer and the answer changes what gets built (bring these in one message, most important first). Update the document with their answers and hand it over with the list of calls you made. That is the only round of questions the check produces.
 10. **Get approval** on the full document. Approval covers what the user saw; a section you have not shown is not approved.
 11. **Hand off** to `godmode:task-planning`. That is the only next skill.
 
@@ -143,6 +143,7 @@ A criterion you cannot turn into a test is too vague. Rewrite it until you can.
 | "The user gave me the full spec" | Users describe goals. Edge cases, errors and limits are still undecided. |
 | "I already know the best approach" | You know one approach. Two alternatives expose its trade-offs. |
 | "I'll offer options to save them effort" | Options steer. Let them describe it first. |
+| "I'll open with my usual question" | A question the project or the request already answers wastes their turn. Read first; ask about the one thing still open, and say what the answer changes. |
 | "I'll fill in sensible defaults quietly" | A default they never heard is one they could not reject. Say it. |
 | "They said 'sounds good'" | Approval covers what you showed. An unwritten section is not approved. |
 | "Several questions at once is faster" | Batched questions get partial answers. One per message. |
@@ -153,6 +154,7 @@ A criterion you cannot turn into a test is too vague. Rewrite it until you can.
 **Never:**
 - Write product code, scaffold, or install anything before approval.
 - Ask more than one question in a message.
+- Ask a question the project, the spec or the conversation already answers.
 - Present a single approach, or choose an approach for the user.
 - Rest the design on an unverified version, API or limit.
 - Invoke any skill other than `godmode:task-planning` after approval.

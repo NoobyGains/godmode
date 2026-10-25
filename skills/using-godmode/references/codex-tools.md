@@ -37,6 +37,8 @@ GodMode skills speak in actions. On Codex CLI and the Codex app they resolve to 
 
 - Install: `codex plugin marketplace add https://github.com/NoobyGains/godmode`, then `codex plugin add godmode@godmode`.
 - User: `$godmode:<skill>`; `/skills` lists them.
+- Manifest: `.codex-plugin/plugin.json` keeps Codex metadata under `extensions.com.openai` (`interface`, and `onboardingSkill` pointing at `godmode:doctor`, which Codex runs when the user opens the plugin's setup). A plugin that declares lifecycle hooks is not eligible for the public plugin directory, so GodMode ships none for Codex. Codex copies an installed plugin into `~/.codex/plugins/cache/<marketplace>/<plugin>/<version>/`; a new version needs `codex plugin add` again.
+- Skill listing budget: 2% of the context window (8,000 characters when unknown; `skills.max_context_tokens` raises it to 10,000 tokens); descriptions are shortened first, then skills dropped with a warning.
 - Fallback: read `skills/<skill>/SKILL.md` from the plugin directory.
 - No GodMode session-start hook runs on Codex; the `using-godmode` description and AGENTS.md carry the bootstrap.
 

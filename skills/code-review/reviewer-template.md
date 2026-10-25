@@ -47,7 +47,7 @@ files). Stages to run: {STAGES}.
   If you need another revision, read it with git show <commit>:<path>.
 - Do it yourself. Do not dispatch helpers, sub-agents or a second reviewer.
   If the diff is too big for one pass, review it in passes and say so.
-- Only comment on code you actually read. Cite file:line for every finding.
+- Only comment on code you actually read. Cite file:line for every finding and quote the line or lines the finding is about. A finding that cannot quote its evidence is at most Minor. Agreement between reviewers does not raise a severity; evidence does.
 
 ## Stage one: spec compliance
 

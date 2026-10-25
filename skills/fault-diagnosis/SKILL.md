@@ -132,3 +132,4 @@ Any of these: stop and go back to phase 1.
 - `godmode:grounding`: current documentation, changelogs and issue trackers when a library or platform behaves unexpectedly.
 - `godmode:performance-tuning`: when the fault is slowness rather than wrong output.
 - `godmode:environment-awareness`: shell, path, line-ending and platform differences that cause "works on my machine".
+- `godmode:knowledge-capture`: once the fix is verified, records a non-obvious root cause with its symptom signature, what did not work and why the fix works, so the next session does not rediscover it.

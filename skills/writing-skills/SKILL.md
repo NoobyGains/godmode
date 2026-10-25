@@ -118,6 +118,8 @@ Form rules the validator enforces:
 - `name` equals the directory name: lowercase letters, digits and single hyphens.
 - The four sections The Prime Directive, When to Use, Cognitive Traps and Guardrails exist and appear in that order.
 - 120 to 350 lines. Move tables, long examples and per-platform detail into `references/*.md` in the skill directory, linked with a relative link; every linked file must exist. Reference files over about 100 lines start with a short contents line, and references stay one level deep.
+- Under 20,000 bytes, with The Prime Directive and The Protocol inside the first 8,000. After a compaction the harness keeps only the start of each invoked skill (Claude Code: the first 5,000 tokens per skill, 25,000 across all skills, newest first), so a rule that must survive the session sits near the top and reference material goes in `references/`.
+- Frontmatter beyond `name` and `description` is harness-specific and must be harmless where it is ignored. `hooks` (a stop check armed when the skill is invoked, as in `godmode:completion-gate`) is honoured by Claude Code and ignored elsewhere; any other field needs a validator allowlist entry and a line in the harness reference. A rule the agent keeps skipping belongs in a hook, not in stronger wording.
 - Cross-references are written `godmode:<name>` and must name an existing skill.
 
 Voice: second person to the agent, "the user" for the human, plain words, no emoji, no marketing.
