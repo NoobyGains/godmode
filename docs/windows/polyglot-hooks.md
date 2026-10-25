@@ -1,66 +1,16 @@
-# Cross-Platform Polyglot Hooks for Claude Code
+# Cross-platform hooks: how GodMode's SessionStart hook runs everywhere
 
-Claude Code plugins need hooks that work on Windows, macOS, and Linux. This document explains the polyglot wrapper technique that makes this possible.
+Claude Code, Cursor and Copilot CLI inject GodMode's bootstrap through a session-start hook that runs a shell command and reads JSON from its stdout. The command has to work on macOS, Linux and Windows, including Windows machines where the only `bash` on PATH is the Windows Subsystem for Linux stub.
 
-## The Problem
-
-Claude Code runs hook commands through the system's default shell:
-- **Windows**: CMD.exe
-- **macOS/Linux**: bash or sh
-
-This creates several challenges:
-
-1. **Script execution**: Windows CMD can't execute `.sh` files directly - it tries to open them in a text editor
-2. **Path format**: Windows uses backslashes (`C:\path`), Unix uses forward slashes (`/path`)
-3. **Environment variables**: `$VAR` syntax doesn't work in CMD
-4. **No `bash` in PATH**: Even with Git Bash installed, `bash` isn't in the PATH when CMD runs
-
-## The Solution: Polyglot `.cmd` Wrapper
-
-A polyglot script is valid syntax in multiple languages simultaneously. Our wrapper (`run-hook.cmd`) is valid in both CMD and bash. It takes a script name argument and runs it in the correct shell:
-
-```cmd
-: << 'CMDBLOCK'
-@echo off
-set "SCRIPT_DIR=%~dp0"
-set "SCRIPT_NAME=%~1"
-"C:\Program Files\Git\bin\bash.exe" -l -c "cd \"$(cygpath -u \"%SCRIPT_DIR%\")\" && \"./%SCRIPT_NAME%\""
-exit /b
-CMDBLOCK
-
-# Unix shell runs from here
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-SCRIPT_NAME="$1"
-shift
-"${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"
-```
-
-### How It Works
-
-#### On Windows (CMD.exe)
-
-1. `: << 'CMDBLOCK'` - CMD sees `:` as a label (like `:label`) and ignores `<< 'CMDBLOCK'`
-2. `@echo off` - Suppresses command echoing
-3. The bash.exe command runs with:
-   - `-l` (login shell) to get proper PATH with Unix utilities
-   - `cygpath -u` converts Windows path to Unix format (`C:\foo` → `/c/foo`)
-4. `exit /b` - Exits the batch script, stopping CMD here
-5. Everything after `CMDBLOCK` is never reached by CMD
-
-#### On Unix (bash/sh)
-
-1. `: << 'CMDBLOCK'` - `:` is a no-op, `<< 'CMDBLOCK'` starts a heredoc
-2. Everything until `CMDBLOCK` is consumed by the heredoc (ignored)
-3. `# Unix shell runs from here` - Comment
-4. The script runs directly with the Unix path
-
-## File Structure
+## The pieces
 
 ```
 hooks/
-├── hooks.json           # Points to the .cmd wrapper
-├── run-hook.cmd         # Polyglot wrapper (cross-platform entry point)
-└── session-start        # Actual hook logic (bash script, no extension)
+├── hooks.json          # Claude Code: SessionStart → run-hook.cmd session-start
+├── hooks-cursor.json   # Cursor: sessionStart → run-hook.cmd session-start
+├── run-hook.cmd        # polyglot wrapper, valid as a cmd.exe batch file and as a bash script
+├── session-start       # the hook itself (bash, no file extension)
+└── doctor              # install self-check, run the same way
 ```
 
 ### hooks.json
@@ -84,135 +34,39 @@ hooks/
 }
 ```
 
-Note: The path must be quoted because `${CLAUDE_PLUGIN_ROOT}` may contain spaces on Windows (e.g., `C:\Program Files\...`). The `run-hook.cmd` wrapper takes the script name as an argument, making it reusable for multiple hooks.
-
-## Requirements
-
-### Windows
-- **Git for Windows** must be installed (provides `bash.exe` and `cygpath`)
-- Default installation path: `C:\Program Files\Git\bin\bash.exe`
-- If Git is installed elsewhere, the wrapper needs modification
-
-### Unix (macOS/Linux)
-- Standard bash or sh shell
-- The `.cmd` file must have execute permission (`chmod +x`)
-
-## Writing Cross-Platform Hook Scripts
-
-Your actual hook logic goes in the `.sh` file. To ensure it works on Windows (via Git Bash):
-
-### Do:
-- Use pure bash builtins when possible
-- Use `$(command)` instead of backticks
-- Quote all variable expansions: `"$VAR"`
-- Use `printf` or here-docs for output
-
-### Avoid:
-- External commands that may not be in PATH (sed, awk, grep)
-- If you must use them, they're available in Git Bash but ensure PATH is set up (use `bash -l`)
-
-### Example: JSON Escaping Without sed/awk
-
-Instead of:
-```bash
-escaped=$(echo "$content" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
-```
-
-Use pure bash:
-```bash
-escape_for_json() {
-    local input="$1"
-    local output=""
-    local i char
-    for (( i=0; i<${#input}; i++ )); do
-        char="${input:$i:1}"
-        case "$char" in
-            $'\\') output+='\\' ;;
-            '"') output+='\"' ;;
-            $'\n') output+='\n' ;;
-            $'\r') output+='\r' ;;
-            $'\t') output+='\t' ;;
-            *) output+="$char" ;;
-        esac
-    done
-    printf '%s' "$output"
-}
-```
-
-## Reusable Wrapper Pattern
-
-For plugins with multiple hooks, you can create a generic wrapper that takes the script name as an argument:
+The plugin root is **double-quoted**. GodMode 1.0 single-quoted it, and single quotes stop every POSIX shell from expanding the variable, so the hook tried to run a file literally named `${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd` and failed on every operating system (issues #1, #2, #4). Double quotes expand the variable and still survive a path with spaces such as `C:\Program Files\...`.
 
 ### run-hook.cmd
-```cmd
-: << 'CMDBLOCK'
-@echo off
-set "SCRIPT_DIR=%~dp0"
-set "SCRIPT_NAME=%~1"
-"C:\Program Files\Git\bin\bash.exe" -l -c "cd \"$(cygpath -u \"%SCRIPT_DIR%\")\" && \"./%SCRIPT_NAME%\""
-exit /b
-CMDBLOCK
 
-# Unix shell runs from here
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-SCRIPT_NAME="$1"
-shift
-"${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"
+A polyglot: the first line `: << 'CMDBLOCK'` is a comment-like label to cmd.exe and the start of a heredoc to bash.
+
+- **cmd.exe** runs the batch half: it looks for Git for Windows bash in `C:\Program Files\Git`, `C:\Program Files (x86)\Git` and the per-user `%LOCALAPPDATA%\Programs\Git`, then for a `bash.exe` on PATH while skipping the WSL launchers in `System32`, `Sysnative` and the Store alias in `WindowsApps` (those fail when no Linux distribution is installed). With no bash found it exits 0 silently: the plugin still loads, only the bootstrap is missing, and `hooks/doctor` reports it.
+- **bash** skips the heredoc and runs the named script with `${BASH:-bash}`, bash's own path, so it works even when the harness spawns the hook with an empty PATH.
+
+Hook scripts have no `.sh` extension on purpose: Claude Code on Windows prepends `bash` to any command containing `.sh`, which would bypass the wrapper.
+
+### session-start
+
+Reads `skills/using-godmode/SKILL.md` with the bash builtin `$(<file)`, escapes it for JSON with parameter expansion (no `sed`, no `jq`, no `cat` needed), and prints exactly one output shape:
+
+| Harness | Detected by | Output |
+|---|---|---|
+| Cursor | `CURSOR_PLUGIN_ROOT` set | `{"additional_context": "..."}` |
+| Claude Code | `CLAUDE_PLUGIN_ROOT` set, `COPILOT_CLI` unset | `{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "..."}}` |
+| Copilot CLI and others | otherwise | `{"additionalContext": "..."}` |
+
+Only one shape is printed because Claude Code reads both of its candidate fields without deduplicating. `printf` is piped through `cat` when `cat` exists so that a harness closing stdout early on Windows produces no "write error" diagnostic.
+
+## Requirements the repository enforces
+
+- `hooks/run-hook.cmd`, `hooks/session-start` and `hooks/doctor` are committed with mode `100755`. Without the executable bit the shell refuses to run them (exit 126) and the hook silently never fires. `scripts/validate.js` and `tests/test-hooks.sh` check the git index.
+- All hook files are LF-only (`.gitattributes`: `hooks/* text eol=lf`). A CRLF in the polyglot breaks both halves.
+
+## Testing
+
+```bash
+bash tests/test-hooks.sh           # POSIX sh invocation, each output shape, empty PATH
+pwsh tests/test-hooks-windows.ps1  # the cmd.exe half, Windows only
 ```
 
-### hooks.json using the reusable wrapper
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" session-start.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" validate-bash.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-## Troubleshooting
-
-### "bash is not recognized"
-CMD can't find bash. The wrapper uses the full path `C:\Program Files\Git\bin\bash.exe`. If Git is installed elsewhere, update the path.
-
-### "cygpath: command not found" or "dirname: command not found"
-Bash isn't running as a login shell. Ensure `-l` flag is used.
-
-### Path has weird `\/` in it
-`${CLAUDE_PLUGIN_ROOT}` expanded to a Windows path ending with backslash, then `/hooks/...` was appended. Use `cygpath` to convert the entire path.
-
-### Script opens in text editor instead of running
-The hooks.json is pointing directly to the `.sh` file. Point to the `.cmd` wrapper instead.
-
-### Works in terminal but not as hook
-Claude Code may run hooks differently. Test by simulating the hook environment:
-```powershell
-$env:CLAUDE_PLUGIN_ROOT = "C:\path\to\plugin"
-cmd /c "C:\path\to\plugin\hooks\session-start.cmd"
-```
-
-## Related Issues
-
-- [anthropics/claude-code#9758](https://github.com/anthropics/claude-code/issues/9758) - .sh scripts open in editor on Windows
-- [anthropics/claude-code#3417](https://github.com/anthropics/claude-code/issues/3417) - Hooks don't work on Windows
-- [anthropics/claude-code#6023](https://github.com/anthropics/claude-code/issues/6023) - CLAUDE_PROJECT_DIR not found
+Or from inside a session: `/godmode:doctor`.
