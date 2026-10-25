@@ -18,6 +18,6 @@
     "validate:ci": "node scripts/validate.js --ci",
     "test": "node scripts/validate.js --ci && bash tests/test-hooks.sh && bash tests/test-manifests.sh",
     "bump": "node scripts/bump-version.js",
-    "assets": "python scripts/readme_assets.py && python scripts/make_logo.py --icon"
+    "assets": "python scripts/readme_assets.py"
   }
 }
