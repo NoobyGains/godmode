@@ -1,371 +1,189 @@
 ---
 name: test-first
-description: Use when implementing any feature or bugfix, before writing implementation code
+description: "Use when implementing a feature, fixing a bug, refactoring, or changing behaviour in any codebase, before writing the production code that does it."
 ---
 
 # Test-First Development
 
-## Overview
-
-Write the test first. Observe it fail. Write the minimum code to pass.
-
-**Core principle:** If you did not watch the test fail, you have no evidence it validates the correct behavior.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## When to Use
-
-**Required:**
-- New features
-- Bug fixes
-- Refactoring
-- Behavior modifications
-
-**Exceptions (confirm with your human partner):**
-- Disposable prototypes
-- Generated code
-- Configuration files
-
-Tempted to think "skip test-first just this once"? Stop. That is rationalization.
+Every change in behaviour starts as a test that fails for the right reason. You write the test, run it, watch it fail, write the least code that makes it pass, and only then clean up. **A test you never saw fail is a test you have no evidence for.**
 
 ## The Prime Directive
 
 ```
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+NO PRODUCTION CODE WITHOUT A FAILING TEST THAT YOU WATCHED FAIL
 ```
 
-Wrote code before the test? Delete it. Start over.
+No exceptions. No workarounds. No shortcuts.
 
-**Zero tolerance:**
-- Do not keep it as "reference material"
-- Do not "adjust" it while writing tests
-- Do not glance at it
-- Delete means delete
+Production code written before its test is deleted, not kept "for reference" and not adapted while the test is written. Delete it and build it again from the test.
 
-Build fresh from tests. Full stop.
+## When to Use
 
-## Red-Green-Refactor
+**Required:**
+- A new feature, function, endpoint, command or component.
+- A bug fix: the failing test reproduces the bug before the fix exists.
+- A refactor: the tests that pin current behaviour run green before you touch the code, and after every step.
+- Any change in behaviour, however small it looks.
+
+**Skip (only with the user's agreement, stated in the conversation):**
+- A throwaway spike whose code will be discarded. When the spike ends, delete it and start the real work test-first.
+- Generated code (lockfiles, generated clients, migrations produced by a tool) where the generator is the thing under test.
+- Pure configuration with no logic. Configuration that changes behaviour is verified by `godmode:completion-gate` instead.
+
+## The Protocol
 
 ```dot
-digraph tdd_loop {
+digraph test_first {
     rankdir=LR;
-    red [label="RED\nWrite failing test", shape=box, style=filled, fillcolor="#ffcccc"];
-    check_red [label="Fails\ncorrectly?", shape=diamond];
-    green [label="GREEN\nMinimal code", shape=box, style=filled, fillcolor="#ccffcc"];
-    check_green [label="All tests\npass?", shape=diamond];
-    refactor [label="REFACTOR\nClean up", shape=box, style=filled, fillcolor="#ccccff"];
-    next [label="Next", shape=ellipse];
+    red [label="RED\nwrite one failing test", shape=box];
+    red_ok [label="fails for the\nexpected reason?", shape=diamond];
+    green [label="GREEN\nleast code to pass", shape=box];
+    green_ok [label="this test and\nall others pass?", shape=diamond];
+    refactor [label="REFACTOR\nclean, stay green", shape=box];
+    next [label="next behaviour", shape=ellipse];
 
-    red -> check_red;
-    check_red -> green [label="yes"];
-    check_red -> red [label="wrong\nfailure"];
-    green -> check_green;
-    check_green -> refactor [label="yes"];
-    check_green -> green [label="no"];
-    refactor -> check_green [label="stay\ngreen"];
-    check_green -> next;
+    red -> red_ok;
+    red_ok -> green [label="yes"];
+    red_ok -> red [label="no: fix the test"];
+    green -> green_ok;
+    green_ok -> refactor [label="yes"];
+    green_ok -> green [label="no: fix the code"];
+    refactor -> green_ok [label="after each edit"];
+    refactor -> next;
     next -> red;
 }
 ```
 
-### RED - Write the Failing Test
+1. **Name the behaviour.** Write one sentence: "When X, the code does Y." If you cannot write it, you do not yet know what to build; go back to the plan or ask the user one question.
 
-Write one minimal test that describes the expected behavior.
+2. **Name the break.** Before writing the test body, name the production mistake that would make this test fail (a wrong branch, a missing side effect, an off-by-one, an unhandled error). A test that no realistic bug can fail is not worth writing.
 
-<Good>
+3. **RED: write one test.** One behaviour per test, a name that reads as the behaviour, real code wherever possible. Derive the expected value by hand (a literal or a hand-checked fixture), never by calling the code under test.
+
+4. **Watch it fail.** Run only that test (`npm test -- path/to/file`, `pytest path::test_name`, `go test -run Name ./pkg`). Read the output and confirm three things:
+   - it fails, rather than erroring on a typo, a missing import or a broken fixture;
+   - the failure message is the one you predicted;
+   - it fails because the behaviour is missing, not for an unrelated reason.
+
+   If it passes, you are testing behaviour that already exists, or the test cannot fail; rewrite it. If it errors, fix the error and run it again until it fails cleanly. Keep the failing output: it is the evidence for this step.
+
+5. **GREEN: write the least code that passes.** Hard-code if that is the least code; the next test will force the generalisation. No options, parameters or abstractions the tests do not demand. No "while I am here" edits elsewhere.
+
+6. **Watch it pass.** Run the test, then the whole suite. The new test passes, every other test still passes, and the output carries no new warnings. If the new test fails, fix the code, not the test. If another test broke, fix that now, before anything else.
+
+7. **REFACTOR.** Only on green. Remove duplication, improve names, extract helpers. Run the suite after every edit. Refactoring adds no behaviour; a new behaviour needs a new failing test.
+
+8. **Repeat** from step 1 for the next behaviour. Commit at green points so every commit has passing tests.
+
+## Bug Fixes
+
+A bug report is a test you have not written yet.
+
+1. Write a test that reproduces the reported symptom through the same entry point the user hit.
+2. Watch it fail with the symptom the user described. If it passes, your reproduction is wrong; keep working on the test, not the fix.
+3. Find the root cause with `godmode:fault-diagnosis` before you change production code.
+4. Fix at the root cause, watch the test pass, run the suite.
+5. Prove the test guards the fix: revert the fix, watch the test fail again, restore the fix, watch it pass. This red-green-red-green loop is what `godmode:completion-gate` asks for when you claim a regression test works.
+
+## Writing Good Tests
+
+| Quality | Good | Bad |
+|---|---|---|
+| One behaviour | `rejects an empty email` | `validates email and domain and whitespace` |
+| Behaviour, not implementation | Asserts the returned value, the stored row, the emitted event | Asserts which private helper was called |
+| Independent expectation | `expect(slug('A B')).toBe('a-b')` | `expect(slug(x)).toBe(slug(x))` |
+| Real collaborators | Uses the real parser and an in-memory store | Mocks every collaborator, then asserts on the mocks |
+| Deterministic | Waits for the condition it needs | Sleeps for a guessed number of milliseconds |
+| Readable failure | The failure message says what was expected | `expected true, got false` |
+
+Before adding a mock, a test helper or a cleanup method, read [the testing anti-patterns](references/testing-anti-patterns.md). It covers asserting on mocks, test-only methods on production classes, mocking without knowing the side effects, incomplete fake data, mirror assertions and change detectors.
+
+For timing-dependent tests, replace sleeps with condition-based waiting; the method is in `godmode:fault-diagnosis`.
+
+## Worked Example
+
+Behaviour: "A failing operation is retried until it succeeds, at most three attempts."
+
+RED:
+
 ```typescript
-test('retries failed operations up to 3 times', async () => {
-  let callCount = 0;
-  const unstableOp = () => {
-    callCount++;
-    if (callCount < 3) throw new Error('transient failure');
+test('retries a failing operation until it succeeds, at most three attempts', async () => {
+  let calls = 0;
+  const flaky = async () => {
+    calls++;
+    if (calls < 3) throw new Error('transient');
     return 'done';
   };
 
-  const outcome = await withRetry(unstableOp);
-
-  expect(outcome).toBe('done');
-  expect(callCount).toBe(3);
+  await expect(withRetry(flaky)).resolves.toBe('done');
+  expect(calls).toBe(3);
 });
 ```
-Descriptive name, tests actual behavior, single concern
-</Good>
 
-<Bad>
+Run it: `ReferenceError: withRetry is not defined`. That is an error, not a failure. Add an empty `withRetry` that returns `undefined`, run again: `expected 'done', received undefined`. That is the predicted failure.
+
+GREEN:
+
 ```typescript
-test('retry works', async () => {
-  const spy = jest.fn()
-    .mockRejectedValueOnce(new Error())
-    .mockRejectedValueOnce(new Error())
-    .mockResolvedValueOnce('done');
-  await withRetry(spy);
-  expect(spy).toHaveBeenCalledTimes(3);
-});
-```
-Vague name, validates mock interactions not real behavior
-</Bad>
-
-**Criteria:**
-- One behavior per test
-- Descriptive name
-- Uses real code (mocks only when unavoidable)
-
-### Verify RED - Watch It Fail
-
-**MANDATORY. Never skip.**
-
-```bash
-npm test path/to/test.test.ts
-```
-
-Confirm:
-- Test fails (not errors out)
-- Failure message matches expectations
-- Fails because the feature is missing (not due to typos)
-
-**Test passes?** You are testing existing behavior. Rewrite the test.
-
-**Test errors?** Fix the error, re-run until it fails correctly.
-
-### GREEN - Minimal Code
-
-Write the simplest possible code that makes the test pass.
-
-<Good>
-```typescript
-async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+export async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       return await fn();
-    } catch (e) {
-      if (attempt === 2) throw e;
+    } catch (error) {
+      lastError = error;
     }
   }
-  throw new Error('unreachable');
+  throw lastError;
 }
 ```
-Just enough to pass
-</Good>
 
-<Bad>
-```typescript
-async function withRetry<T>(
-  fn: () => Promise<T>,
-  opts?: {
-    maxAttempts?: number;
-    backoffStrategy?: 'linear' | 'exponential';
-    onAttempt?: (n: number) => void;
-  }
-): Promise<T> {
-  // YAGNI
-}
-```
-Over-engineered
-</Bad>
+Run it: passes. Run the suite: passes. The next behaviour ("the error from the third attempt is rethrown") gets its own failing test before any change.
 
-Do not add features, refactor unrelated code, or "improve" beyond what the test requires.
+## When You Are Stuck
 
-### Verify GREEN - Watch It Pass
-
-**MANDATORY.**
-
-```bash
-npm test path/to/test.test.ts
-```
-
-Confirm:
-- Test passes
-- Other tests still pass
-- Output is clean (no errors, no warnings)
-
-**Test fails?** Fix the code, not the test.
-
-**Other tests fail?** Fix them now.
-
-### REFACTOR - Clean Up
-
-Only after green:
-- Eliminate duplication
-- Improve naming
-- Extract helpers
-
-Keep tests green. Do not add new behavior.
-
-### Repeat
-
-Next failing test for the next behavior.
-
-## Quality Standards
-
-| Quality | Good | Bad |
-|---------|------|-----|
-| **Focused** | One thing. "and" in the name? Split it. | `test('validates email and domain and whitespace')` |
-| **Descriptive** | Name explains the behavior | `test('test1')` |
-| **Intentional** | Demonstrates the desired API | Obscures what the code should do |
-
-## Why Sequence Matters
-
-**"I'll write tests afterward to confirm it works"**
-
-Tests written after code pass immediately. Passing immediately proves nothing:
-- May validate the wrong thing
-- May verify implementation details instead of behavior
-- May miss edge cases you overlooked
-- You never watched it catch the failure
-
-Test-first forces you to observe the failure, proving the test actually verifies something.
-
-**"I already manually tested all the edge cases"**
-
-Manual testing is ad hoc. You believe you covered everything but:
-- No record of what you tested
-- Cannot rerun when code changes
-- Easy to skip cases under pressure
-- "It worked when I tried it" is not comprehensive
-
-Automated tests are systematic. They execute identically every time.
-
-**"Deleting X hours of work is wasteful"**
-
-Sunk cost fallacy. The time is already spent. Your choice now:
-- Delete and rebuild with test-first (X more hours, high confidence)
-- Keep it and bolt on tests (30 min, low confidence, probable defects)
-
-The real waste is keeping code you cannot trust. Working code without legitimate tests is technical debt.
-
-**"Test-first is dogmatic, being pragmatic means adapting"**
-
-Test-first IS pragmatic:
-- Catches defects before commit (faster than debugging later)
-- Prevents regressions (tests catch breakage immediately)
-- Documents behavior (tests demonstrate how code works)
-- Enables refactoring (change freely, tests catch problems)
-
-"Pragmatic" shortcuts = debugging in production = slower.
-
-**"Tests after achieve the same goals - it's about the spirit not the ritual"**
-
-No. Tests-after answer "What does this do?" Tests-first answer "What should this do?"
-
-Tests-after are biased by your implementation. You verify what you built, not what is required. You check the edge cases you remember, not ones you discover.
-
-Tests-first force edge case discovery before implementing. Tests-after verify you remembered everything (you did not).
-
-30 minutes of tests after is not test-first. You get coverage, but lose proof that tests work.
+| Problem | What it tells you |
+|---|---|
+| You cannot think how to test it | Write the call you wish existed and the assertion first; the API falls out of that. |
+| The test needs a page of setup | The design is too coupled. Extract the logic so it can be called with plain inputs. |
+| You must mock everything | The unit does too much or reaches for its dependencies. Inject them. |
+| The only way to observe the result is a private field | Test through the public behaviour that depends on that field. |
+| The codebase has no tests at all | Start with a characterisation test of the current behaviour of the code you are about to change. |
 
 ## Cognitive Traps
 
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "Too simple to test" | Simple code breaks. A test takes 30 seconds. |
-| "I'll test afterward" | Tests passing immediately prove nothing. |
-| "Tests after achieve the same thing" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
-| "I already tested manually" | Ad hoc is not systematic. No record, cannot rerun. |
-| "Deleting X hours is wasteful" | Sunk cost fallacy. Keeping unverified code is technical debt. |
-| "Keep as reference, write tests first" | You will adapt it. That is testing after. Delete means delete. |
-| "Need to explore first" | Fine. Discard the exploration, then start with test-first. |
-| "Hard to test = I should skip it" | Listen to the test. Hard to test = hard to use. Simplify the design. |
-| "Test-first will slow me down" | Test-first is faster than debugging. Pragmatic = test-first. |
-| "Manual testing is faster" | Manual testing does not prove edge cases. You retest every change. |
-| "Existing code has no tests" | You are improving it. Add tests for what exists. |
+| Rationalisation | Truth |
+|---|---|
+| "It is too simple to need a test." | Simple code breaks too, and the test takes a minute. Simple tests are the cheapest ones you will ever write. |
+| "I will write the tests afterwards." | Tests written after the code pass on the first run, so they prove nothing about themselves. You test what you built, not what was needed. |
+| "I already tried it by hand." | A manual check leaves no record and cannot be rerun on the next change. |
+| "I will keep the code I wrote as a reference while I write the test." | You will copy it, and the test will be shaped to fit it. That is testing afterwards with extra steps. Delete it. |
+| "Deleting two hours of work is wasteful." | The hours are spent either way. What you choose now is between code you can trust and code you hope works. |
+| "The test passed straight away, so the code is right." | A test that passes before the code exists is testing nothing. Make it fail first. |
+| "This is hard to test, so testing is the wrong tool here." | Hard to test means hard to use. Change the design until it is easy. |
+| "Test-first is dogma; I am being pragmatic." | Debugging an untested change in production is the least pragmatic way to spend an afternoon. |
 
-## Guardrails - STOP and Start Over
+## Guardrails
 
-- Code before test
-- Test after implementation
-- Test passes immediately
-- Cannot explain why the test failed
-- Tests added "later"
-- Rationalizing "just this once"
-- "I already tested it manually"
-- "Tests after serve the same purpose"
-- "It's about the spirit not the ritual"
-- "Keep as reference" or "adapt existing code"
-- "Already invested X hours, deleting is wasteful"
-- "Test-first is dogmatic, I'm being pragmatic"
-- "This is different because..."
+**Never:**
+- Write production code before a failing test for it exists.
+- Keep, adapt or glance at code written before its test.
+- Change a test to make it pass when the code is wrong.
+- Claim a test is red or green without having run it in this session.
+- Bundle a refactor or an unrelated fix into a green step.
+- Leave the suite red at a commit.
 
-**All of these mean: Delete the code. Start over with test-first.**
+**Always:**
+- Run the new test alone and read its failure before writing code.
+- Derive expected values independently of the code under test.
+- Run the whole suite after every green step and every refactor edit.
+- Reproduce a bug as a failing test before fixing it.
+- Report the red output and the green output as evidence when the work is handed on.
 
-## Example: Bug Fix
+## Connections
 
-**Bug:** Empty email accepted by form
-
-**RED**
-```typescript
-test('rejects empty email', async () => {
-  const result = await processForm({ email: '' });
-  expect(result.error).toBe('Email required');
-});
-```
-
-**Verify RED**
-```bash
-$ npm test
-FAIL: expected 'Email required', got undefined
-```
-
-**GREEN**
-```typescript
-function processForm(data: FormData) {
-  if (!data.email?.trim()) {
-    return { error: 'Email required' };
-  }
-  // ...
-}
-```
-
-**Verify GREEN**
-```bash
-$ npm test
-PASS
-```
-
-**REFACTOR**
-Extract a validation pipeline for multiple fields if needed.
-
-## Completion Checklist
-
-Before declaring work finished:
-
-- [ ] Every new function/method has a test
-- [ ] Watched each test fail before implementing
-- [ ] Each test failed for the expected reason (feature missing, not typo)
-- [ ] Wrote minimal code to pass each test
-- [ ] All tests pass
-- [ ] Output is clean (no errors, no warnings)
-- [ ] Tests use real code (mocks only when unavoidable)
-- [ ] Edge cases and error paths are covered
-
-Cannot check every box? You skipped test-first. Start over.
-
-## When Stuck
-
-| Problem | Solution |
-|---------|----------|
-| Do not know how to write the test | Write the API you wish existed. Write the assertion first. Ask your human partner. |
-| Test too complicated | Design too complicated. Simplify the interface. |
-| Must mock everything | Code too coupled. Use dependency injection. |
-| Test setup is enormous | Extract helpers. Still heavy? Simplify the design. |
-
-## Debugging Integration
-
-Bug found? Write a failing test that reproduces it. Follow the test-first cycle. The test both proves the fix and prevents regression.
-
-Never fix bugs without a test.
-
-## Testing Anti-Patterns
-
-When adding mocks or test utilities, read @testing-anti-patterns.md to avoid common pitfalls:
-- Validating mock behavior instead of real behavior
-- Adding test-only methods to production classes
-- Mocking without understanding dependency chains
-
-## Final Rule
-
-```
-Production code -> test exists and failed first
-Otherwise -> not test-first
-```
-
-No exceptions without your human partner's permission.
+- `godmode:fault-diagnosis`: a bug fix finds its root cause there before the green step; it also holds the condition-based waiting method for timing tests.
+- `godmode:completion-gate`: before you say a feature or fix is done, it checks the red-green evidence and the full-suite run.
+- `godmode:quality-gates`: coverage, lint and type checks run on top of the tests; they never replace them.
+- `godmode:code-review`: the reviewer checks that tests assert real behaviour and that every behaviour in the spec has a test.
+- `godmode:delegated-execution` and `godmode:inline-execution`: every implementation task in a plan runs this cycle; implementers report their red and green output.

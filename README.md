@@ -1,359 +1,305 @@
 <p align="center">
-  <img src=".github/assets/hero.svg" alt="GodMode" width="830" height="400">
+  <img src="assets/hero.png" alt="GodMode: engineering discipline for AI coding agents" width="800">
 </p>
 
 <p align="center">
-  <a href="#install"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
-  <img src="https://img.shields.io/badge/skills-36-orange" alt="Skills">
-  <img src="https://img.shields.io/badge/platforms-4-purple" alt="Platforms">
+  <strong>Your coding agent questions the request, verifies against current docs instead of its memory, plans, builds test-first on the cheapest capable model, gets a second model family to review, and proves the result before it says done.</strong>
 </p>
 
 <p align="center">
-  An engineering framework for AI coding agents.<br>
-  Stop hoping your agent writes good code — make it.
+  <a href="https://github.com/NoobyGains/godmode/stargazers"><img src="https://img.shields.io/github/stars/NoobyGains/godmode?style=flat-square&color=f59e0b" alt="GitHub stars"></a>
+  <a href="https://github.com/NoobyGains/godmode/tags"><img src="https://img.shields.io/github/v/tag/NoobyGains/godmode?style=flat-square&label=version&color=8b5cf6" alt="Version"></a>
+  <a href="https://github.com/NoobyGains/godmode/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/NoobyGains/godmode/validate.yml?style=flat-square&label=validate" alt="Validate"></a>
+  <img src="https://img.shields.io/badge/skills-33-38bdf8?style=flat-square" alt="33 skills">
+  <img src="https://img.shields.io/badge/dependencies-zero-22c55e?style=flat-square" alt="Zero dependencies">
+  <img src="https://img.shields.io/badge/Claude%20Code%20%C2%B7%20Codex%20%C2%B7%20Antigravity%20%C2%B7%20Cursor%20%C2%B7%20Gemini%20CLI%20%C2%B7%20OpenCode-64748b?style=flat-square" alt="Harnesses">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/NoobyGains/godmode?style=flat-square&color=0ea5e9" alt="License"></a>
 </p>
-
-## Quick Start
-
-```bash
-claude plugin marketplace add NoobyGains/godmode
-claude plugin install godmode
-```
-
-That's it. mention Godmode — GodMode activates automatically.
-
----
 
 <p align="center">
-  <img src=".github/assets/demo.svg" alt="GodMode Demo" width="830" height="540">
+  <a href="#install">Install</a> •
+  <a href="#what-a-session-looks-like">Demo</a> •
+  <a href="#why-godmode">Why</a> •
+  <a href="#how-it-works">How it works</a> •
+  <a href="#the-33-skills">Skills</a> •
+  <a href="#harnesses">Harnesses</a> •
+  <a href="#compared-with">Compared with</a> •
+  <a href="CHANGELOG.md">Changelog</a>
 </p>
 
-## The Problem
-
-AI coding agents have a predictable failure mode: you ask for a feature, and they immediately start writing code. No questions about requirements. No check for existing patterns. No tests. No spec. Just a wall of generated files and a "let me know if you need changes."
+## What a session looks like
 
 <p align="center">
-  <img src=".github/assets/comparison.svg" alt="Without GodMode vs With GodMode" width="830" height="520">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/hero.svg">
+    <img src="assets/hero-light.svg" alt="A GodMode session: the agent questions the request, verifies Stripe's current API, plans seven tasks, runs them with a fresh subagent each and two reviews per task, gets a Codex second opinion, and proves the result with test, lint and build output before asking how to land it" width="830">
+  </picture>
 </p>
 
-The result is code that works in isolation but clashes with everything around it. Inconsistent naming. Duplicated logic. Tests bolted on after the fact. Entire components built from scratch when a solid open-source solution already exists. You end up spending more time fixing the agent's output than you would have spent writing it yourself.
-
-GodMode fixes this. It is a 36-skill system that activates automatically and governs the full development lifecycle — from the first question about requirements through to a merged pull request.
-
-## How It Works
-
-GodMode operates as a five-phase gated pipeline. The agent cannot advance until each phase meets its exit criteria.
-
-<p align="center">
-  <img src=".github/assets/pipeline.svg" alt="GodMode Pipeline" width="830" height="280">
-</p>
-
-**DEFINE** — The agent interrogates the problem space. It asks targeted questions one at a time, surfaces trade-offs, researches proven references, presents 2-3 approaches with rationale, and produces a spec document. Nothing moves forward until you approve it.
-
-**PLAN** — The approved spec is decomposed into atomic tasks (2-5 minutes each). Every task includes exact file paths, complete code snippets, shell commands with expected output, and pass/fail criteria. Ambiguity dies here.
-
-**EXECUTE** — Fresh subagents receive individual tasks and work in isolation. Test-driven development is mandatory: write a failing test, make it pass, refactor, commit. A two-stage review (spec compliance + code quality) runs after every task.
-
-**REVIEW** — Completed work is evaluated against the original spec, then against code quality standards. Issues are severity-ranked. Critical findings block forward progress until resolved.
-
-**SHIP** — End-to-end test verification. The agent presents options: merge, open a PR, keep the branch, or discard. Worktrees are cleaned up. Nothing left dangling.
-
-## Dynamic Execution Routing
-
-GodMode doesn't just have one way of working. It analyzes your task and automatically selects the optimal execution mode:
-
-```
-Task arrives
-    │
-    ├── Single atomic step?
-    │   └── YES → Handle directly (no orchestration)
-    │
-    ├── Multiple independent parts?
-    │   ├── Need peer coordination? → Agent Teams
-    │   └── No coordination needed? → Parallel Execution
-    │
-    └── Multi-step sequence?
-        └── YES → Delegated Execution (sequential + review gates)
-```
-
-### Four Execution Modes
-
-**Direct** — Simple tasks that don't need decomposition. Config changes, typo fixes, single-file modifications.
-
-**Delegated Execution** — Sequential multi-step implementation. A fresh subagent handles each task, followed by a spec compliance audit and a code quality audit. The controller never loses context because it curates exactly what each subagent needs.
-
-**Parallel Execution** — Independent problems dispatched to concurrent agents. Each agent works in isolation with a focused brief. Results are reconciled and integration-tested after all agents report back. Used for multi-domain debugging, distributed investigation, independent test fixes.
-
-**Agent Teams** — Multiple Claude instances collaborating via peer-to-peer messaging, each in its own git worktree. Teammates can share discoveries mid-work, negotiate interfaces in real-time, and coordinate on shared problems. Used for multi-module features, codebase migrations, and diagnosis of complex issues.
-
-The system decides automatically. You say "build me a dashboard" and GodMode figures out whether that's a 3-agent team job or a sequential delegation.
-
-## Agent Teams
-
-This is the most powerful execution mode. When a task has multiple parts that need to share discoveries or coordinate interfaces, GodMode deploys a team of 2-5 Claude instances that work simultaneously.
-
-### How It Works
-
-```
-1. ENUMERATE — List all tasks
-2. MAP — Which tasks need information from each other?
-3. COUNT — How many task pairs require collaboration?
-   0 pairs → Parallel execution (no team needed)
-   1 pair  → Consider single agent
-   2+ pairs → Deploy Agent Teams
-4. ASSIGN — Each teammate gets clear file ownership (no shared files)
-5. EXECUTE — Teammates work in parallel, messaging each other as needed
-6. INTEGRATE — Team lead merges results, runs full test suite
-```
-
-### What This Looks Like in Practice
-
-**Scenario: Add subscription billing (React frontend + Node backend + Stripe)**
-
-```
-Team: billing-feature-team (3 teammates + lead)
-
-backend-eng:  Define Stripe API contract → Implement endpoints → Webhook handler
-frontend-eng: Build billing UI with mock → Integrate webhooks into UI
-qa-eng:       Write end-to-end tests (waits for backend + frontend)
-
-Coordination:
-  Frontend discovers API needs paymentMethodId field
-  → Messages backend directly: "Need paymentMethodId in subscription response"
-  → Backend adjusts contract, continues
-  → Frontend adapts, continues
-  → No context switching. No replanning. No blocking.
-```
-
-Each teammate works in its own git worktree. No merge conflicts. The lead monitors progress, relays discoveries between teammates, and unblocks dependencies.
-
-### Team Patterns
-
-| Pattern | When to use | Example |
-|---|---|---|
-| **Feature Team** | Frontend + backend + tests for one feature | Billing, dashboard, auth flow |
-| **Exploration Team** | Parallel investigation of unknowns | Evaluating 3 libraries simultaneously |
-| **Diagnosis Team** | Competing hypotheses tested in parallel | Latency spike with multiple suspects |
-| **Migration Team** | Cross-module refactor with shared conventions | Callback-to-async migration across 4 modules |
-| **Inspection Team** | Multi-perspective code review | Security + performance + architecture review |
-
-## Reference-First Development
-
-Before writing a single line of code, GodMode searches for proven implementations:
-
-- **GitHub repos** — Minimum 3 distinct search queries across 2+ channels before declaring "nothing exists." Evaluates stars, maintenance, community health, license, test coverage, dependency footprint.
-- **Design marketplaces** — ThemeForest, Webflow, Framer, Awwwards, Dribbble. Maps your niche (fitness, SaaS, legal) to specific section patterns used by premium templates.
-- **Your existing codebase** — Surveys 2-3 similar files, catalogs conventions (naming, error handling, validation patterns, test structure), and replicates them exactly.
-- **Architecture references** — Stripe API patterns for payment systems, Supabase schemas for multi-tenant, Discord's gateway for WebSocket, Cal.com for subscription lifecycle.
-
-The principle: every professional implementation represents months of iteration, thousands of users, production incidents, and security audits. You inherit all of that when you use a reference. You inherit none of it when you generate from scratch.
-
-## Quality Gates
-
-Every piece of code passes through systematic verification. This is not optional.
-
-### Per-Task Review (After Each Task)
-
-1. **Spec Compliance Audit** — Does the implementation match the specification exactly? Nothing more, nothing less.
-2. **Code Quality Audit** — Is it well-crafted, maintainable, and consistent with the codebase?
-3. **Test Verification** — Red-green-refactor cycle confirmed. Tests fail without the fix, pass with it.
-
-### Pre-Landing Checks (7 Mandatory)
-
-| Check | Threshold |
-|---|---|
-| Lint | Zero errors, zero warnings |
-| Type Safety | Strict mode, no `any` escape hatches |
-| Test Coverage | 80% line, 70% branch, 90% new code |
-| Build | Clean, no warnings |
-| Bundle Size | Under budget |
-| Dependency Audit | Zero critical/high vulnerabilities |
-| Complexity | No function exceeding 10 cyclomatic |
-
-### Completion Gate
-
-Before declaring anything "done," the agent must produce fresh terminal output proving:
-- Tests pass (not "they should pass" — actual output showing 0 failures)
-- Linter clean (actual output showing 0 errors)
-- Build succeeds (actual exit code 0)
-
-Hedging language like "should work" or "probably passes" is prohibited.
-
-## The 36 Skills
-
-Every skill has a **Prime Directive** (a non-negotiable rule), **Cognitive Traps** (rationalizations to watch for), and **Guardrails** (what's prohibited). They compose for full workflows or fire independently.
-
-<details>
-<summary><strong>Core Workflow</strong> (6 skills)</summary>
-
-| Skill | Prime Directive |
-|---|---|
-| `activation` | Invoke applicable skills before generating any response |
-| `rationale` | No work without questioning whether the work is worth doing |
-| `intent-discovery` | No implementation without validated design first |
-| `task-planning` | No implementation without a plan first |
-| `task-runner` | No plan execution without critical review of each task |
-| `completion-gate` | No completion assertions without fresh verification output |
-
-</details>
-
-<details>
-<summary><strong>Execution Patterns</strong> (5 skills)</summary>
-
-| Skill | Prime Directive |
-|---|---|
-| `delegated-execution` | Fresh subagent per task + two-stage review |
-| `parallel-execution` | No concurrent dispatch without confirming isolation |
-| `team-orchestration` | No team without a collaboration requirement |
-| `agent-messaging` | No agent dispatch without a structured brief |
-| `workspace-isolation` | No feature work on the main branch |
-
-</details>
-
-<details>
-<summary><strong>Quality and Review</strong> (4 skills)</summary>
-
-| Skill | Prime Directive |
-|---|---|
-| `quality-gate` | No landing without review |
-| `review-response` | Every piece of feedback gets technical evaluation |
-| `quality-enforcement` | No code lands without all quality checks passing |
-| `comprehension-check` | No commit until every change is understood |
-
-</details>
-
-<details>
-<summary><strong>Research and References</strong> (4 skills)</summary>
-
-| Skill | Prime Directive |
-|---|---|
-| `reference-engine` | No building without a reference |
-| `github-search` | No building from scratch without searching GitHub first |
-| `codebase-research` | No new code without understanding existing code first |
-| `design-research` | No website layout without template research first |
-
-</details>
-
-<details>
-<summary><strong>Development Practices</strong> (6 skills)</summary>
-
-| Skill | Prime Directive |
-|---|---|
-| `test-first` | No production code without failing test first |
-| `specification-first` | No implementation without specification first |
-| `fault-diagnosis` | No fixes without root cause investigation first |
-| `error-recovery` | No continued attempts without acknowledging failure count |
-| `merge-protocol` | No integration without passing tests |
-| `pattern-matching` | Every addition must mirror an existing precedent |
-
-</details>
-
-<details>
-<summary><strong>Architecture and Design</strong> (4 skills)</summary>
-
-| Skill | Prime Directive |
-|---|---|
-| `system-design` | No structural complexity without an established requirement |
-| `ui-engineering` | No component without structure, states, and accessibility defined |
-| `design-integration` | Never rebuild what the design system already provides |
-| `ux-patterns` | No UI code without a UX reference first |
-
-</details>
-
-<details>
-<summary><strong>Infrastructure and Operations</strong> (5 skills)</summary>
-
-| Skill | Prime Directive |
-|---|---|
-| `project-bootstrap` | No feature code before project structure is established |
-| `environment-awareness` | No shell commands without knowing the target environment |
-| `deployment-advisor` | No technology recommendation without checking what the user already has |
-| `performance-tuning` | No optimization without measurement proving the problem |
-| `security-protocol` | No external data reaches system call/query/output without validation |
-
-</details>
-
-<details>
-<summary><strong>Meta</strong> (2 skills)</summary>
-
-| Skill | Prime Directive |
-|---|---|
-| `protocol-authoring` | TDD applied to process documentation (red/green/refactor for skills) |
-| `knowledge-capture` | Extract insight from every meaningful interaction |
-
-</details>
-
-## Three-Tier Priority
-
-When skills conflict, GodMode resolves them with a strict hierarchy:
-
-```
-1. PROJECT (highest) — Your project's /skills directory
-2. PERSONAL (middle)  — Your personal custom skills
-3. GODMODE (lowest)   — Built-in defaults
-```
-
-Your codebase conventions always win. If your project has a custom `authentication` skill, it shadows GodMode's version. You can override any skill without modifying the framework.
+<sub>An illustration of a session, not a transcript. Every line maps to a skill below.</sub>
 
 ## Install
 
-### Claude Code
+**Claude Code**
 
-```bash
-claude plugin marketplace add NoobyGains/godmode
-claude plugin install godmode
+```
+/plugin install godmode --marketplace NoobyGains/godmode
 ```
 
-Then start any conversation. GodMode activates automatically via the SessionStart hook. Run `/godmode` to explicitly invoke it, or just start working — the activation skill detects relevant context and fires the right skills.
+On older Claude Code versions use two steps: `/plugin marketplace add NoobyGains/godmode`, then `/plugin install godmode@godmode`. Start a new session afterwards: the bootstrap is injected at session start. `/godmode:doctor` confirms the install.
 
-### Other Platforms
+**Antigravity**
 
-| Platform | Method |
+```bash
+agy plugin install https://github.com/NoobyGains/godmode
+```
+
+**Codex**
+
+```bash
+codex plugin marketplace add NoobyGains/godmode
+codex plugin add godmode@godmode
+```
+
+**Any agent that reads skills** (Cursor, Gemini CLI, OpenCode, Copilot CLI, Windsurf and others)
+
+```bash
+npx skills add NoobyGains/godmode
+```
+
+This installs the skills into the agent's skills directory. The bootstrap that makes them trigger automatically needs the harness-specific route in the [harness table](#harnesses).
+
+> [!TIP]
+> Nothing to configure. GodMode is Markdown skills plus one session-start hook; it never calls a network service, never collects telemetry, and has zero runtime dependencies.
+
+<details>
+<summary><b>Gemini CLI, Cursor, OpenCode, updating, uninstalling</b></summary>
+
+- **Gemini CLI**: `gemini extensions install https://github.com/NoobyGains/godmode`. The extension's `GEMINI.md` carries the bootstrap.
+- **Cursor**: install the plugin from this repository (the repo ships `.cursor-plugin/plugin.json` and `.cursor-plugin/marketplace.json`); a `sessionStart` hook injects the bootstrap.
+- **OpenCode**: add `"godmode@git+https://github.com/NoobyGains/godmode.git"` to the `plugin` (V1) or `plugins` (V2) array of `opencode.json`. Details in [.opencode/INSTALL.md](.opencode/INSTALL.md).
+- **Update**: Claude Code `/plugin update godmode@godmode` (third-party marketplaces do not auto-update); Antigravity: run the install command again; Codex: `codex plugin marketplace upgrade` then `codex plugin add godmode@godmode`.
+- **Uninstall**: Claude Code `/plugin uninstall godmode@godmode`; Antigravity `agy plugin uninstall godmode`; Codex `codex plugin remove godmode`.
+
+</details>
+
+## Why GodMode
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>🔎 Grounded, not remembered</h3>
+      Model memory is a hypothesis. Before code is written against any API, CLI, library or platform rule, <code>grounding</code> verifies it against a current source and records the citation in the plan.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🧭 Should we build this at all?</h3>
+      <code>rationale</code> asks the senior engineer's first question before anyone designs: what problem, what effort, what already exists. Then <code>intent-discovery</code> turns the idea into an agreed design, one question at a time.
+    </td>
+    <td width="33%" valign="top">
+      <h3>💸 Cost-disciplined orchestration</h3>
+      <code>model-routing</code> names the cheapest capable model and effort on every dispatch. <code>using-godmode</code> routes each task to the lightest execution mode that fits: inline, delegated, parallel, or an agent team only when teammates must coordinate.
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>✅ Evidence before "done"</h3>
+      <code>completion-gate</code> allows no success claim without fresh command output in the same message. <code>code-review</code> reviews every task twice: spec compliance, then quality.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🔁 A second model family</h3>
+      <code>cross-model-review</code> sends the diff to a reviewer from another model family (Codex, Gemini, or Claude) before landing. Different models make different mistakes.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🧩 One repo, every harness</h3>
+      Identical skills on Claude Code, Antigravity, Codex, Cursor, Gemini CLI and OpenCode. Skill bodies name actions; a per-harness reference maps them to real tools.
+    </td>
+  </tr>
+</table>
+
+## Without and with
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/comparison.svg">
+    <img src="assets/comparison-light.svg" alt="Without GodMode the agent codes immediately from memory and declares success without running anything. With GodMode the same request is questioned, designed, grounded in current docs, planned, built test-first and proven." width="830">
+  </picture>
+</p>
+
+## How it works
+
+GodMode is a gated pipeline. The agent cannot move to the next phase until the current gate has evidence.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/pipeline.svg">
+    <img src="assets/pipeline-light.svg" alt="The GodMode pipeline: define, plan, execute, review, ship. Each phase is a gate." width="830">
+  </picture>
+</p>
+
+1. **Define.** `rationale` challenges the request. `intent-discovery` asks one question at a time, presents two or three approaches, and writes the design document. `grounding` verifies every fact that can change.
+2. **Plan.** `reference-first` finds the proven implementation to build on. `task-planning` writes tasks of two to five minutes with exact files, complete code, commands and expected output.
+3. **Execute.** `delegated-execution` runs the plan with a fresh subagent per task, a ledger on disk that survives context loss, and a bounded fix loop; `inline-execution` is the cheap single-context mode; `parallel-execution` and `team-orchestration` cover independent and collaborating work. Every task is `test-first`.
+4. **Review.** `code-review` runs spec compliance then quality on each task; `cross-model-review` brings in another model family before landing; `review-response` handles feedback with evidence instead of reflexive agreement.
+5. **Ship.** `quality-gates` are machine-checked, `completion-gate` demands fresh output, `merge-protocol` lands the branch and cleans up the worktree.
+
+### Grounding: the skill nobody else makes the headline
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/grounding.svg">
+    <img src="assets/grounding-light.svg" alt="The grounding skill refuses to code against a library from memory, fetches the current documentation, notes that the remembered API was outdated, and records the sources" width="830">
+  </picture>
+</p>
+
+### Execution routing and model routing
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/teams.svg">
+    <img src="assets/teams-light.svg" alt="GodMode picks an agent team because the modules must agree on conventions mid-work, sizes each seat with model-routing, runs three teammates in worktrees and merges them with the full suite green" width="830">
+  </picture>
+</p>
+
+Agent teams are the most expensive mode, so they are a decision, not a default: the lead enumerates the tasks, maps which ones need information from each other, and only forms a team when teammates must coordinate mid-work. On harnesses without teams the same skill degrades to parallel subagents.
+
+## The 33 skills
+
+Every skill has a Prime Directive (the rule that cannot be broken), a Protocol, Cognitive Traps (the rationalisations it blocks) and Guardrails. Bodies describe actions, never one harness's tools; `skills/using-godmode/references/` maps those actions to each harness.
+
+<details open>
+<summary><b>Core loop</b></summary>
+
+| Skill | Prime Directive |
 |---|---|
-| **Cursor** | Plugin manifest at `.cursor-plugin/plugin.json` |
-| **OpenCode** | Plugin at `.opencode/plugins/godmode.js` |
-| **Codex** | Symlink skills to Codex config directory |
+| `using-godmode` | Check for a relevant skill before any response or action |
+| `rationale` | No work without questioning whether the work is worth doing |
+| `intent-discovery` | No implementation without an agreed design |
+| `grounding` | No fact that can change is used without a current source |
+| `task-planning` | No implementation without a plan of atomic, verifiable tasks |
+| `knowledge-capture` | No meaningful task ends without recording what it taught |
 
-Each skill is a standalone Markdown file. Any AI agent that can read files can consume them.
+</details>
 
-## Validation
+<details>
+<summary><b>Execution</b></summary>
 
-Every skill is machine-validated on every change:
+| Skill | Prime Directive |
+|---|---|
+| `delegated-execution` | Fresh subagent per task, two reviews per task, a ledger that survives |
+| `inline-execution` | One context, every task, one final review |
+| `parallel-execution` | No concurrent dispatch without confirmed isolation |
+| `team-orchestration` | No team without a collaboration requirement |
+| `agent-briefing` | No dispatch without a structured brief |
+| `workspace-isolation` | No feature work on the main branch |
+| `model-routing` | No dispatch without a named model and effort, the cheapest that can do the job |
+| `merge-protocol` | No integration without passing tests |
 
-```bash
-npm run validate
-```
+</details>
 
-Checks all 36 skills for structural correctness, required frontmatter fields, cross-references, and internal consistency. Runs automatically in CI.
+<details>
+<summary><b>Quality</b></summary>
 
-## How This README Was Built
+| Skill | Prime Directive |
+|---|---|
+| `test-first` | No production code without a failing test first |
+| `code-review` | No landing without spec review, then quality review |
+| `cross-model-review` | No landing without one review from another model family |
+| `quality-gates` | No code lands with a failing machine check |
+| `completion-gate` | No completion claim without fresh verification output |
+| `review-response` | Every piece of feedback gets a technical evaluation |
+| `fault-diagnosis` | No fix without the root cause |
+| `error-recovery` | No further attempt without acknowledging the failure count |
 
-This README was built using GodMode itself:
+</details>
 
-1. **intent-discovery** — Defined audience (developers), tone (professional), and sections needed
-2. **reference-engine** — Studied READMEs from Aider, Ruff, LobeChat, and top dev tool repos with 10K+ stars
-3. **design-research** — Referenced Linear, Stripe, and Vercel for visual design language
-4. **team-orchestration** — Dispatched parallel agent teams: skill researcher, README writer, SVG designer, execution routing mapper
-5. **ux-patterns** — Eliminated 14 amateur anti-patterns from the SVG visuals (no typewriter gimmicks, no floating particles, no gratuitous animations)
-6. **quality-enforcement** — Playwright-verified every SVG renders correctly on GitHub
-7. **completion-gate** — Screenshot verification of the final result on github.com
+<details>
+<summary><b>Research and design</b></summary>
 
-## What GodMode is NOT
+| Skill | Prime Directive |
+|---|---|
+| `reference-first` | No building without a proven reference |
+| `codebase-conventions` | Every addition mirrors an existing precedent |
+| `ui-research` | No UI without a researched pattern and design tokens |
+| `ui-engineering` | No component without structure, states and accessibility defined |
+| `system-design` | No structural complexity without a current requirement |
 
-- **Not a replacement for thinking.** GodMode structures how your agent approaches work. You still make the decisions.
-- **Not magic.** It's composable engineering discipline encoded as skills — no black boxes, no hidden prompts.
-- **Not a code generator.** It governs *how* the agent works, not *what* it builds. Your codebase, your architecture, your calls.
-- **Not framework-specific.** Works with any language, any stack, any project size. The skills are language-agnostic by design.
-- **Not slow.** Skills are Markdown files resolved at conversation start. The overhead is near-zero — milliseconds, not seconds.
-- **Not locked-in.** MIT licensed. Every skill is a standalone Markdown file. Fork it, modify it, strip it for parts — it's yours.
+</details>
+
+<details>
+<summary><b>Platform and meta</b></summary>
+
+| Skill | Prime Directive |
+|---|---|
+| `environment-awareness` | No shell command without knowing the target environment |
+| `project-bootstrap` | No feature code before the project foundation exists |
+| `security-protocol` | No external data reaches a system call, query or output unvalidated |
+| `performance-tuning` | No optimisation without a measurement proving the problem |
+| `writing-skills` | Skills are written test-first, like code |
+| `doctor` | Diagnose the install before blaming the skills |
+
+</details>
+
+## Harnesses
+
+| Harness | Install | Bootstrap at session start | Status |
+|---|---|---|---|
+| Claude Code | one-step `/plugin install` line above | SessionStart hook | Verified: hook tested on sh, with an empty PATH, and through cmd.exe on Windows; `claude plugin validate` passes |
+| Antigravity CLI (`agy`) | `agy plugin install <repo url>` | Always-on plugin rule plus the skill index | Manifest validated with `agy plugin validate`; live install in progress |
+| Codex CLI and App | `codex plugin marketplace add` + `codex plugin add` | Native skill discovery (`$godmode:using-godmode`) | Manifest and marketplace shipped; live install in progress |
+| Gemini CLI | `gemini extensions install <repo url>` | Extension context file | Manifest shipped, untested |
+| Cursor | plugin from repository | `sessionStart` hook | Manifest shipped, untested |
+| OpenCode V1 and V2 | `opencode.json` plugin entry | Plugin injects into the first user message | Plugin shipped, syntax-checked, untested on a live install |
+| Copilot CLI, Windsurf, others | `npx skills add NoobyGains/godmode` | None (skills trigger from their descriptions) | Skills only |
+
+"Untested" means no maintainer has run it on a live install yet. If you do, open an issue with the transcript and the row changes.
+
+Limits worth knowing: agent teams exist only on Claude Code and are experimental and opt-in there; Antigravity has no todo tool, so plans are tracked in a task artifact; OpenCode V2 has no todo tool either; Codex needs multi-agent enabled for subagent dispatch. Each `references/<harness>-tools.md` spells out the substitutions.
+
+## Compared with
+
+GodMode grew out of [superpowers](https://github.com/obra/superpowers) and shares its shape: Markdown skills, a bootstrap at session start, a define-plan-execute-review-ship flow. The differences are the three commitments above, and this table is an attempt to be fair about when the others are the better pick.
+
+| Project | What it is | Use it instead when |
+|---|---|---|
+| [superpowers](https://github.com/obra/superpowers) | 15 tightly tuned skills, 17 harnesses, an eval lab and a Discord | You want the smallest core with the longest track record |
+| [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) | 36 skills with a learning loop that writes solutions back into the repo | You want every fix to compound into a project knowledge base |
+| [spec-kit](https://github.com/github/spec-kit) | A CLI-driven spec-first workflow with verdict states | Your team wants formal specifications as the primary artefact |
+| [agent-skills](https://github.com/addyosmani/agent-skills) | 25 lifecycle skills installed with `npx skills add` | You want a lighter set without a bootstrap hook |
+| **GodMode** | 33 skills, 6 harness manifests, web-grounded facts, per-seat model routing, cross-model review | You want the agent to verify instead of remember, spend tokens deliberately, and prove results |
+
+## Verified before every release
+
+- `node scripts/validate.js --ci`: frontmatter rules, section order, cross-references, tool-name coupling, hook quoting and executable bits, version agreement across every manifest, README skill coverage, icon size.
+- `bash tests/test-hooks.sh` on Linux, macOS and Windows Git Bash, and `tests/test-hooks-windows.ps1` through cmd.exe.
+- `claude plugin validate .` and `agy plugin validate .`.
+- A headless acceptance session per verified harness: the prompt "Let's make a react todo list" must trigger `rationale` or `intent-discovery` before any code.
+- One review of the release diff by a different model family than the author.
+
+## What GodMode is not
+
+- **Not a code generator.** It governs how the agent works, not what it builds.
+- **Not magic.** Composable discipline in Markdown; read any skill and you know exactly what it asks for.
+- **Not free of judgement.** Skills decide what evidence is needed; you still decide what to build.
+- **Not locked in.** MIT. Every skill is a standalone file. Fork it, trim it, or run `npx skills add` and take only the ones you want.
+- **Not a telemetry source.** No network calls, no analytics, no phone-home of any kind.
 
 ## Contributing
 
-Open an issue or submit a PR. If you are adding a new skill, use the `protocol-authoring` skill to generate it — it enforces correct structure using TDD applied to process documentation.
+Issues and pull requests are welcome. Read [AGENTS.md](AGENTS.md) first: it has the rules for skill wording (actions, not tools; facts from current sources; the bootstrap size limit) and the checks CI runs. New skills follow `writing-skills`.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/star-history-dark.svg">
+    <img src="assets/star-history.svg" alt="Star history of NoobyGains/godmode" width="700">
+  </picture>
+</p>
+
+## Thanks
+
+- [@ivnad95](https://github.com/ivnad95), [@g7trader](https://github.com/g7trader) and [@AdversaLLC](https://github.com/AdversaLLC) for diagnosing the 1.0 hook bug with exact reproductions; your fix is in 2.0.
+- [@urbabby](https://github.com/urbabby), whose `orchestrator-core` fork skill shaped the "rulings, not stalls" idea in `delegated-execution`.
+- [Jesse Vincent](https://github.com/obra) and the superpowers contributors for the methodology GodMode grew from, and for the cross-harness hook and manifest patterns (MIT) that 2.0 follows.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
-
-Built by [David](https://github.com/NoobyGains).
+MIT. See [LICENSE](LICENSE).
