@@ -1,16 +1,43 @@
-name: GodMode Validate
+name: Validate
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
+
+permissions:
+  contents: read
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
-      - run: node scripts/validate-skills.js --ci
+          node-version: '22'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Repository validator
+        run: node scripts/validate.js --ci
+      - name: Hook tests (bash)
+        shell: bash
+        run: bash tests/test-hooks.sh
+      - name: Hook tests (cmd.exe)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: pwsh tests/test-hooks-windows.ps1
+      - name: Manifest tests
+        shell: bash
+        run: bash tests/test-manifests.sh
+      - name: README pictures are regenerated, not hand-edited
+        shell: bash
+        run: |
+          python scripts/readme_assets.py >/dev/null
+          git diff --exit-code -- assets/ || { echo "assets/ differs from scripts/readme_assets.py output; run the script and commit"; exit 1; }

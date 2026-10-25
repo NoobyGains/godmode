@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 830 356" width="830" height="356" role="img" aria-label="Without GodMode the agent codes immediately from memory and declares success without running anything. With GodMode the same request is questioned, designed, grounded in current docs, planned, built test-first and proven.">
+<rect width="0" height="0"><animate id="loop" attributeName="x" from="0" to="0" dur="14.0s" repeatCount="indefinite"/></rect>
+<g transform="translate(16.0,0)">
+<rect x="0.5" y="0.5" width="390.0" height="355" rx="10" fill="#f6f8fa" stroke="#d0d7de"/>
+<rect x="0.5" y="0.5" width="390.0" height="34" rx="10" fill="#eaeef2"/>
+<rect x="0.5" y="24" width="390.0" height="10" fill="#eaeef2"/>
+<circle cx="18" cy="17" r="5.5" fill="#ff5f57"/>
+<circle cx="36" cy="17" r="5.5" fill="#febc2e"/>
+<circle cx="54" cy="17" r="5.5" fill="#28c840"/>
+<text x="195.5" y="21.5" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#cf222e">Without GodMode</text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+0.30s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+0.30s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<rect x="6" y="38.6" width="379.0" height="20" rx="4" fill="#ddf4ff"/>
+<text x="16" y="52" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">❯ </tspan><tspan fill="#1f2328" font-weight="600">add Stripe subscription billing</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+1.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+1.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="72" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#1f2328">Sure! Creating the billing files now…</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+2.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+2.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="92" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">+ src/billing/stripe.ts</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+2.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+2.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="112" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">  stripe v8 calls from memory (removed 2023)</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+3.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+3.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="132" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">+ src/billing/webhook.ts</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+3.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+3.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="152" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">  no signature check, no idempotency</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+4.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+4.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="172" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">+ src/routes/billing.ts</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+4.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+4.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="192" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">  duplicates the existing route helper</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+5.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+5.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="212" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#1f2328">Done! Billing should work now.</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+7.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="252" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#cf222e">✗ </tspan><tspan fill="#1f2328">no questions, no design, no docs checked</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.80s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+7.80s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="272" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#cf222e">✗ </tspan><tspan fill="#1f2328">no tests written, nothing run</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+8.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+8.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="292" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#cf222e">✗ </tspan><tspan fill="#1f2328">"should work" is the only evidence</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+9.40s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+9.40s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="312" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#cf222e">✗ </tspan><tspan fill="#1f2328">you debug code you did not write</tspan></text>
+</g>
+</g>
+<g transform="translate(423.0,0)">
+<rect x="0.5" y="0.5" width="390.0" height="355" rx="10" fill="#f6f8fa" stroke="#d0d7de"/>
+<rect x="0.5" y="0.5" width="390.0" height="34" rx="10" fill="#eaeef2"/>
+<rect x="0.5" y="24" width="390.0" height="10" fill="#eaeef2"/>
+<circle cx="18" cy="17" r="5.5" fill="#ff5f57"/>
+<circle cx="36" cy="17" r="5.5" fill="#febc2e"/>
+<circle cx="54" cy="17" r="5.5" fill="#28c840"/>
+<text x="195.5" y="21.5" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#1a7f37">With GodMode</text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+0.30s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+0.30s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<rect x="6" y="38.6" width="379.0" height="20" rx="4" fill="#ddf4ff"/>
+<text x="16" y="52" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">❯ </tspan><tspan fill="#1f2328" font-weight="600">add Stripe subscription billing</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+1.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+1.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="72" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">Using </tspan><tspan fill="#8250df" font-weight="600">godmode:rationale</tspan><tspan fill="#59636e"> </tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+1.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+1.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="92" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">worth building? does Stripe Billing suffice?</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+2.40s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+2.40s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="112" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">Using </tspan><tspan fill="#8250df" font-weight="600">godmode:intent-discovery</tspan><tspan fill="#59636e"> </tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+2.80s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+2.80s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="132" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">one question at a time → agreed design doc</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+3.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+3.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="152" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">Using </tspan><tspan fill="#8250df" font-weight="600">godmode:grounding</tspan><tspan fill="#59636e"> </tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+4.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+4.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="172" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">current Stripe docs fetched and cited</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+4.80s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+4.80s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="192" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">Using </tspan><tspan fill="#8250df" font-weight="600">godmode:task-planning</tspan><tspan fill="#59636e"> </tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+5.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+5.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="212" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">7 tasks, exact files, tests, commands</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+6.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+6.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="232" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">Using </tspan><tspan fill="#8250df" font-weight="600">godmode:delegated-execution</tspan><tspan fill="#59636e"> </tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+6.40s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+6.40s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="252" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">fresh subagent per task, two reviews each</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+7.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="272" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">Using </tspan><tspan fill="#8250df" font-weight="600">godmode:completion-gate</tspan><tspan fill="#59636e"> </tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+7.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="32" y="292" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#59636e">tests, lint, build run and read first</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+8.80s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+8.80s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="16" y="312" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="12" xml:space="preserve"><tspan fill="#1a7f37">✓ </tspan><tspan fill="#1f2328">84 tests · 0 failures · 19 commits · sources</tspan></text>
+</g>
+</g>
+</svg>

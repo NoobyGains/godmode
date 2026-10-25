@@ -1,10 +1,26 @@
 {
   "name": "godmode",
-  "description": "Elite AI development framework: reference-first design, agent orchestration, automated quality gates, and battle-tested engineering workflows",
-  "version": "1.0.0",
+  "description": "Engineering discipline for AI coding agents: question the request, verify against current docs instead of memory, plan, build test-first on the cheapest capable model, review with a second model family, prove it before saying done",
+  "version": "2.0.0",
   "author": {
-    "name": "David"
+    "name": "David Innes",
+    "url": "https://github.com/NoobyGains"
   },
+  "homepage": "https://github.com/NoobyGains/godmode",
+  "repository": "https://github.com/NoobyGains/godmode",
   "license": "MIT",
-  "keywords": ["skills", "godmode", "ai-development", "agent-orchestration", "reference-first", "ux-design", "blueprints", "code-quality", "tdd", "debugging", "frontend", "architecture", "security", "scaffolding"]
+  "icon": "assets/icon.png",
+  "keywords": [
+    "skills",
+    "agent-skills",
+    "engineering-discipline",
+    "tdd",
+    "planning",
+    "code-review",
+    "agent-teams",
+    "grounding",
+    "antigravity",
+    "codex",
+    "cursor"
+  ]
 }

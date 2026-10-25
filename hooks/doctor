@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# GodMode doctor: prints what the install looks like from inside the harness.
+#
+# Run it the way hooks run: "<plugin-root>/hooks/run-hook.cmd doctor", or
+# through the /godmode:doctor command. Prints plain text, exits 0 when
+# everything that can be checked here is fine.
+set -uo pipefail
+
+case "$0" in
+  */*|*\\*) SCRIPT_DIR="$(cd "${0%[/\\]*}" && pwd)" ;;
+  *) SCRIPT_DIR="$(pwd)" ;;
+esac
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+problems=0
+ok()   { printf 'ok    %s\n' "$1"; }
+bad()  { printf 'FAIL  %s\n' "$1"; problems=$((problems + 1)); }
+info() { printf 'info  %s\n' "$1"; }
+
+echo "GodMode doctor"
+echo
+info "plugin root: $ROOT"
+v="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$ROOT/.claude-plugin/plugin.json" 2>/dev/null | head -1)"
+info "version: ${v:-unknown}"
+
+harness="unknown"
+[ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && harness="Claude Code"
+[ -n "${CURSOR_PLUGIN_ROOT:-}" ] && harness="Cursor"
+[ -n "${COPILOT_CLI:-}" ] && harness="GitHub Copilot CLI"
+[ -n "${CODEX_HOME:-}" ] && harness="Codex"
+info "harness (from environment): $harness"
+info "shell: ${BASH_VERSION:-not bash}; PATH entries: $(printf '%s' "${PATH:-}" | tr ':' '\n' | grep -c . || true)"
+case "$(uname -s 2>/dev/null || echo unknown)" in
+  MINGW*|MSYS*|CYGWIN*) info "platform: Windows (Git Bash)";;
+  Darwin) info "platform: macOS";;
+  Linux) info "platform: Linux";;
+  *) info "platform: $(uname -s 2>/dev/null || echo unknown)";;
+esac
+echo
+
+[ -r "$ROOT/skills/using-godmode/SKILL.md" ] && ok "skills/using-godmode/SKILL.md readable" || bad "skills/using-godmode/SKILL.md missing: the bootstrap has nothing to inject"
+n="$(find "$ROOT/skills" -mindepth 2 -maxdepth 2 -name SKILL.md 2>/dev/null | wc -l | tr -d ' ')"
+[ "${n:-0}" -gt 20 ] && ok "$n skills found" || bad "only ${n:-0} skills found under $ROOT/skills"
+
+for f in run-hook.cmd session-start doctor; do
+  if [ -x "$ROOT/hooks/$f" ]; then ok "hooks/$f is executable"; else bad "hooks/$f is not executable (chmod +x; on a plugin install this means the release shipped without the bit)"; fi
+  if grep -q $'\r' "$ROOT/hooks/$f" 2>/dev/null; then bad "hooks/$f has CRLF line endings (git autocrlf?)"; fi
+done
+
+if grep -q "'\${CLAUDE_PLUGIN_ROOT}" "$ROOT/hooks/hooks.json" 2>/dev/null; then
+  bad "hooks/hooks.json single-quotes \${CLAUDE_PLUGIN_ROOT}: the hook can never run (GodMode 1.0 bug)"
+else
+  ok "hooks/hooks.json quotes the plugin root correctly"
+fi
+
+out="$(CLAUDE_PLUGIN_ROOT="$ROOT" "$BASH" "$ROOT/hooks/session-start" 2>&1)"
+case "$out" in
+  *'"hookSpecificOutput"'*'godmode:using-godmode'*) ok "session-start prints the Claude Code bootstrap";;
+  *) bad "session-start output is not the expected JSON: $(printf '%s' "$out" | head -c 200)";;
+esac
+
+echo
+if [ $problems -eq 0 ]; then
+  echo "All checks passed. If skills still do not trigger, start a fresh session: the bootstrap is injected at session start only."
+else
+  echo "$problems problem(s). Reinstall or update the plugin; if the problem persists open an issue with this output."
+  exit 1
+fi

@@ -1,0 +1,21 @@
+{
+  "name": "godmode",
+  "displayName": "GodMode",
+  "version": "2.0.0",
+  "description": "Engineering discipline for AI coding agents: question, verify against current docs, plan, test first, review, prove it",
+  "logo": "assets/icon.png",
+  "suggestedPrompts": [
+    "I want to add a feature to this project",
+    "Something is broken and I don't know why",
+    "Before we build this, is it worth building?"
+  ],
+  "category": "Developer Tools",
+  "keywords": ["skills", "agent-skills", "engineering-discipline", "tdd", "planning", "code-review", "grounding"],
+  "author": {
+    "name": "David Innes",
+    "url": "https://github.com/NoobyGains"
+  },
+  "homepage": "https://github.com/NoobyGains/godmode",
+  "repository": "https://github.com/NoobyGains/godmode",
+  "license": "MIT"
+}

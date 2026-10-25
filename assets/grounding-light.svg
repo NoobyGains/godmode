@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 830 300" width="830" height="300" role="img" aria-label="The grounding skill refuses to code against a library from memory, fetches the current documentation and records the sources">
+<title>Grounding: web search is the source of truth</title>
+<rect width="0" height="0"><animate id="loop" attributeName="x" from="0" to="0" dur="16s" repeatCount="indefinite"/></rect>
+<rect x="0.5" y="0.5" width="829" height="299" rx="10" fill="#f6f8fa" stroke="#d0d7de"/>
+<path d="M0.5,36 L829.5,36" stroke="#d0d7de"/>
+<rect x="0.5" y="0.5" width="829" height="36" rx="10" fill="#eaeef2"/>
+<rect x="0.5" y="26" width="829" height="10" fill="#eaeef2"/>
+<circle cx="22" cy="18" r="6" fill="#ff5f57"/>
+<circle cx="42" cy="18" r="6" fill="#febc2e"/>
+<circle cx="62" cy="18" r="6" fill="#28c840"/>
+<text x="415.0" y="22.5" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#59636e">godmode:grounding</text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+0.30s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+0.30s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<rect x="14" y="39.9" width="802" height="24" rx="4" fill="#ddf4ff"/>
+<text x="24" y="56" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#59636e">❯ </tspan><tspan fill="#1f2328" font-weight="600">wire up the new Anthropic SDK streaming helper</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+1.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+1.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="80" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#59636e">Using </tspan><tspan fill="#8250df" font-weight="600">godmode:grounding</tspan><tspan fill="#59636e"> because SDK method names change faster than model memory</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+2.10s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+2.10s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="40" y="104" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#59636e">Fact that can change: SDK streaming API → must be verified before any code</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+3.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+3.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="128" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="none">⠋ </tspan><tspan fill="#1f2328">Context7 · anthropic-sdk-typescript · query: streaming helpers</tspan></text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+3.00s" end="loop.begin+5.20s"/><circle cx="30.0" cy="123.0" r="5.0" fill="none" stroke="#0969da" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="21.2 10.6"><animateTransform attributeName="transform" type="rotate" from="0 30.0 123.0" to="360 30.0 123.0" dur="0.9s" repeatCount="indefinite"/></circle></g><text x="24" y="128" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#1a7f37" opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+5.20s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/>✓</text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+5.50s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+5.50s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="152" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="none">⠋ </tspan><tspan fill="#1f2328">WebFetch · docs.claude.com · messages streaming</tspan></text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+5.50s" end="loop.begin+7.40s"/><circle cx="30.0" cy="147.0" r="5.0" fill="none" stroke="#0969da" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="21.2 10.6"><animateTransform attributeName="transform" type="rotate" from="0 30.0 147.0" to="360 30.0 147.0" dur="0.9s" repeatCount="indefinite"/></circle></g><text x="24" y="152" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#1a7f37" opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.40s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/>✓</text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.80s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+7.80s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="176" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#1a7f37">✓ </tspan><tspan fill="#1f2328">client.messages.stream() · .on('text') · finalMessage() · verified 2026-10-25</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+8.80s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+8.80s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="200" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#9a6700">! </tspan><tspan fill="#1f2328">memory said messages.create({stream:true}) + manual SSE parsing → outdated, not used</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+9.80s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+9.80s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="40" y="224" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#59636e">Sources recorded in the plan: 2 URLs, library version pinned</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+11.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+11.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="248" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#1f2328">Writing the client against the verified API. Tests first.</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+11.60s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/><rect x="24" y="259" width="8" height="17" fill="#1f2328"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.5;1" dur="1.1s" repeatCount="indefinite"/></rect></g>
+</svg>

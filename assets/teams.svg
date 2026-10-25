@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 830 372" width="830" height="372" role="img" aria-label="GodMode picks the cheapest execution mode that fits: direct, delegated, parallel, or an agent team, and names the model for every dispatch">
+<title>Execution routing</title>
+<rect width="0" height="0"><animate id="loop" attributeName="x" from="0" to="0" dur="18s" repeatCount="indefinite"/></rect>
+<rect x="0.5" y="0.5" width="829" height="371" rx="10" fill="#161b22" stroke="#30363d"/>
+<path d="M0.5,36 L829.5,36" stroke="#30363d"/>
+<rect x="0.5" y="0.5" width="829" height="36" rx="10" fill="#21262d"/>
+<rect x="0.5" y="26" width="829" height="10" fill="#21262d"/>
+<circle cx="22" cy="18" r="6" fill="#ff5f57"/>
+<circle cx="42" cy="18" r="6" fill="#febc2e"/>
+<circle cx="62" cy="18" r="6" fill="#28c840"/>
+<text x="415.0" y="22.5" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#8b949e">godmode:using-godmode · execution mode</text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+0.30s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+0.30s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<rect x="14" y="39.9" width="802" height="24" rx="4" fill="#1f2a3a"/>
+<text x="24" y="56" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">❯ </tspan><tspan fill="#e6edf3" font-weight="600">migrate 4 modules from callbacks to async, keep the public API</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+1.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+1.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="80" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:using-godmode</tspan><tspan fill="#8b949e"> to pick an execution mode</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+2.10s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+2.10s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="40" y="104" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Single step? no · independent parts? yes · must agree on conventions mid-work? yes</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+3.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+3.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="128" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#e6edf3">→ Agent team: 3 teammates, strict file ownership, lead integrates at the end</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+4.40s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+4.40s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="152" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:model-routing</tspan><tspan fill="#8b949e"> to size each seat</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+5.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+5.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="40" y="176" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">teammates: sonnet · reviewers: sonnet · final whole-branch review: opus</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+6.40s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+6.40s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="200" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="none">⠋ </tspan><tspan fill="#e6edf3">auth-module    · worktree wt/auth    · 12 functions</tspan></text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+6.40s" end="loop.begin+10.00s"/><circle cx="30.0" cy="195.0" r="5.0" fill="none" stroke="#58a6ff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="21.2 10.6"><animateTransform attributeName="transform" type="rotate" from="0 30.0 195.0" to="360 30.0 195.0" dur="0.9s" repeatCount="indefinite"/></circle></g><text x="24" y="200" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#3fb950" opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+10.00s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/>✓</text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+6.90s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+6.90s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="224" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="none">⠋ </tspan><tspan fill="#e6edf3">queue-module   · worktree wt/queue   · 9 functions</tspan></text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+6.90s" end="loop.begin+10.60s"/><circle cx="30.0" cy="219.0" r="5.0" fill="none" stroke="#58a6ff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="21.2 10.6"><animateTransform attributeName="transform" type="rotate" from="0 30.0 219.0" to="360 30.0 219.0" dur="0.9s" repeatCount="indefinite"/></circle></g><text x="24" y="224" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#3fb950" opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+10.60s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/>✓</text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.40s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+7.40s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="248" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="none">⠋ </tspan><tspan fill="#e6edf3">storage-module · worktree wt/storage · 15 functions</tspan></text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.40s" end="loop.begin+11.40s"/><circle cx="30.0" cy="243.0" r="5.0" fill="none" stroke="#58a6ff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="21.2 10.6"><animateTransform attributeName="transform" type="rotate" from="0 30.0 243.0" to="360 30.0 243.0" dur="0.9s" repeatCount="indefinite"/></circle></g><text x="24" y="248" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#3fb950" opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+11.40s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/>✓</text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+8.60s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+8.60s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="40" y="272" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">queue → auth: "error type for timeouts?"  auth: "TimeoutError from errors.ts"</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+12.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+12.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="296" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#3fb950">✓ </tspan><tspan fill="#e6edf3">3 worktrees merged · full suite 212 passed · public API diff: none</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+13.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+13.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="320" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:merge-protocol</tspan><tspan fill="#8b949e"> to land it</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+13.80s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/><rect x="24" y="331" width="8" height="17" fill="#e6edf3"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.5;1" dur="1.1s" repeatCount="indefinite"/></rect></g>
+</svg>

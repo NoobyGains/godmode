@@ -1,16 +1,16 @@
 {
   "name": "godmode",
   "displayName": "GodMode",
-  "description": "Core skills library: TDD, debugging, collaboration patterns, and proven techniques",
-  "version": "1.0.0",
+  "description": "Engineering discipline for AI coding agents: question the request, verify against current docs instead of memory, plan, build test-first, review with a second model family, prove it before saying done",
+  "version": "2.0.0",
   "author": {
-    "name": "David",
-    "email": ""
+    "name": "David Innes",
+    "url": "https://github.com/NoobyGains"
   },
+  "homepage": "https://github.com/NoobyGains/godmode",
+  "repository": "https://github.com/NoobyGains/godmode",
   "license": "MIT",
-  "keywords": ["skills", "tdd", "debugging", "collaboration", "best-practices", "workflows"],
+  "keywords": ["skills", "engineering-discipline", "tdd", "planning", "code-review", "grounding"],
   "skills": "./skills/",
-  "agents": "./agents/",
-  "commands": "./commands/",
-  "hooks": "./hooks/hooks.json"
+  "hooks": "./hooks/hooks-cursor.json"
 }

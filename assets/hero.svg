@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 830 564" width="830" height="564" role="img" aria-label="A Claude Code session with GodMode: the agent questions the request, checks current docs, plans, dispatches a tested implementation, reviews it and proves the result before saying done">
+<title>GodMode in Claude Code</title>
+<rect width="0" height="0"><animate id="loop" attributeName="x" from="0" to="0" dur="26s" repeatCount="indefinite"/></rect>
+<rect x="0.5" y="0.5" width="829" height="563" rx="10" fill="#161b22" stroke="#30363d"/>
+<path d="M0.5,36 L829.5,36" stroke="#30363d"/>
+<rect x="0.5" y="0.5" width="829" height="36" rx="10" fill="#21262d"/>
+<rect x="0.5" y="26" width="829" height="10" fill="#21262d"/>
+<circle cx="22" cy="18" r="6" fill="#ff5f57"/>
+<circle cx="42" cy="18" r="6" fill="#febc2e"/>
+<circle cx="62" cy="18" r="6" fill="#28c840"/>
+<text x="415.0" y="22.5" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12.5" fill="#8b949e">claude · my-saas · godmode 2.0</text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+0.30s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+0.30s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<rect x="14" y="39.9" width="802" height="24" rx="4" fill="#1f2a3a"/>
+<text x="24" y="56" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">❯ </tspan><tspan fill="#e6edf3" font-weight="600">add subscription billing with Stripe</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+1.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+1.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="80" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:rationale</tspan><tspan fill="#8b949e"> to check the work is worth doing</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+2.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+2.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="40" y="104" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Problem: 3 paid tiers, no billing today. Effort: substantial. Stripe Billing covers 90%.</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+3.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+3.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="128" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:intent-discovery</tspan><tspan fill="#8b949e"> to pin down the design before any code</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+4.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+4.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="40" y="152" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">One question at a time → design doc saved to docs/plans/2026-10-25-billing-design.md</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+5.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+5.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="176" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:grounding</tspan><tspan fill="#8b949e"> to verify Stripe's current API instead of trusting memory</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+6.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+6.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="200" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#3fb950">✓ </tspan><tspan fill="#e6edf3">docs.stripe.com/api/subscriptions (2026-10) · webhooks need idempotency keys · cited</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.40s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+7.40s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="224" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:task-planning</tspan><tspan fill="#8b949e"> to write 7 tasks of 2-5 minutes each</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+8.40s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+8.40s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="248" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:delegated-execution</tspan><tspan fill="#8b949e"> to run the plan with a fresh subagent per task</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+9.30s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+9.30s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="272" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="none">⠋ </tspan><tspan fill="#e6edf3">Task 1/7 webhook handler · test-first · implementer: sonnet</tspan></text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+9.30s" end="loop.begin+12.00s"/><circle cx="30.0" cy="267.0" r="5.0" fill="none" stroke="#58a6ff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="21.2 10.6"><animateTransform attributeName="transform" type="rotate" from="0 30.0 267.0" to="360 30.0 267.0" dur="0.9s" repeatCount="indefinite"/></circle></g><text x="24" y="272" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#3fb950" opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+12.00s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/>✓</text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+12.30s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+12.30s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="296" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#3fb950">✓ </tspan><tspan fill="#e6edf3">spec review passed · code review passed · 2 commits</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+13.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+13.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="320" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="none">⠋ </tspan><tspan fill="#e6edf3">Task 2/7 subscription CRUD · implementer: sonnet</tspan></text>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+13.20s" end="loop.begin+15.60s"/><circle cx="30.0" cy="315.0" r="5.0" fill="none" stroke="#58a6ff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="21.2 10.6"><animateTransform attributeName="transform" type="rotate" from="0 30.0 315.0" to="360 30.0 315.0" dur="0.9s" repeatCount="indefinite"/></circle></g><text x="24" y="320" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#3fb950" opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+15.60s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/>✓</text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+15.90s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+15.90s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="344" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#3fb950">✓ </tspan><tspan fill="#e6edf3">spec review passed · code review passed · 3 commits</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+16.80s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+16.80s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="40" y="368" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">… tasks 3-7 …</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+18.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+18.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="392" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:cross-model-review</tspan><tspan fill="#8b949e"> for a second opinion from a different model family</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+19.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+19.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="416" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#d29922">! </tspan><tspan fill="#e6edf3">codex: webhook retries can double-charge → fixed with event-id dedupe, re-reviewed</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+20.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+20.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="440" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#8b949e">Using </tspan><tspan fill="#bc8cff" font-weight="600">godmode:completion-gate</tspan><tspan fill="#8b949e"> to prove it before claiming it</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+21.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+21.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="464" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#3fb950">✓ </tspan><tspan fill="#e6edf3">npm test · 84 passed, 0 failed · exit 0</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+22.00s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+22.00s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="488" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#3fb950">✓ </tspan><tspan fill="#e6edf3">npm run lint · 0 errors · npm run build · exit 0</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+23.20s" end="loop.end"/><animate attributeName="opacity" from="0" to="1" begin="loop.begin+23.20s" dur="0.25s" fill="freeze"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+<text x="24" y="512" font-family="ui-monospace, 'Cascadia Code', 'Cascadia Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" xml:space="preserve"><tspan fill="#e6edf3">Done: 7 tasks, 19 commits on feature/billing. Merge, open a PR, keep it, or discard?</tspan></text>
+</g>
+<g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+23.80s" end="loop.end"/><set attributeName="opacity" to="0" begin="loop.begin"/><rect x="24" y="523" width="8" height="17" fill="#e6edf3"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.5;1" dur="1.1s" repeatCount="indefinite"/></rect></g>
+</svg>

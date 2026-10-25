@@ -1,17 +1,20 @@
 {
   "name": "godmode",
-  "description": "AI development framework: reference-first design, agent orchestration, automated quality gates",
+  "description": "GodMode: engineering discipline for AI coding agents",
   "owner": {
-    "name": "David"
+    "name": "David Innes",
+    "url": "https://github.com/NoobyGains"
   },
   "plugins": [
     {
       "name": "godmode",
-      "description": "36 composable skills for disciplined AI development — intent discovery, spec-driven planning, parallel agent execution, automated quality gates, and reference-first design",
-      "version": "1.0.0",
+      "description": "Engineering discipline for AI coding agents: question the request, verify against current docs instead of memory, plan, build test-first on the cheapest capable model, review with a second model family, prove it before saying done",
+      "version": "2.0.0",
       "source": "./",
+      "category": "development",
       "author": {
-        "name": "David"
+        "name": "David Innes",
+        "url": "https://github.com/NoobyGains"
       }
     }
   ]
