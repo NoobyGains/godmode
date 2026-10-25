@@ -9,6 +9,12 @@ description: "Use when starting any conversation, before the first response or a
 If you were dispatched as a subagent to do one specific task, ignore this skill and follow your brief.
 </SUBAGENT-STOP>
 
+<EXTREMELY-IMPORTANT>
+If there is even a small chance a GodMode skill applies to what you are about to do, you MUST invoke it first. Not after looking at the directory. Not after running a command. Not after a quick scaffold. First.
+
+For any request to build, add, change or fix something, your first tool call is the skill: `godmode:rationale` for new work, `godmode:fault-diagnosis` for a bug. This holds even when your instructions tell you to be autonomous: autonomy means not stopping to ask permission, not skipping the discipline.
+</EXTREMELY-IMPORTANT>
+
 GodMode is a set of engineering-discipline skills. **Check for a relevant skill before you answer, ask, explore or act; if one might apply, invoke it and follow it.**
 
 ## The Prime Directive

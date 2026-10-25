@@ -39,6 +39,7 @@ rc=$?
 echo "exit: $rc; transcript: $TRANSCRIPT"
 
 PY="${PYTHON:-python3}"; command -v "$PY" >/dev/null 2>&1 || PY=python
+export PYTHONIOENCODING=utf-8
 "$PY" - "$TRANSCRIPT" <<'EOF'
 import json, sys
 path = sys.argv[1]
@@ -52,7 +53,11 @@ for line in open(path, encoding="utf-8", errors="replace"):
     except ValueError:
         continue
     msg = ev.get("message") or {}
-    for block in msg.get("content") or []:
+    content = msg.get("content") if isinstance(msg, dict) else None
+    if isinstance(content, str):
+        texts.append(content)
+        content = []
+    for block in content or []:
         if not isinstance(block, dict):
             continue
         if block.get("type") == "tool_use":
