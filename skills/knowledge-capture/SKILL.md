@@ -1,277 +1,124 @@
 ---
 name: knowledge-capture
-description: Use when completing any meaningful task - distill patterns, lessons, and insights from the interaction and persist them for future sessions
+description: "Use when a substantial task finishes, when the user corrects the agent or states a preference, when a non-obvious cause or project convention is discovered the hard way, or when the user asks the agent to remember or forget something"
 ---
 
 # Knowledge Capture
 
-## Overview
-
-Every substantial interaction yields signal. A debugging session exposes a hidden codebase convention. A user correction reveals a preference. A failed plan uncovers a blind spot. Recording these observations is not overhead -- it is compound interest on capability.
-
-**Core principle:** Solving a difficult problem without recording what you discovered means solving it from zero next time.
-
-**No exceptions. No workarounds. No shortcuts.**
+Each session starts cold. What you learned the hard way in this one (a hidden convention, a root-cause signature, a preference the user stated) is lost unless it is written where the next session will read it. **Save durable, non-obvious lessons into the harness's own memory or the project's docs, never into a store of your own invention, and keep that memory short, current and free of duplicates.**
 
 ## The Prime Directive
 
 ```
-EXTRACT INSIGHT FROM EVERY MEANINGFUL INTERACTION
+SAVE WHAT THE NEXT SESSION CANNOT REDISCOVER CHEAPLY, WHERE IT WILL BE READ
 ```
 
-An interaction that ends without reflection is a wasted investment. You possessed the context, found the answer, observed what succeeded -- then discarded all of it.
-
-**No excuses:**
-- Do not skip capture because the task felt "routine"
-- Do not skip capture because you are "about to switch contexts"
-- Do not skip capture because the lesson seems "self-evident"
-- What feels obvious with full context becomes invisible from a cold start
-
-Reflect. Distill. Persist. Full stop.
+No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
-**Mandatory after:**
-- Delivering a complex feature (which patterns proved effective?)
-- Resolving a stubborn defect (what was the root-cause signature?)
-- Receiving review feedback that surfaced issues (what should differ next time?)
-- Being corrected by the user (new preference discovered)
-- Revising a plan significantly (what was misjudged?)
-- Discovering a codebase convention through trial and error (spare the next session that journey)
+**Required:**
+- The user corrects your approach or states a preference ("always use pnpm", "no emoji in commits").
+- A bug's root cause was non-obvious and could recur.
+- You found a project convention or gotcha by trial and error.
+- A plan was badly misjudged and you now know why.
+- The user says "remember", "note that", "from now on", or "forget".
+- A substantial task finishes and something above happened during it.
 
-**Exceptions (confirm with the human):**
-- One-line trivial fixes
-- Interactions that produced no new information
-- When the user explicitly declines
+**Skip:**
+- Anything the repository already records: code structure, git history, the README, existing instruction files.
+- Facts that only matter to this conversation (the current task's progress, a temporary path).
+- Generic knowledge any capable engineer has.
+- Secrets, tokens, personal data. Never store these.
+- The user declines.
 
-Tempted to think "there is nothing to capture here"? Pause. That is rationalization.
+## Where Memory Lives
 
-## The Entry Protocol
+Use the harness's native mechanism. The exact paths and commands for each harness are in its reference file under `godmode:using-godmode` (for example [the Claude Code reference](../using-godmode/references/claude-code-tools.md)).
 
-```
-AFTER completing any meaningful task:
-
-1. REFLECT: What succeeded? What failed? What was unexpected?
-2. DISTILL: What generalizable pattern or insight emerges?
-3. DEDUPLICATE: Is this already recorded? Does it contradict something stored?
-4. PERSIST: Write it to the appropriate memory file with date and context
-5. PRUNE: Remove any prior entries that newer evidence invalidates
-
-Omit any step = insight permanently lost
-```
-
-## The Capture Lifecycle
-
-```dot
-digraph capture_lifecycle {
-    rankdir=TB;
-    node [shape=box style=filled];
-
-    task [label="Meaningful Task\nCompleted" fillcolor=lightyellow shape=doublecircle];
-
-    reflect [label="REFLECT\nWhat occurred?\nWhat surprised me?" fillcolor="#ccccff"];
-    distill [label="DISTILL\nAbstract the insight\nfrom the specifics" fillcolor="#ccccff"];
-    exists [label="Already\nrecorded?" shape=diamond fillcolor="#fff3e0"];
-    conflicts [label="Contradicts\nan existing entry?" shape=diamond fillcolor="#fff3e0"];
-    persist [label="PERSIST\nSave to memory\nwith date + context" fillcolor="#ccffcc"];
-    prune [label="PRUNE\nRemove outdated\nentry" fillcolor="#ffcccc"];
-    cluster [label="CLUSTER\n3+ related insights?\nForm a conviction" fillcolor="#ccffcc"];
-    promote [label="PROMOTE\nHigh-confidence conviction\n-> CLAUDE.md rule" fillcolor="#e8f5e9"];
-    skip [label="Skip\n(already known)" fillcolor="#eeeeee"];
-
-    task -> reflect;
-    reflect -> distill;
-    distill -> exists;
-    exists -> skip [label="yes, identical"];
-    exists -> conflicts [label="no"];
-    conflicts -> prune [label="yes"];
-    prune -> persist;
-    conflicts -> persist [label="no"];
-    persist -> cluster;
-    cluster -> promote [label="3+ confirmations"];
-    cluster -> task [label="await further\nevidence" style=dashed];
-}
-```
-
-## Categories of Insight
-
-### Effective Patterns
-
-Code approaches, debugging tactics, and architectural choices that led to clean results. These are positive signals to reinforce.
-
-```
-Sample entry:
-  Date: 2025-04-10
-  Context: Built retry logic for third-party webhook delivery
-  Insight: Exponential backoff with random jitter eliminated thundering-herd spikes
-  Confidence: medium (validated once)
-```
-
-### Failures and Their Remedies
-
-What went wrong, how it was resolved, how to prevent recurrence. Failures yield the highest-signal lessons.
-
-```
-Sample entry:
-  Date: 2025-04-12
-  Context: Logging middleware silently swallowed request bodies after refactor
-  Insight: Any change to middleware ordering demands a full integration test pass -- blast radius is total
-  Confidence: high (validated by production incident)
-```
-
-### User Preferences
-
-Stylistic choices, tool preferences, and conventions the user follows. Discovered through corrections and direct statements.
-
-```
-Sample entry:
-  Date: 2025-04-13
-  Context: User corrected my naming approach
-  Insight: User requires camelCase for variables, PascalCase for types, and no abbreviations anywhere
-  Confidence: high (direct correction)
-```
-
-### Project-Specific Knowledge
-
-Architecture details, hidden gotchas, critical files, tribal knowledge that lives nowhere in documentation.
-
-```
-Sample entry:
-  Date: 2025-04-14
-  Context: Spent 15 minutes searching for runtime config
-  Insight: All runtime configuration lives in src/config/runtime.ts, not in .env files
-  Confidence: high (verified in source)
-```
-
-## Storage Mechanism
-
-Leverage Claude Code's memory system: `~/.claude/projects/[project]/memory/`
-
-### Memory File Taxonomy
-
-| File | Purpose | Example Entry |
+| Kind of lesson | Destination | Who may write |
 |---|---|---|
-| `effective-patterns.md` | Code approaches and strategies that produced clean outcomes | "Zod schemas at API boundaries catch malformed data before it propagates" |
-| `failure-analysis.md` | Root-cause patterns and diagnostic techniques | "Tests passing locally but failing in CI usually indicate timezone or locale assumptions" |
-| `project-map.md` | Architecture, key files, and codebase conventions | "Database migrations reside in db/migrations/ and execute via `pnpm db:migrate`" |
-| `human-preferences.md` | Stylistic choices, tooling preferences, and conventions the user enforces | "User demands explicit error types; string-based errors are rejected" |
+| Agent's own learnings about this user or project (preferences, gotchas, past decisions) | the harness's auto memory, if it has one | you, freely |
+| Standing instructions for every agent on the project | the project instruction file (CLAUDE.md, AGENTS.md, GEMINI.md) or a rules file | propose; the user approves |
+| Knowledge a human contributor also needs | the project's docs (README, `docs/`, ADRs, comments at the code) | you, as part of the change |
+| Personal preferences across projects | the user-level instruction file | propose; the user approves |
 
-### Entry Structure
+When the harness has no auto memory, the instruction file or the project docs are the only destinations, so every save is a proposal to the user. Never create a parallel store (a private JSON file, a custom database, a memory folder the harness does not load). Memory nobody loads is not memory.
 
-Every captured insight must include:
+## The Protocol
+
+1. **Reflect.** At the end of a substantial task, or right after a correction, ask: what did I learn that I would want at the start of the next session? What surprised me? What did the user have to tell me?
+2. **Filter.** Keep a lesson only if it is durable (still true next month), non-obvious (not derivable from the code in a minute) and actionable (it changes what an agent does). Drop the rest.
+3. **Distil.** Write it as one fact in plain words, generalised from the specific case. Add why it holds and how to apply it. Convert relative dates ("yesterday", "next sprint") to absolute dates.
+4. **Deduplicate.** Read the destination first. If the fact is already there, update that entry rather than adding another. If a stored entry contradicts the new evidence, replace it and keep the newer fact.
+5. **Write** to the right destination from the table. One fact per entry; keep any index file to one line per entry.
+6. **Promote with consent.** When the same lesson has held three or more times, or the user stated it as a rule, propose moving it into the project instruction file. Quote the line you would add. Add it only on a yes.
+7. **Prune.** When you read memory at the start of work, remove or fix entries that are wrong, stale, or duplicated. Verify any file, function or flag a memory names before acting on it; memory reflects what was true when written.
+
+## Entry Format
+
+For auto memory or a notes file:
 
 ```markdown
-### [Concise title]
-- **Date:** YYYY-MM-DD
-- **Context:** What was happening when this was discovered
-- **Insight:** The generalized takeaway
-- **Confidence:** low / medium / high
-- **Confirmations:** Number of times this has been validated
+---
+name: prefers-pnpm
+description: User wants pnpm, never npm or yarn, in this repository
+---
+
+Use pnpm for every install and script in this repository.
+**Why:** the lockfile is pnpm-lock.yaml and CI fails on npm installs (corrected 2026-10-25).
+**How to apply:** run `pnpm install`, `pnpm test`; never add package-lock.json.
 ```
 
-### Deduplication Protocol
+For a proposed instruction-file line, one imperative sentence the user can accept or edit:
 
-Before writing a new entry, scan the target memory file. If the insight already exists:
-- Same insight, same confidence level -> skip entirely
-- Same insight, elevated confidence -> update confidence and increment confirmation count
-- Contradicting insight -> replace the old entry, note the contradiction
-
-## The Maturation Cycle
-
-Isolated insights become powerful when they converge into convictions.
-
-### From Insight to Conviction
-
-```
-Insight 1: "This project validates forms with zod" (medium confidence)
-Insight 2: "API route handlers also validate payloads with zod" (medium confidence)
-Insight 3: "User corrected me for using manual validation instead of zod" (high confidence)
-
-    Converge into conviction
-
-Conviction: "This project ALWAYS validates at every boundary using zod"
-Confidence: high (confirmed across 3 interactions)
+```text
+- Use pnpm for all installs and scripts; CI rejects npm lockfiles.
 ```
 
-### From Conviction to Rule
+## What Good Lessons Look Like
 
-When a conviction reaches high confidence (confirmed across 3+ interactions), it becomes eligible for promotion to a project `CLAUDE.md` rule:
-
-```
-Conviction: "This project always validates with zod"
-  -> Confirmed 3+ times
-  -> Propose to user: "I have observed that this project consistently
-    uses zod for validation. Should I codify this as a project rule in CLAUDE.md?"
-  -> User approves -> add to CLAUDE.md
-```
-
-**Never auto-promote.** Always obtain user consent before adding entries to `CLAUDE.md`. The human is the final authority on permanent rules.
-
-### Session-Start Review
-
-When beginning a new session on a project:
-1. Read all memory files for the project
-2. Identify clusters of related insights that have not been synthesized
-3. Flag entries that may be stale (old date, low confidence, never reconfirmed)
-4. Surface convictions ready for promotion
-
-## Confidence Tiers
-
-| Tier | Meaning | Origin | Action |
-|---|---|---|---|
-| **Low** | Tentative signal | Single occurrence, unconfirmed | Record, watch for confirmation |
-| **Medium** | Probable pattern | Confirmed twice, or one strong indicator | Record, apply when relevant |
-| **High** | Established truth | Confirmed 3+ times, or explicit user declaration | Record, apply consistently, consider promotion |
+| Weak | Strong |
+|---|---|
+| "Fixed the login bug" | "Session cookies here need `SameSite=None; Secure`; the app is embedded in an iframe on the partner site." |
+| "User likes clean code" | "User rejects string-typed errors; use the `AppError` subclasses in `src/errors.ts`." |
+| "Tests were flaky" | "Tests that pass locally and fail in CI here are timezone bugs; CI runs in UTC, dev machines do not." |
+| "Remember the config" | "Runtime config is read from `src/config/runtime.ts`, not from `.env`; `.env` only feeds the build." |
 
 ## Cognitive Traps
 
-| Rationalization | Truth |
+| Rationalisation | Truth |
 |---|---|
-| "There is nothing to capture here" | Every task produces signal. You are not examining closely enough. |
-| "I will recall this naturally" | You will not. The next session starts with a blank slate. Memory files are your continuity. |
-| "Too minor to bother recording" | Minor insights accumulate. Three small observations become one powerful conviction. |
-| "It is self-evident" | Self-evident to you now, with full context. Not self-evident when cold-starting next week. |
-| "Recording takes too long" | Thirty seconds to write an entry. Thirty minutes to rediscover the same insight. |
-| "The user did not request this" | They requested quality. Learning from experience IS how quality improves over time. |
-| "Memory files are getting cluttered" | That is a pruning problem, not a recording problem. Prune more; never stop capturing. |
-| "This only applies to this one project" | Project-specific knowledge is the MOST valuable kind. That is precisely why it is stored per-project. |
+| "I'll remember this" | The next session starts with nothing. Write it or lose it. |
+| "It's obvious" | It is obvious now, with full context. Cold, it is invisible. |
+| "More memory is better" | Memory loads into every session and costs context. Short and current beats complete. |
+| "I'll keep my own notes file" | A store the harness does not load is never read. Use the native one. |
+| "The user said it once; I'll add a rule" | Rules in instruction files are the user's. Propose; do not write unasked. |
+| "This old entry is probably still right" | Memory reflects the past. Verify before acting; fix or delete if wrong. |
+| "Save the whole debugging story" | Save the lesson. The story is in the git log. |
 
 ## Guardrails
 
-**Prohibited actions:**
-- Skipping reflection after a difficult debugging session
-- Storing entries without date and context (undated insights decay)
-- Auto-adding rules to CLAUDE.md without user approval
-- Recording the same insight twice without deduplication
-- Retaining entries that newer evidence contradicts
-- Recording implementation minutiae instead of generalizable patterns
+**Never:**
+- Store secrets, credentials, tokens or personal data.
+- Write to the user's instruction files without approval.
+- Invent a memory store the harness does not load.
+- Save what the repository already records.
+- Add a duplicate entry instead of updating the existing one.
+- Act on a remembered file, flag or function without checking it still exists.
 
-**Required actions:**
-- Reflect after completing any significant work
-- Check memory before persisting (deduplicate)
-- Attach confidence levels to every entry
-- Obtain user consent before promoting convictions to CLAUDE.md rules
-- Prune entries invalidated by newer evidence
-- Organize entries by topic, not chronologically
+**Always:**
+- Read the destination before writing to it.
+- Write one fact per entry, with why and how to apply it.
+- Use absolute dates.
+- Remove entries newer evidence contradicts.
+- Tell the user in one line what you saved and where.
 
-## Integration
+## Connections
 
-**This skill feeds INTO other skills:**
-
-- **godmode:fault-diagnosis** -- Historical failure analysis informs current troubleshooting
-- **godmode:pattern-matching** -- Captured conventions reinforce code conformity
-- **godmode:test-first** -- Past test failures shape future test strategy
-- **godmode:task-planning** -- Past plan failures prevent repeating misjudgments
-- **godmode:quality-enforcement** -- Captured quality patterns elevate the baseline
-
-**This skill is fed BY other skills:**
-
-- **godmode:review-response** -- Review feedback becomes captured insights
-- **godmode:completion-gate** -- Verification failures become recorded lessons
-- **godmode:comprehension-check** -- Walkthrough findings become stored observations
-- **godmode:task-runner** -- Plan execution reveals what works and what does not
-
-**The virtuous cycle:**
-```
-Work -> Capture -> Persist -> Apply -> Work better -> Capture more
-```
+- `godmode:using-godmode`: the harness reference files name each harness's memory paths and commands.
+- `godmode:fault-diagnosis`: a non-obvious root cause is a prime lesson to capture.
+- `godmode:review-response`: repeated review feedback becomes a lesson or a proposed rule.
+- `godmode:codebase-conventions`: conventions found here feed later conformity checks.
+- `godmode:completion-gate`: the end of a verified task is the natural moment to reflect.
+- `godmode:writing-skills`: a lesson that applies to every project may belong in a skill instead.

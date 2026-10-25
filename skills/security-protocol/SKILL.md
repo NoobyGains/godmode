@@ -1,259 +1,147 @@
 ---
 name: security-protocol
-description: Use when writing code that processes user input, manages authentication or authorization, constructs database queries, handles file operations, interacts with external data, exposes API endpoints, or manages secrets - any code that crosses a trust boundary
+description: "Use when writing or changing code that handles user input, uploaded files, authentication, sessions, authorisation, database queries, shell commands, file paths, outbound requests to user-supplied URLs, HTTP responses and headers, secrets or credentials, deserialisation, or new third-party dependencies."
 ---
 
 # Security Protocol
 
-## Overview
-
-Security is not a phase you bolt on. Every line of code is a security decision.
-
-**Core principle:** Never trust data from outside your trust boundary. Validate at every boundary crossing.
-
-**No exceptions. No workarounds. No shortcuts.**
+Every point where data enters your code from outside is a trust boundary: request bodies, headers, cookies, URLs, files, environment, message queues, third-party API responses, and model output. Data that crosses one is hostile until it has been validated for what it claims to be and encoded for where it is going. **Validate on the way in, encode on the way out, authorise every action, and keep secrets out of code.**
 
 ## The Prime Directive
 
 ```
-NO EXTERNAL DATA REACHES A SYSTEM CALL, QUERY, OR OUTPUT WITHOUT VALIDATION AND SANITIZATION
+NO EXTERNAL DATA REACHES A SYSTEM CALL, QUERY OR OUTPUT WITHOUT VALIDATION
 ```
 
-When data crosses a trust boundary, it must be validated before consumption. This is absolute.
+No exceptions. No workarounds. No shortcuts.
+
+"System call" includes shell commands, file-system paths, outbound HTTP requests, deserialisers and `eval`-like functions. "Query" includes SQL, NoSQL, LDAP, XPath and search engines. "Output" includes HTML, JSON sent to browsers, logs, headers and prompts sent to a model.
 
 ## When to Use
 
-**Mandatory when writing code that:**
-- Accepts user input (forms, URLs, headers, uploaded files)
-- Constructs database queries
-- Renders user-supplied content
-- Manages authentication or authorization
-- Handles secrets or credentials
-- Invokes external APIs
-- Manipulates file paths
-- Executes system commands
-- Sets HTTP response headers
-- Processes file uploads
+**Required:**
+- Code that reads any request data, uploaded file, webhook, queue message or third-party response.
+- Login, sign-up, password reset, sessions, tokens, API keys, roles or permissions.
+- Building a query, a shell command, a file path or an outbound URL from anything not hard-coded.
+- Rendering user-supplied content, setting response headers or configuring CORS.
+- Adding, upgrading or vendoring a dependency, a CI action or a build tool.
+- Error handling on any path that touches the above (failing open is a vulnerability).
 
-**This is not discretionary.** Security awareness is woven into development, not applied afterward.
+**Skip:**
+- Code with no external input and no privileged action, such as a pure function over trusted constants. If you are unsure whether data is external, it is.
 
-## The Entry Protocol
+## The Protocol
 
-```
-BEFORE shipping ANY code that handles external data:
+1. **Map the boundaries.** For the change in front of you, list every input source and every sink it reaches (database, shell, file system, network, browser, log). Write the list in the plan or PR description; it is the scope of the rest of this protocol.
 
-1. IDENTIFY: Where does data enter the system? (Trust boundary)
-2. VALIDATE: Is input validated at the boundary?
-3. SANITIZE: Is output encoded for its target context?
-4. AUTHORIZE: Is access control verified before the action?
-5. PROTECT: Are secrets, tokens, and keys managed safely?
+2. **Validate at the boundary, with an allowlist.** Parse input into a typed shape with a schema at the point it enters: type, length, format, range, and an explicit set of allowed values where one exists. Reject what does not fit; do not try to repair it. Validation runs on the server even when the client also validates. Work through the checklist below.
 
-Omit any step = vulnerability shipped
-```
+3. **Use the safe API for each sink.**
+   - Queries: parameterised statements or a query builder, never string concatenation.
+   - Shell: avoid the shell; call the program with an argument array. If a shell is unavoidable, allowlist every argument.
+   - Paths: resolve the final path and check it stays inside the intended directory; never pass user input straight to file APIs.
+   - Outbound requests to user-supplied URLs: allowlist schemes and hosts, resolve the address and block private, loopback and link-local ranges, and do not follow redirects blindly.
+   - HTML: an auto-escaping template engine or framework; sanitise with a maintained library when rich text is required.
+   - Deserialisation: data formats only (JSON with a schema), never native object deserialisers on untrusted input.
 
-## OWASP Top 10 Condensed Guide
+4. **Authorise every action on the server.** For each endpoint or command, check that this user may perform this action on this specific resource. Deny by default. Never trust a role, user ID or price sent by the client.
 
-### A01: Broken Access Control
+5. **Handle authentication and passwords with established libraries.** Never write your own crypto, session or token scheme. Hash passwords with the algorithm the current OWASP guidance recommends (Argon2id first; parameters in the reference file). Session cookies are `HttpOnly`, `Secure` and `SameSite`; sessions rotate on login and expire.
 
-**Every endpoint must verify: Can THIS user perform THIS action on THIS resource?**
+6. **Keep secrets out of code, logs and URLs.** See Secrets Management below.
 
-```
-# VULNERABLE: Checks authentication but not authorization
-GET /api/accounts/456/profile  # User 123 views user 456's private data
+7. **Fail closed.** Errors in validation, authorisation or an external call must deny the action, release resources and return a generic message. Stack traces, SQL errors and internal paths never reach the user; they go to the server log without secrets.
 
-# SECURE: Verify resource ownership
-if resource.owner_id != authenticated_user.id:
-    return 403 Forbidden
-```
+8. **Set the security headers** for any HTTP response (table below).
 
-| Verification | Method |
-|---|---|
-| Authentication | Is the user who they claim to be? |
-| Authorization | Is this user permitted to perform this action? |
-| Resource ownership | Does this user own this specific resource? |
-| Role enforcement | Server-side role check; never trust client-provided role claims |
+9. **Govern the supply chain.** Before adding a dependency or CI action, check maintenance, known vulnerabilities and install scripts; commit lockfiles; pin CI actions to commit SHAs; run the ecosystem's audit (`npm audit`, `pip-audit`, `cargo audit`, `govulncheck ./...`) and a secret scanner (for example `gitleaks git`) in CI.
 
-**Default posture: deny.** If no explicit rule grants access, access is denied.
+10. **Test the abuse cases.** Write failing tests first (`godmode:test-first`) for at least: another user's resource ID, an oversized and a malformed input, an injection payload for each sink, and an expired or missing token. Record the run as evidence.
 
-### A02: Cryptographic Failures
-
-| Required Practice | Prohibited Practice |
-|---|---|
-| bcrypt/scrypt/argon2 for password hashing | MD5, SHA1, SHA256 for passwords |
-| TLS everywhere (HTTPS) | HTTP for anything sensitive |
-| Cryptographically secure RNG for tokens | Math.random() for security tokens |
-| Encrypt sensitive data at rest | Store sensitive data in plaintext |
-| Use established cryptographic libraries | Implement custom cryptography |
-
-### A03: Injection
-
-**Never concatenate external input into queries, commands, or templates.**
-
-| Injection Vector | Prevention |
-|---|---|
-| SQL injection | Parameterized queries / prepared statements. Always. |
-| NoSQL injection | Type-check inputs; use ODM query builders |
-| Command injection | Avoid shell execution. If unavoidable: allowlist arguments, never interpolate |
-| LDAP injection | Escape special characters; use parameterized queries |
-| Template injection | Use auto-escaping template engines |
-
-```sql
--- VULNERABLE: String concatenation
-SELECT * FROM users WHERE email = '" + userInput + "'
-
--- SECURE: Parameterized query
-SELECT * FROM users WHERE email = $1
-```
-
-This is non-negotiable. There is no scenario where string concatenation in queries is acceptable.
-
-### A04: Insecure Design
-
-- Enforce rate limiting on authentication endpoints
-- Use CAPTCHA or proof-of-work for account creation
-- Validate business logic constraints server-side (never client-side only)
-- Design for abuse scenarios, not just intended usage
-
-### A05: Security Misconfiguration
-
-| Checkpoint | Action |
-|---|---|
-| Default credentials | Replace all defaults before deployment |
-| Debug features | Disable debug mode, admin consoles, and verbose errors in production |
-| Error verbosity | Never expose stack traces, SQL errors, or internal paths to users |
-| Directory listing | Disable on all web servers |
-| Security headers | Set them (see Security Headers section) |
-| CORS policy | Restrict to specific origins; never `*` for credentialed requests |
-
-### A06: Vulnerable Components
-
-```
-BEFORE adding any dependency:
-
-1. Is it actively maintained? (Last commit within 6 months)
-2. Are known vulnerabilities published? (npm audit, snyk, dependabot)
-3. Is it widely adopted? (Download counts and stars are signals, not guarantees)
-4. Is it actually necessary? (Do not add a dependency for a single utility function)
-```
-
-Execute `npm audit` / `pip audit` / `cargo audit` regularly. Remediate critical and high findings immediately.
-
-### A07: Authentication Failures
-
-| Requirement | Implementation |
-|---|---|
-| Password storage | bcrypt/scrypt/argon2 with unique salts |
-| Session tokens | Cryptographically random, httpOnly, secure, sameSite flags |
-| Brute-force protection | Lock account after 5-10 consecutive failures |
-| Multi-factor authentication | Support TOTP minimum for sensitive applications |
-| Password policy | Minimum 8 characters; cross-reference against breach databases |
-| Session lifecycle | Expire sessions; invalidate on password change |
-
-### A08: Data Integrity Failures
-
-- Verify integrity of software updates and CI/CD pipelines
-- Use signed artifacts and checksums
-- Never auto-deserialize untrusted data (no `eval()`, no `pickle.loads()` on user input)
-
-### A09: Logging and Monitoring Failures
-
-| Log | Never Log |
-|---|---|
-| Authentication attempts (success and failure) | Passwords or authentication tokens |
-| Authorization denials | Complete credit card numbers |
-| Input validation failures | Personally identifiable information without purpose |
-| System errors | Encryption keys or secrets |
-
-### A10: Server-Side Request Forgery (SSRF)
-
-- Validate and allowlist URLs before server-side requests
-- Never allow users to control URLs for server-side fetches
-- Block requests to internal networks (169.254.x.x, 10.x.x.x, 127.x.x.x, 192.168.x.x)
-
-## Security Headers
-
-Set these on every HTTP response:
-
-```
-Content-Security-Policy: default-src 'self'; script-src 'self'
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: camera=(), microphone=(), geolocation=()
-```
-
-Begin restrictive and relax only when a specific requirement demands it.
-
-## Secrets Management
-
-```
-NEVER:
-- Embed secrets in source code
-- Commit .env files to version control
-- Write secrets to log output
-- Transmit secrets in URL query parameters
-- Store secrets in client-side code
-
-ALWAYS:
-- Use environment variables or dedicated secret managers
-- Add .env to .gitignore BEFORE the first commit
-- Rotate secrets on a defined schedule
-- Use distinct secrets per environment
-- Audit secret access
-```
+11. **Check against the current OWASP Top 10** in [references/owasp-top-10.md](references/owasp-top-10.md) before you call security work done. The list is revised every few years; confirm the edition is still current (`godmode:grounding`).
 
 ## Input Validation Checklist
 
-For every input field:
+For every input field and parameter:
 
-- [ ] Type validated (string, number, email, URL)
-- [ ] Length constrained (minimum and maximum)
-- [ ] Format validated (regex for structured data)
-- [ ] Range checked (numbers, dates)
-- [ ] Allowlisted where possible (enum values, known options)
-- [ ] Sanitized for output context (HTML, SQL, shell)
-- [ ] File uploads: type verified by content inspection (not extension), size limited
+- [ ] Type is enforced by parsing, not by casting (a string that should be an integer is parsed and rejected if it fails).
+- [ ] Length has a minimum and a maximum, including for arrays and nested objects.
+- [ ] Format is checked with a strict pattern or a dedicated parser (emails, URLs, dates, UUIDs), anchored at both ends.
+- [ ] Numbers and dates have a range.
+- [ ] Enumerations are checked against an allowlist.
+- [ ] Unknown fields are rejected or stripped, so a client cannot set `isAdmin` by adding it (mass assignment).
+- [ ] Text is normalised (Unicode, case, whitespace) before comparison or uniqueness checks.
+- [ ] Files: size limit, type checked from content not from the extension or the client's content type, stored outside the web root under a generated name, never executed.
+- [ ] Output is encoded for its context (HTML body, attribute, URL, JavaScript, CSS, SQL, shell, log line).
+- [ ] Rate limits exist on authentication, password reset, and any expensive or enumerable endpoint.
+
+## Secrets Management
+
+**Never:**
+- Put a secret in source code, a committed config file, a container image, a client bundle or a URL query string.
+- Log a secret, token, password, session ID or full card number, including in error messages and debug output.
+- Reuse one secret across environments or services.
+
+**Always:**
+- Add `.env` and its variants to `.gitignore` before the first commit, and commit only `.env.example` with placeholders.
+- Load secrets from the environment or a secret manager at start-up, and fail fast if one is missing.
+- Give each environment and service its own credential with the least privilege it needs.
+- Rotate on a schedule, and immediately when a secret may have leaked.
+- Treat a committed secret as compromised: rotate it first, then remove it from history. Deleting the file in a later commit does not remove it.
+
+## Security Headers
+
+<!-- Values from the OWASP HTTP Headers Cheat Sheet, fetched 2026-10-25: https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html -->
+
+| Header | Starting value | Note |
+|---|---|---|
+| `Content-Security-Policy` | `default-src 'self'; frame-ancestors 'none'; object-src 'none'` | Build up from restrictive; avoid `unsafe-inline` for scripts. `frame-ancestors` replaces `X-Frame-Options` in supporting browsers. |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | HTTPS-only sites. Read the preload requirements before adding `preload`. |
+| `X-Content-Type-Options` | `nosniff` | Send correct `Content-Type` headers too. |
+| `X-Frame-Options` | `DENY` | For older browsers, alongside `frame-ancestors`. |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Set explicitly rather than relying on browser defaults. |
+| `Permissions-Policy` | `geolocation=(), camera=(), microphone=()` | Disable every feature the site does not use. |
+| `Cross-Origin-Opener-Policy` | `same-origin` | Isolates the browsing context. |
+| `X-XSS-Protection` | `0`, or omit | The old filter can create vulnerabilities; rely on CSP. |
+| `Server`, `X-Powered-By` | remove | They advertise the stack. |
+
+CORS: allow specific origins only; never reflect the request origin or use `*` together with credentials.
 
 ## Cognitive Traps
 
-| Rationalization | Truth |
+| Rationalisation | Truth |
 |---|---|
-| "Internal tool, no attacker" | Internal tools get compromised. Internal users make mistakes. Insider threats are real. |
-| "We will add security later" | Security is not a feature. Retrofitting it costs 10x more than building it in. |
-| "The framework handles it" | Frameworks have escape hatches. Know exactly what your framework does and does not protect. |
-| "Input validation is excessive" | Every injection attack in history started with unvalidated input. |
-| "It is just a prototype" | Prototypes become production systems. Secure from the beginning. |
-| "Too complicated, slows development" | Data breaches slow development permanently. |
-| "Nobody would do that" | Attackers do exactly that. Assume all input is hostile. |
+| "It's an internal tool." | Internal networks get breached and internal users make mistakes. The boundary is the code, not the firewall. |
+| "The framework handles it." | Frameworks have escape hatches (raw queries, unescaped output, disabled CSRF). Know which ones this code uses. |
+| "The front end validates it." | Anyone can call the API directly. Only server-side checks count. |
+| "Nobody would send that." | Attackers send exactly that, automatically, at scale. |
+| "We'll add security later." | Later means rewriting the data flow. It is cheapest while the code is being written. |
+| "It's only a prototype." | Prototypes ship. A secret committed today stays in history. |
+| "This dependency is popular, so it's safe." | Popular packages are the most attractive supply-chain targets. Check it and pin it. |
+| "An error here is harmless." | Failing open on an exception skips the check that would have denied the request. |
 
-## Guardrails -- HALT and Fix
+## Guardrails
 
-- String concatenation in SQL queries
-- `eval()` or `exec()` on user-provided data
-- Secrets in source code or committed configuration files
-- Missing authorization checks on endpoints
-- User input rendered without encoding
-- Wildcard `*` CORS policy with credentials
-- HTTP for anything involving authentication or sensitive data
-- Client-side-only validation without server-side counterpart
-- Disabled CSRF protection
-- Default credentials in deployed environments
+**Never:**
+- Concatenate external input into a query, command, path, URL, template or `eval`.
+- Ship an endpoint that checks authentication but not authorisation on the specific resource.
+- Implement your own cryptography, password hashing or token format.
+- Commit, log or put in a URL any secret.
+- Catch an exception in a security check and continue as if it passed.
+- Disable CSRF protection, certificate verification or output escaping to make something work.
 
-**Every item on this list is a security vulnerability. Remediate before shipping.**
+**Always:**
+- Map boundaries and sinks before writing the code.
+- Validate with an allowlist schema on the server, and encode for the output context.
+- Deny by default and fail closed.
+- Run the dependency audit and secret scan, and write the abuse-case tests.
+- Check the change against the current OWASP Top 10 reference.
 
-## Integration
+## Connections
 
-**Complementary skills:**
-- **godmode:system-design** -- Authentication strategy and data flow design
-- **godmode:quality-enforcement** -- Security checks as automated quality gates
-- **godmode:completion-gate** -- Security verification before shipping
-- **godmode:test-first** -- Write security-focused test cases
-
-## The Bottom Line
-
-```
-Trust boundary crossed -> validate input, sanitize output, verify authorization
-```
-
-No exceptions. No "we will add it later." Security ships with the code or the code does not ship.
+- `godmode:system-design`: authentication strategy, data flow and trust zones are design decisions; settle them there first.
+- `godmode:test-first`: abuse cases are written as failing tests before the fix or feature.
+- `godmode:quality-gates`: dependency audit, secret scanning and static analysis run as machine-enforced gates.
+- `godmode:grounding`: OWASP guidance, library APIs and header behaviour are verified against current sources.
+- `godmode:code-review`: reviewers check the boundary map and the sinks list.
+- `godmode:completion-gate`: security work is done only with the test and scan output in hand.

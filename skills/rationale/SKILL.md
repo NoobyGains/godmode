@@ -1,283 +1,167 @@
 ---
 name: rationale
-description: Use when a user requests new work - features, components, integrations, or additions - to challenge assumptions, evaluate effort, surface alternatives, and ensure the work is worth doing before committing to it
+description: "Use when the user asks for new work such as a feature, component, integration, service or dependency, especially when the request names a solution instead of a problem, the scope looks larger than the user may expect, or the motivation is that other products have it"
 ---
 
-# Rationale: The Senior Engineer's First Question
+# Rationale
 
-## Overview
-
-The difference between a junior developer and a senior engineer is one question: **"Should we actually build this?"** Junior developers accept every request at face value. Senior engineers interrogate the request itself before touching a keyboard. Most wasted engineering effort traces back to building the wrong thing, not building the thing wrong.
-
-**Core principle:** Challenge every request with the same rigor you would apply to a production code review. The cheapest feature is the one you never build.
-
-**No exceptions. No workarounds. No shortcuts.**
+The most expensive feature is the one nobody needed. Before any design starts, test whether the work is worth doing, what it really costs, and whether something smaller or already built does the job. **Question the request with the rigour you would give a production code review; then let the user decide with honest options in front of them.**
 
 ## The Prime Directive
 
 ```
-NO WORK WITHOUT QUESTIONING WHETHER THE WORK IS WORTH DOING
+NO NEW WORK WITHOUT ASKING WHETHER IT IS WORTH DOING
 ```
 
-If you have not evaluated the necessity, effort, and alternatives for a requested piece of work, you are operating as a yes-machine, not an engineer. Proceeding without rationale analysis is engineering malpractice.
+No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
-**Required for:**
-- Any feature request entering the pipeline ("build me X", "add Y")
-- New components, integrations, or modules
-- Scope that appears larger than the user may realize
-- Requests that involve significant architectural additions
-- "Nice to have" features without clear problem statements
-- Requests influenced by trends, hype, or "everyone else has this"
+**Required:**
+- "Build me X", "add Y", "integrate Z", "we need a W".
+- A new module, service, dependency or architectural layer.
+- A request that states a solution ("add a cache") rather than a problem ("the page is slow").
+- Scope that looks bigger than the user seems to expect.
+- Motivation from trend or comparison ("everyone has dark mode").
 
-**Skip for:**
-- Bug fixes (the problem is self-evident)
-- Tasks the user has deeply specified with clear rationale already provided
-- Security patches and vulnerability fixes
-- Direct user commands ("delete this file", "run this script")
-- Typo corrections, formatting, trivial config changes
-- Work that has already passed through this skill
+**Skip:**
+- Bug fixes and security patches: the need is self-evident; go to `godmode:fault-diagnosis` or `godmode:security-protocol`.
+- Direct commands with clear scope ("delete this file", "run the tests", "rename this variable").
+- Typos, formatting, a config value the user dictated.
+- Work the user already justified in detail, or that already passed this gate in this conversation.
 
-## Cognitive Traps
+## The Protocol
 
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "The user asked for it, so we should build it" | Users articulate desires, not validated needs. Desire is not justification. |
-| "It's too simple to question" | Simple requests hide massive scope. "Just add auth" is 3 days minimum. |
-| "Questioning the request wastes time" | Building the wrong thing wastes 100x more time than 5 minutes of analysis. |
-| "The user will think I'm being difficult" | Senior engineers earn trust by challenging assumptions, not by rubber-stamping. |
-| "We can always refactor later" | Technical debt compounds. "Later" means "never" or "at 10x the cost." |
-| "It's already been decided" | Decisions made without analysis are assumptions, not decisions. |
-| "Everyone else has this feature" | Cargo-culting is not engineering. Other products have different constraints. |
-| "It will only take a few minutes" | Estimation without analysis is guessing. "A few minutes" is the most dangerous phrase in engineering. |
+Scale the depth to the request. A button label gets one line per point; a new service gets the full treatment. Never spend longer on the analysis than the work would take.
 
-## The Five-Point Analysis
+### 1. Reality check
 
-You MUST complete all five points before recommending a path forward.
+- What problem does this solve, for whom, and how often?
+- What happens if nothing is built?
+- Did the user describe a problem or jump to a solution? Trace a stated solution back to the problem it serves; the best fix may be different.
+- Is the pain real and present, or hypothetical?
 
-### 1. Reality Check
+Evidence left behind: one sentence restating the problem in your own words.
 
-Establish whether the work is genuinely needed.
+### 2. Effort classification
 
-```
-Ask yourself:
-- What specific problem does this solve?
-- Who experiences this problem and how often?
-- What happens if we do nothing?
-- Is this a real pain point or a hypothetical one?
-- Has the user articulated the PROBLEM or jumped straight to a SOLUTION?
-```
+| Class | Typical size | Signs |
+|---|---|---|
+| Trivial | minutes | one file, no new dependency, no design impact |
+| Moderate | hours | several files, maybe one dependency, contained |
+| Substantial | days | new subsystem or pattern, new test infrastructure |
+| Massive | weeks | architecture change, new service, data migration |
 
-**Critical distinction:** Users often present solutions ("add a caching layer") when they should present problems ("the page loads slowly"). Always trace back to the underlying problem. The stated solution may not be the best one.
+Count the parts people forget: tests, documentation, review rounds, migration, and the maintenance that never ends. First estimates run low; say so when your confidence is weak.
 
-### 2. Effort Analysis
+Evidence left behind: the class and one line of justification.
 
-Classify the true cost honestly. Engineers chronically underestimate.
+### 3. Alternatives
 
-| Classification | Time | Characteristics |
-|---------------|------|-----------------|
-| **Trivial** | Minutes | Single file change, no new dependencies, no architectural impact |
-| **Moderate** | Hours | Multiple files, possibly new dependencies, contained scope |
-| **Substantial** | Days | New subsystem, new patterns, testing infrastructure needed |
-| **Massive** | Weeks | Architectural changes, new services, data migrations, cross-cutting |
+Look before proposing a build, cheapest first:
 
-```
-For EACH classification, consider:
-- Implementation time (the part engineers estimate)
-- Testing time (the part engineers forget)
-- Documentation time (the part engineers ignore)
-- Review and iteration time (the part engineers deny)
-- Maintenance burden going forward (the part nobody thinks about)
+1. Can an existing feature in this codebase be extended?
+2. Does a maintained library or package do it?
+3. Does a hosted service do it?
+4. Is there an open-source project covering most of it?
+5. Is there a small version that delivers most of the value?
 
-Multiply your initial estimate by 2.5. That is closer to reality.
-```
+For each candidate: what share of the need it covers, its cost, lock-in, licence and maintenance health. Invoke `godmode:reference-first` to run the search properly, and `godmode:grounding` for any claim about a library's current version, price or licence.
 
-### 3. Alternative Paths
+Evidence left behind: a short list of real candidates with coverage and trade-offs, or a note that the search found none.
 
-Before building, exhaust what already exists.
+### 4. Senior-engineer view
 
-```
-Search order:
-1. Does an existing library/package solve this? (npm, pip, crates, gems)
-2. Does an existing service handle this? (Stripe, Auth0, Twilio, SendGrid)
-3. Is there an open-source project that does 80% of what's needed?
-4. Can an existing feature in the codebase be extended instead?
-5. Is there a 10% effort path that delivers 80% of the value?
+- What would a staff engineer challenge in this?
+- Hidden costs: complexity added, test surface, onboarding cost, operational load.
+- What hurts in six months: scaling, security surface, dependency rot, migration if requirements move?
+- Is this treating a symptom of a deeper problem?
 
-For EACH alternative found:
-- What percentage of the requirement does it cover?
-- What are its trade-offs? (cost, vendor lock-in, maintenance)
-- How mature and maintained is it?
-```
+Evidence left behind: the two or three hidden costs that matter most.
 
-**Invoke godmode:reference-engine** during this phase to locate existing implementations.
-**Invoke godmode:github-search** to find open-source solutions before building from scratch.
+### 5. Decision point
 
-### 4. Senior Engineer Perspective
+Present the options and recommend exactly one:
 
-Apply the thinking a principal engineer would bring to an architecture review.
+- **A) Build as requested**: effort class, honest trade-off.
+- **B) Build a smaller version**: what it keeps, what it cuts, effort class.
+- **C) Use an existing alternative**: name, coverage, trade-off.
+- **D) Skip or defer**: why, and what to do instead.
 
-```
-Ask yourself:
-- What would a staff engineer challenge about this approach?
-- What are the hidden costs nobody is thinking about?
-  - Ongoing maintenance burden
-  - Cognitive complexity added to the codebase
-  - Testing surface area increase
-  - Documentation requirements
-  - Onboarding cost for future contributors
-- What will bite you in 6 months?
-  - Scaling implications
-  - Security surface area
-  - Dependency rot
-  - Migration pain if requirements change
-- Is this solving a symptom or the root cause?
-- Are we adding complexity that could be avoided entirely?
-```
-
-### 5. Decision Point
-
-Present the user with clear, honest options. Do not bury the lead.
-
-```
-ALWAYS present these options (adapt labels to the specific request):
-
-A) Build as requested
-   - Effort: [classification]
-   - Trade-offs: [honest assessment]
-
-B) Build a simplified version
-   - What it covers: [80% path description]
-   - What it skips: [the 20% that costs 80% of the effort]
-   - Effort: [classification]
-
-C) Use an existing alternative
-   - What: [library/service/pattern name]
-   - Coverage: [what percentage of the need it addresses]
-   - Trade-offs: [cost, vendor lock-in, limitations]
-
-D) Skip or defer
-   - Why: [honest rationale - not needed yet, premature, better timing later]
-   - What to do instead: [the nothing option, or a minimal placeholder]
-
-Recommend ONE option with clear reasoning.
-```
-
-## Workflow Diagram
+Always include A and D. Drop B or C only when no honest version of them exists, and say why. Then wait for the user's choice; option selection is never automatic, even when the user asked you to move fast.
 
 ```dot
 digraph rationale {
-    rankdir=TB;
-    node [shape=box style=filled];
-
-    request [label="User Request Received" fillcolor=lightyellow shape=doublecircle];
-    skip_check [label="Skip conditions met?\n(bug fix, trivial, pre-analyzed)" fillcolor=lightyellow shape=diamond];
-    pass_through [label="Pass to intent-discovery" fillcolor="#e8f5e9" shape=doublecircle];
-
-    reality [label="1. Reality Check\nIs this genuinely needed?" fillcolor="#e3f2fd"];
-    effort [label="2. Effort Analysis\nClassify true cost" fillcolor="#e3f2fd"];
-    alternatives [label="3. Alternative Paths\nSearch before building" fillcolor="#e3f2fd"];
-    senior [label="4. Senior Engineer Perspective\nHidden costs, 6-month view" fillcolor="#e3f2fd"];
-    decision [label="5. Decision Point\nPresent options A/B/C/D" fillcolor="#fff3e0"];
-
-    user_decides [label="User selects option" fillcolor=lightyellow shape=diamond];
-    proceed [label="Invoke intent-discovery\nwith validated rationale" fillcolor="#e8f5e9" shape=doublecircle];
-    defer [label="Work deferred or skipped\nDocument reasoning" fillcolor="#fce4ec"];
-
-    request -> skip_check;
-    skip_check -> pass_through [label="yes"];
-    skip_check -> reality [label="no"];
-    reality -> effort;
-    effort -> alternatives;
-    alternatives -> senior;
-    senior -> decision;
-    decision -> user_decides;
-    user_decides -> proceed [label="A or B"];
-    user_decides -> alternatives [label="C - research deeper"];
-    user_decides -> defer [label="D"];
+    "Request" -> "Skip condition?";
+    "Skip condition?" -> "Hand to next skill" [label="yes"];
+    "Skip condition?" -> "Five-point analysis" [label="no"];
+    "Five-point analysis" -> "Options A/B/C/D + one recommendation";
+    "Options A/B/C/D + one recommendation" -> "User chooses";
+    "User chooses" -> "godmode:intent-discovery" [label="A or B"];
+    "User chooses" -> "godmode:reference-first" [label="C"];
+    "User chooses" -> "Record decision, stop" [label="D"];
 }
 ```
 
-## Presenting the Analysis
+## Output Format
 
-**Format your output as:**
+```markdown
+## Rationale: <request in a few words>
 
-```
-## Rationale Analysis: [Request Summary]
+**Problem:** <one sentence>
+**Effort:** <class> - <why>
+**Alternatives found:** <name: coverage, trade-off> (or "none found after searching X, Y")
+**Hidden costs:** <two or three bullets>
 
-### Problem Statement
-[What problem does this actually solve? Restate in your own words.]
+**A) Build as requested** - <effort>, <trade-off>
+**B) Smaller version** - <effort>, <keeps / cuts>
+**C) Existing alternative** - <name>, <coverage>, <trade-off>
+**D) Skip or defer** - <why>
 
-### Effort Estimate
-[Classification] — [Brief justification for the classification]
-
-### Alternatives Considered
-- [Alternative 1]: [coverage %] — [trade-off summary]
-- [Alternative 2]: [coverage %] — [trade-off summary]
-
-### Hidden Costs
-- [Cost 1 nobody mentioned]
-- [Cost 2 nobody mentioned]
-
-### Options
-
-**A) Build as requested** — [effort], [one-line trade-off]
-**B) Simplified version** — [effort], [what you keep, what you cut]
-**C) Existing alternative** — [name], [coverage], [trade-off]
-**D) Skip/defer** — [why this might be the right call]
-
-### Recommendation
-[Your recommended option with clear reasoning]
+**Recommendation:** <letter> because <reason>.
 ```
 
-Keep the analysis proportional to the request. A simple feature gets a concise analysis. A major architectural addition gets thorough treatment. Do not write a dissertation for a button color change.
+For a trivial request, compress this to three lines: problem, effort, recommendation.
+
+## Handling Pushback and Urgency
+
+- The user disagrees: give your reasoning once, clearly. If they still want it, proceed with their choice and note their reason in the design document.
+- The work is urgent: say so, compress to problem, effort and one alternative, flag the risk urgency hides, and proceed.
+- You are an advisor, not a gatekeeper. The goal is a better decision, not a slower one.
+
+## Cognitive Traps
+
+| Rationalisation | Truth |
+|---|---|
+| "The user asked for it, so build it" | A request states a wish, not a validated need. Check the need. |
+| "It is too simple to question" | "Just add login" hides sessions, resets, lockout and audit. |
+| "Questioning wastes their time" | Five minutes of analysis is cheap next to building the wrong thing. |
+| "They will think I am difficult" | Honest options earn trust; rubber stamps do not. |
+| "We can refactor later" | Later costs more, and often never comes. |
+| "Everyone else has this" | Their constraints are not this project's constraints. |
+| "It will only take a few minutes" | An estimate without analysis is a guess. Classify it. |
+| "I know which library fits" | That is memory. Search and verify current state first. |
 
 ## Guardrails
 
 **Never:**
-- Skip rationale analysis because the user seems eager to start
-- Present only "build it" as the recommendation without considering alternatives
-- Underestimate effort to avoid disappointing the user (honesty builds trust)
-- Skip the alternatives search (invoke reference-engine and github-search)
-- Rubber-stamp a request because "the user knows best" (they hired an engineer, not a yes-machine)
-- Spend more time on rationale analysis than the work itself would take (be proportional)
-- Use this skill to block or frustrate the user (the goal is better decisions, not gatekeeping)
+- Recommend a build without first looking for something that already exists.
+- Shrink an estimate to please the user.
+- Offer only "build it", or hedge with "it depends" instead of recommending.
+- Pick an option for the user.
+- Use this gate to stall work the user has decided on.
+- Run a full analysis on a request that meets a skip condition.
 
 **Always:**
-- Complete all five analysis points before presenting options
-- Present at least options A and D (build it vs. skip it) -- the full spectrum
-- Be honest about effort classification, even when the answer is uncomfortable
-- Search for existing alternatives before recommending a build
-- Recommend one option clearly (do not hedge with "it depends on your priorities")
-- Accept the user's decision gracefully after presenting the analysis
-- Scale analysis depth to request size (trivial requests get brief analysis)
-
-## Edge Cases
-
-**When the user pushes back on the analysis:**
-- Present your reasoning once, clearly
-- If they still want to proceed, respect their decision
-- You are an advisor, not a gatekeeper
-- Document their rationale for the choice and move on
-
-**When the request is genuinely trivial:**
-- Perform a quick mental pass through the five points
-- If all five resolve in under 30 seconds, present a one-line rationale and proceed
-- Do not force a heavyweight analysis on a lightweight request
-
-**When urgency is real:**
-- Acknowledge the urgency
-- Compress the analysis to essentials (problem + effort + one alternative)
-- Flag risks that urgency may cause the user to overlook
-- Proceed with their decision
+- Restate the problem before judging the solution.
+- Present at least A and D, and recommend one option.
+- Keep the depth proportional to the request.
+- Accept the user's choice and carry their reason forward.
 
 ## Connections
 
-This skill fits into the GodMode workflow as the FIRST gate before creative work:
-
-- **godmode:intent-discovery** -- Rationale sits BEFORE this skill. Once work passes rationale analysis, intent-discovery takes over to design the solution.
-- **godmode:reference-engine** -- Invoked DURING alternative path analysis (Point 3) to locate existing implementations and patterns.
-- **godmode:github-search** -- Invoked DURING alternative path analysis to find open-source solutions before building from scratch.
-- **godmode:task-planning** -- Downstream. Only reached after rationale and intent-discovery both complete.
-- **godmode:fault-diagnosis** -- Separate concern. Bug fixes skip rationale and go directly to fault-diagnosis.
+- `godmode:intent-discovery`: next step after the user picks A or B.
+- `godmode:reference-first`: runs the alternatives search in point 3, and takes over when the user picks C.
+- `godmode:grounding`: verifies any claim about a library, service, price or licence.
+- `godmode:fault-diagnosis`: bugs skip this gate and go there.
+- `godmode:system-design`: when the analysis shows the real question is architectural.

@@ -80,6 +80,15 @@ No exceptions. No workarounds. No shortcuts.
 
 Aim questions at the places a same-family reviewer is least likely to look: assumptions the author made without stating them, error paths, concurrency, input from outside the trust boundary, and behaviour the requirements are silent on.
 
+## Keeping It Cheap
+
+The outside reviewer often runs on a separate subscription or quota that the user also needs for other work. Keep one review to one bounded cost:
+
+- One reviewer, one round, one report. No helpers, no follow-up chat.
+- Only the servers, plugins and tools the questions need; a read-only review needs no write access and rarely needs the web.
+- A medium effort setting on a capable mid-tier model; escalate the tier only when a medium review has demonstrably missed something, and only with the user's agreement.
+- Batch: when several small changes land together, write one brief covering the combined range instead of one review per commit.
+
 ## Cognitive Traps
 
 | Rationalisation | Truth |

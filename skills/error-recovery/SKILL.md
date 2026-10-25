@@ -1,174 +1,162 @@
 ---
 name: error-recovery
-description: Use when repeated fix attempts fail, the agent appears stuck in a loop, or complexity is increasing without progress
+description: "Use when a fix attempt has failed more than once for the same problem, when a fix for one problem causes another, when the same file keeps being edited without progress, when test results get worse, or when the work feels stuck in a loop."
 ---
 
 # Error Recovery
 
-## Overview
-
-AI agents get stuck. They try the same approach repeatedly, add complexity to fix complexity, and rationalize "one more attempt" long past the point of diminishing returns. This skill detects stuck patterns **proactively** and forces recovery before wasted effort compounds.
-
-**Core principle:** Track every failed attempt. Escalate at defined thresholds. Never allow unbounded retries.
+Agents get stuck in a recognisable way: the same approach, retried with small variations, each attempt adding code and confidence but not progress. This skill counts the attempts, escalates at fixed thresholds and forces either a genuinely different approach, a rollback, or an honest report to the user. **Retries are bounded; the counter decides when to stop, not your optimism.**
 
 ## The Prime Directive
 
 ```
-NO CONTINUED ATTEMPTS WITHOUT ACKNOWLEDGING FAILURE COUNT
+EVERY ATTEMPT IS COUNTED, AND AFTER THE THIRD FAILURE YOU STOP AND TELL THE USER
 ```
 
-Before EVERY fix attempt, state: "This is attempt N of the current issue." If N >= 3, you are not authorized to continue without user direction.
+No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
-This skill activates **automatically** when any of these patterns appear:
+**Required, as soon as any of these is true:**
+- The same error, or the same failing test, survives two fix attempts.
+- A fix for one problem produces a new problem.
+- The same file has been edited three or more times for one issue.
+- Each attempt makes the code longer or more complex and the problem is not smaller.
+- The test suite has more failures than when you started.
+- You are reverting a change and trying a variation of it.
+- You hear yourself think "let me try one more thing".
 
-- Same error message after 2+ attempted fixes
-- A fix for problem A introduces problem B
-- File edited 3+ times for the same issue without resolution
-- Increasing line count or complexity with each attempt
-- "Let me try one more thing" after 2+ failures
-- Test suite results getting worse, not better
-- Reverting a fix and trying a variation of the same approach
+This skill overrides whatever strategy is currently failing.
 
-**This skill overrides optimism.** When triggered, it takes priority over whatever strategy is currently failing.
+**Skip:**
+- The first failure of a fix. That is ordinary diagnosis; stay in `godmode:fault-diagnosis` and keep the counter.
 
-## Failure Counter
+## The Protocol
 
-You MUST maintain an internal failure counter for each distinct issue:
+1. **Open a failure log** for the issue the moment the first fix fails, and keep it in the task notes or the progress ledger so it survives a context reset:
 
-```
-FAILURE LOG
-Issue: [description]
-Attempt 1: [what you tried] -> [result]
-Attempt 2: [what you tried] -> [result]
-Attempt 3: [what you tried] -> [result]  <- STOP HERE
-```
+   ```
+   Issue: checkout total is off by one cent for some carts
+   Attempt 1: rounded each line item to 2 decimals -> 3 carts still wrong
+   Attempt 2: rounded the total instead of lines -> different 2 carts wrong
+   Attempt 3: ...
+   ```
 
-**Rules:**
-- Increment the counter for every attempted fix, including "small tweaks"
-- A variation of the same approach counts as a new attempt
-- Reverting and retrying counts as a new attempt
-- The counter resets ONLY when the issue is resolved or the user explicitly resets scope
+2. **Count every attempt.** A small tweak counts. A variation of the same idea counts. Reverting and retrying counts. A new error that appeared while fixing this one belongs to the same issue and the same counter. The counter resets only when the issue is verified fixed or the user redefines the problem.
 
-## Severity Levels
+3. **Before each attempt, say its number.** "This is attempt 3 for the checkout rounding issue." Saying it out loud is what keeps the counter honest.
 
-### Yellow -- 2 Failed Attempts
+4. **Escalate by the ladder below.** The level is set by the counter, not by how close the last attempt felt.
 
-- Log the concern explicitly: "Two attempts have failed for [issue]."
-- Identify what both attempts had in common
-- Your next attempt MUST use a **fundamentally different** approach
-- If you cannot identify a different approach, escalate to Orange immediately
+5. **On recovery, verify and close.** When an attempt works, prove it with `godmode:completion-gate` (the regression test, the full suite, the original reproduction), record the attempt that worked and why the others did not, and close the log.
 
-### Orange -- 3 Failed Attempts
-
-- **STOP all fix attempts.**
-- Step back completely. Re-read the original error from scratch
-- Re-analyze the problem as if seeing it for the first time
-- List what you know, what you assumed, and what you have not verified
-- Formulate a new hypothesis that contradicts your previous assumptions
-- Present the situation to the user: "Three attempts have failed. Here is my revised analysis."
-
-### Red -- 4+ Failed Attempts
-
-- **HALT. Do not continue without explicit user direction.**
-- Present an honest assessment:
-  - What you tried (all attempts, briefly)
-  - What you learned from each failure
-  - What you believe the actual problem might be
-  - What you recommend as next steps (including "I may not be able to solve this")
-- Wait for user input before proceeding
-- If the user says continue, reset to Yellow with the new direction
-
-## Escalation Flowchart
+## The Severity Ladder
 
 ```dot
-digraph recovery {
-  rankdir=TB
-  node [shape=box]
+digraph ladder {
+    rankdir=TB;
+    node [shape=box];
+    fail [label="Fix attempt fails\ncounter + 1"];
+    level [label="Counter?", shape=diamond];
+    yellow [label="YELLOW (2)\nname what both attempts shared;\nnext attempt must differ in kind"];
+    orange [label="ORANGE (3)\nstop fixing; re-diagnose from scratch;\nroll back if worse; tell the user"];
+    red [label="RED (4+)\nhalt; honest assessment;\nwait for the user"];
+    done [label="Verified fixed\nclose the log", shape=ellipse];
 
-  start [label="Fix attempt fails"]
-  count [label="Increment failure counter"]
-  check [label="How many failures?"]
-  yellow [label="YELLOW: Log concern\nTry fundamentally different approach"]
-  orange [label="ORANGE: STOP\nRe-analyze from scratch\nPresent revised analysis"]
-  red [label="RED: HALT\nPresent honest assessment\nWait for user direction"]
-  resolved [label="Issue resolved\nReset counter"]
-  user [label="User provides direction\nReset to Yellow"]
-
-  start -> count
-  count -> check
-  check -> yellow [label="2"]
-  check -> orange [label="3"]
-  check -> red [label="4+"]
-  yellow -> start [label="Next attempt fails"]
-  yellow -> resolved [label="Fix works"]
-  orange -> start [label="New hypothesis\nattempt fails"]
-  orange -> resolved [label="Fix works"]
-  red -> user [label="User responds"]
-  user -> start [label="New attempt"]
+    fail -> level;
+    level -> yellow [label="2"];
+    level -> orange [label="3"];
+    level -> red [label="4 or more"];
+    yellow -> fail [label="next attempt fails"];
+    yellow -> done [label="works"];
+    orange -> fail [label="new hypothesis fails"];
+    orange -> done [label="works"];
+    red -> yellow [label="user gives direction:\nnew counter"];
 }
 ```
 
-## Recovery Strategies
+### Yellow: two failed attempts
 
-When a fix fails, apply these in order:
+- Say it: "Two attempts have failed for this issue."
+- Write down what the two attempts had in common: the same file, the same layer, the same assumption, the same kind of change.
+- The next attempt must be **fundamentally different**, not a variation (see the table below). If you cannot name a different approach, go straight to orange.
 
-1. **Re-read the actual error message.** Not your interpretation of it -- the literal text. Errors frequently contain the answer.
+### Orange: three failed attempts
 
-2. **Try a fundamentally different approach.** Not a variation. If you were editing config, try code. If you were patching, try replacing. If you were adding, try removing.
+- **Stop making fixes.**
+- Re-read the original error and the original requirement from scratch, as if for the first time.
+- Write three lists: what you know (with evidence), what you assumed, what you have not verified. The bug is usually in the second or third list.
+- If the code is now worse than when you started (more failures, more complexity), roll back to the last known-good state before going further (see below).
+- Go back through phases 1 to 3 of `godmode:fault-diagnosis` with a hypothesis that contradicts at least one of your earlier assumptions.
+- Tell the user where you are: "Three attempts have failed. Here is what I tried, what I now think is going on, and what I will try next." At orange you may make one more attempt on the new hypothesis while the user reads; at red you may not.
 
-3. **Simplify ruthlessly.** Strip the problem to its smallest reproducible case. Remove everything non-essential. Test the simplest possible version.
+### Red: four or more failed attempts
 
-4. **Verify your assumptions.** Print values. Check types. Confirm the file you think you are editing is the one actually being executed. Confirm the function you think is being called is actually being called.
+- **Halt. No further attempts without the user's direction.**
+- Give an honest assessment, in this shape:
+  1. What the problem is, in one sentence.
+  2. Every attempt, one line each, and what each one taught you.
+  3. What you now believe the real cause is, and how sure you are.
+  4. Options, with your recommendation: a different design, more information from the user, a smaller scope, help from someone with access you lack, or stopping. "I may not be able to solve this in this environment" is an acceptable option when it is true.
+- Wait. When the user gives a direction, start a new counter for that direction.
 
-5. **Escalate with honesty.** Tell the user: "I have tried N approaches. None worked. Here is what I know and what I recommend."
+## Fundamentally Different, Not a Variation
 
-6. **Rollback to last known-good state.** If you have made things worse, undo all changes and return to where things last worked. Start fresh from there.
-
-## Anti-Patterns to Block
-
-These patterns indicate the agent is stuck and MUST trigger this skill:
-
-| Anti-Pattern | What to Do Instead |
+| If every attempt so far... | ...a different approach is |
 |---|---|
-| "Let me try one more thing" (after 3+ failures) | STOP. You said that last time. Escalate. |
-| Adding complexity to fix complexity | Simplify. Remove code. Reduce moving parts. |
-| Ignoring the error message, trying random changes | Read the error. It is telling you something specific. |
-| Blaming the environment ("must be a cache issue") | Verify the claim. Run a clean build. Check actually. |
-| Widening scope instead of narrowing it | Focus on the smallest failing case, not the whole system. |
-| Editing the same file repeatedly | Step back. The problem may not be in that file. |
-| "It should work" without verifying | Run it. Check output. Trust evidence, not expectations. |
-| Fixing the test instead of the code | The test is probably right. Fix what it is testing. |
+| Edited configuration | Read and change the code that consumes the configuration |
+| Patched the place the error appears | Trace the bad value to its source (`godmode:fault-diagnosis`) |
+| Added code (guards, special cases, retries) | Remove code: simplify until the bug has nowhere to hide |
+| Worked on the whole system | Build the smallest reproduction outside the system |
+| Trusted what you believe is running | Prove it: print the version, the path of the file actually loaded, the function actually called |
+| Followed one library's approach | Read that library's current documentation and issue tracker (`godmode:grounding`) or try the standard approach |
+| Assumed the test is right | Check the test's assumptions; or, if you assumed the test is wrong, assume it is right |
+
+## Rolling Back
+
+When attempts have made things worse, go back to the last state you know was good and start from there with what you learned.
+
+1. Find the last known-good commit (`git log`, the last green CI run, the last checkpoint in the progress ledger).
+2. Save the failed work where it cannot be lost and will not land: a branch named for the attempt, or a stash with a message. Look at what is uncommitted before you discard anything.
+3. Return to the good state on your working branch (`git switch` to it, or `git revert` the failed commits on a shared branch). Do not rewrite shared history or run destructive commands without the user's agreement.
+4. Confirm the good state really is good: run the reproduction and the suite.
+5. Apply the new approach from there, one step at a time.
 
 ## Cognitive Traps
 
-| Rationalization | Reality |
+| Rationalisation | Truth |
 |---|---|
-| "This is a different issue" | If it appeared while fixing the original, it is the same issue. Count it. |
-| "I almost had it last time" | Almost does not count. Two near-misses is a pattern, not progress. |
-| "The approach is right, just needs tweaking" | Three tweaks of the same approach is not three different attempts. |
-| "I need to understand the whole system first" | You need to understand the failing part. Scope down, not up. |
-| "Let me refactor first, then fix" | Refactoring while debugging creates two problems. Fix first. |
-| "This is an edge case" | If it blocks completion, it is a primary case. |
-| "One more log statement will reveal it" | If three log statements did not help, you are looking in the wrong place. |
+| "This is a different issue." | It appeared while you were fixing the first one. Same issue, same counter. |
+| "I almost had it last time." | Two near-misses are a pattern, not progress. |
+| "The approach is right; it just needs tweaking." | Three tweaks of one approach are one approach that has failed three times. |
+| "One more log line will show it." | If three did not, you are logging in the wrong place. Change where you look. |
+| "It must be a cache or an environment issue." | Prove it with a clean run before you act on it. |
+| "Telling the user I am stuck looks bad." | Burning the user's time and money in a silent loop looks worse, and is. |
+| "Let me refactor first and then fix it." | Refactoring while debugging turns one problem into two. |
+| "The test must be wrong." | Usually the test is telling you the truth. Check its assumptions before you change it. |
 
 ## Guardrails
 
-STOP and activate this skill if you observe:
+**Never:**
+- Make an attempt without stating its number.
+- Reset the counter by renaming the problem.
+- Continue past the third failure without telling the user, or past the fourth without the user's direction.
+- Suppress errors, skip tests or weaken assertions to make the failure go away.
+- Discard failed work, rewrite shared history or run destructive commands without looking first and without the user's agreement.
+- Report "almost working" as progress.
 
-- You have edited the same file 3+ times for one issue
-- Your fix introduced a new failure
-- You are writing more code to handle an error than the original feature
-- The test suite has more failures now than when you started
-- You are suppressing errors or warnings instead of fixing them
-- You are about to say "let me try" for the 3rd+ time
-- Your solution is more complex than the original problem
-- You have been working on the same error for more than 10 minutes of active attempts
+**Always:**
+- Keep the failure log where it survives a context reset.
+- Make the attempt after yellow different in kind, not in degree.
+- Roll back when the code has become worse than the starting point.
+- Give the user an honest, specific assessment at red, including "I do not know".
+- Verify the eventual fix with fresh evidence before closing the log.
 
 ## Connections
 
-- **godmode:fault-diagnosis** -- Error recovery activates when fault diagnosis is not converging. If Phase 4 has failed 3+ times, this skill takes over.
-- **godmode:completion-gate** -- After recovery, use completion-gate to verify the fix actually holds. Prevents false "done" claims after a recovery sequence.
-- **godmode:test-first** -- Recovery should include writing a test that reproduces the exact failure. A fix without a regression test is not complete.
-- **godmode:task-planning** -- If recovery reveals the task was scoped wrong, return to task planning to re-scope before continuing.
+- `godmode:fault-diagnosis`: the four phases you return to at orange; it hands over to this skill after three failed fixes.
+- `godmode:completion-gate`: proves the fix that finally worked.
+- `godmode:test-first`: the regression test that pins the fix.
+- `godmode:grounding`: current documentation and issue trackers when the stuck point is a library or platform.
+- `godmode:task-planning`: when recovery shows the task was scoped or designed wrong, re-plan before continuing.
+- `godmode:workspace-isolation`: keeping failed attempts on their own branch or worktree so rollback is cheap.

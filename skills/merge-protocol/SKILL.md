@@ -1,225 +1,173 @@
 ---
 name: merge-protocol
-description: Use when implementation is finished, tests are green, and you need to decide how to land the work - presents structured integration paths for local merge, pull request, deferral, or abandonment
+description: "Use when implementation on a branch is finished and reviewed and the work needs to land, be proposed as a pull request, be parked for later, or be thrown away."
 ---
 
 # Merge Protocol
 
-## Overview
+The last step of a run decides what happens to the branch: merge it locally, open a pull request, keep it as it is, or abandon it. Each path is easy to get slightly wrong (merging into the wrong base, deleting a worktree that held the only copy of a file, force-pushing over someone's commits), and most of those mistakes are expensive to undo.
 
-Coordinate the final step of development: moving finished work into the mainline or disposing of it cleanly.
+**Core principle: prove the suite is green on the exact tree you are about to land, let the user choose the path, execute it exactly, and tear down only what this run created.** Integration is the user's decision; your job is to make each option safe.
 
-**Core principle:** Validate first, present choices, execute the selected path, then tidy up.
+## The Prime Directive
 
-**Announce at start:** "I'm using the merge-protocol skill to finalize this work."
-
-## Prime Directive
-
-> **NO INTEGRATION WITHOUT PASSING TESTS**
+```
+NO LANDING ON A RED SUITE, NO ABANDONING WITHOUT THE TYPED WORD
+```
 
 No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
-- All planned implementation work is done and committed
-- The test suite runs green on the current branch
-- Review feedback (if solicited) has been resolved
-- You are ready to land, shelve, or abandon the branch
-- Following delegated-execution or task-runner completion
-- When a workspace-isolation branch needs teardown
+**Required:**
+- `godmode:delegated-execution` or `godmode:inline-execution` finished and the final review is clean.
+- `godmode:parallel-execution` or `godmode:team-orchestration` integrated their results.
+- The user says "merge it", "ship it", "open a PR", "drop this branch".
 
-## Cognitive Traps
+**Skip:**
+- Work is unfinished or the final review has open Critical or Important findings: go back to the executing skill.
+- A deploy or release: that is the project's own release process, after the merge.
 
-| Rationalization | Truth |
-|-----------------|-------|
-| "Tests were green an hour ago, no need to re-run" | Any commit since then invalidates stale results. Re-verify now. |
-| "Merging is mechanical — nothing breaks" | Conflicts and integration regressions are real. Test the merged state. |
-| "I'll remove the worktree tomorrow" | Orphaned worktrees pile up and create confusion. Remove them immediately. |
-| "Let me just merge — skip the menu" | Always present all four paths. The human picks the workflow. |
-| "Abandonment is obvious — no confirmation needed" | Destroying work permanently demands explicit typed confirmation. Always. |
+## The Protocol
 
-## The Workflow
+### 1. Validate the suite
 
-### Phase 1: Validate the Suite
+Run the project's full test command in the worktree, plus its other machine checks if it has them (lint, type check, build). Read the output.
+- **Red:** stop. Report the failures with their output. The menu comes after a green suite.
+- **Green:** record the command and counts.
 
-**Run the full test suite before anything else:**
+Also check `git status --porcelain`. Uncommitted changes are either committed now (they belong to the work) or reported to the user (they do not).
+
+### 2. Capture the environment
 
 ```bash
-# Execute the project's test runner
-npm test / cargo test / pytest / go test ./...
+git_dir=$(cd "$(git rev-parse --git-dir)" && pwd -P)
+git_common=$(cd "$(git rev-parse --git-common-dir)" && pwd -P)
+worktree_path=$(git rev-parse --show-toplevel)     # capture now; later steps change directory
+branch=$(git branch --show-current)
 ```
 
-**On failure:**
-```
-Suite failures detected (<N> failing). Resolution required before proceeding:
+| State | Paths offered | Teardown |
+|---|---|---|
+| Normal checkout (`git_dir` equals `git_common`) | all four | none needed |
+| Linked worktree on a named branch | all four | only if this run created it |
+| Linked worktree, detached HEAD | PR (push as a new branch), keep, abandon | the host manages it; leave it |
 
-[Display failing tests]
+### 3. Identify the trunk
 
-Integration cannot continue until the suite is green.
-```
+The trunk is the branch this work forked from: named in the plan, the ledger, the branch's upstream, or `git merge-base`. If it is not certain, ask one question: "This branch split from `<best guess>`, correct?" Merging into the wrong base is expensive to undo.
 
-Halt here. Do not advance to Phase 2.
+### 4. Present the paths
 
-**On success:** Proceed to Phase 2.
-
-### Phase 2: Identify the Trunk Branch
-
-```bash
-# Determine the ancestor branch
-git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
-```
-
-Or confirm: "This branch diverged from main — correct?"
-
-### Phase 3: Offer Integration Paths
-
-Present exactly these four choices:
+Present exactly this, with the real names filled in:
 
 ```
-Work is complete and verified. Select an integration path:
+The work on <branch> is complete. Suite: <command> -> <counts>.
 
 1. Merge into <trunk> locally
-2. Push and open a Pull Request
-3. Leave the branch untouched (I'll handle it myself)
-4. Abandon this work entirely
+2. Push <branch> and open a pull request against <trunk>
+3. Keep the branch as it is for later
+4. Abandon the work (deletes the branch and its commits)
 
 Which path?
 ```
 
-**Keep it terse** — no extra commentary.
+Wait for the answer. If the run made rulings or left deferred minors, list them above the menu so the user decides with them in view.
 
-### Phase 4: Execute the Selected Path
+### 5. Execute the chosen path
 
-#### Path 1: Local Merge
-
-```bash
-# Switch to trunk
-git checkout <trunk>
-
-# Sync with remote
-git pull
-
-# Integrate the feature branch
-git merge <feature-branch>
-
-# Validate the merged state
-<test command>
-
-# Remove the merged branch
-git branch -d <feature-branch>
-```
-
-Then: Proceed to Phase 5 (Worktree Teardown)
-
-#### Path 2: Pull Request
+**Path 1: Merge locally**
 
 ```bash
-# Push the branch upstream
-git push -u origin <feature-branch>
-
-# Open the PR
-gh pr create --title "<title>" --body "$(cat <<'EOF'
-## Summary
-<2-3 bullets describing the changes>
-
-## Verification Steps
-- [ ] <checklist items>
-EOF
-)"
+main_root=$(git -C "$git_common/.." rev-parse --show-toplevel)
+cd "$main_root"
+git switch "$trunk"
+git pull --ff-only            # if the trunk has a remote; stop if it cannot fast-forward
+git merge --no-ff "$branch"
+<full test command>
 ```
 
-Then: Proceed to Phase 5 (Worktree Teardown)
+If the merged result is red, stop. The merge is local and nothing is pushed: leave the branch and worktree in place, report, and investigate. If green: tear down (step 6), then `git branch -d "$branch"`. Do not push the trunk unless the user asked for that too.
 
-#### Path 3: Defer
+**Path 2: Pull request**
 
-Report: "Branch <name> preserved. Worktree remains at <path>."
-
-**Do not tear down the worktree.**
-
-#### Path 4: Abandon
-
-**Require explicit confirmation:**
-```
-Permanent deletion warning:
-- Branch <name>
-- All commits: <commit-list>
-- Worktree at <path>
-
-Type 'abandon' to proceed.
-```
-
-Wait for the exact word.
-
-After confirmation:
 ```bash
-git checkout <trunk>
-git branch -D <feature-branch>
+git push -u origin "$branch"
+# detached HEAD: git push origin HEAD:refs/heads/<new-branch>
 ```
 
-Then: Proceed to Phase 5 (Worktree Teardown)
+Open the pull request against the trunk with the forge's command-line tool if one is installed, or the creation link the push prints. Follow the repository's pull-request template. The body says what changed, how it was verified (commands and counts), the rulings made, and the deferred minors. Report the URL. Keep the worktree: review feedback gets fixed there.
 
-### Phase 5: Worktree Teardown
+**Path 3: Keep as it is**
 
-**Applies to Paths 1, 2, and 4:**
+Report: `Keeping <branch>. Worktree at <path>. Resume with the ledger at <ledger path>.` Change nothing.
 
-Detect if the current branch lives in a worktree:
-```bash
-git worktree list | grep $(git branch --show-current)
+**Path 4: Abandon**
+
+Show exactly what will be lost and require the typed word:
+
+```
+This permanently deletes:
+- branch <branch>
+- commits: <git log --oneline trunk..branch>
+- worktree at <path>, including uncommitted files: <list or "none">
+
+Type "abandon" to confirm.
 ```
 
-If so:
-```bash
-git worktree remove <worktree-path>
+Only the exact word authorises it. "Yes", "sure" or "get rid of it" do not; ask again. On confirmation: change to the main root, tear down (step 6), then `git branch -D "$branch"`. If the branch was pushed, ask separately before deleting the remote branch.
+
+### 6. Tear down
+
+Runs after path 1 and confirmed abandonment only.
+- Normal checkout: nothing to remove.
+- Worktree under `.worktrees/` or `worktrees/` that this run created: `git worktree remove "$worktree_path"`, then `git worktree prune`.
+- Harness-managed worktree: leave it to the harness; use its exit action if it has one.
+- **Removal refused** because of modified or untracked files: those files exist nowhere else. Never force it on your own. Show `git -C "$worktree_path" status --porcelain -uall` and offer: commit them to the branch, move them to the main checkout, or delete them. Act on the user's choice.
+
+Delete the run's plan workspace (`.godmode/runs/<plan-slug>/`) after the rulings have been reported.
+
+### 7. Report
+
+```
+Path: <1-4>  Branch: <name>  Trunk: <name>
+Suite: <command> -> <counts> (on the merged tree for path 1)
+Result: <merge commit | PR URL | kept at path | deleted>
+Teardown: <what was removed, what was left and why>
 ```
 
-**Path 3:** Worktree stays intact.
+## Cognitive Traps
 
-## Decision Matrix
-
-| Path | Merges | Pushes | Keeps Worktree | Removes Branch |
-|------|--------|--------|----------------|----------------|
-| 1. Local merge | Yes | No | No | Yes |
-| 2. Pull request | No | Yes | Yes | No |
-| 3. Defer | No | No | Yes | No |
-| 4. Abandon | No | No | No | Yes (force) |
-
-## Frequent Errors
-
-**Skipping validation**
-- **Consequence:** Broken code lands on trunk, failing PR created
-- **Correction:** Always verify the suite before presenting paths
-
-**Open-ended prompting**
-- **Consequence:** "What now?" leads to ambiguity and stalling
-- **Correction:** Present exactly four structured paths
-
-**Premature worktree removal**
-- **Consequence:** Destroys workspace needed for PR or deferred work
-- **Correction:** Only tear down worktrees for Paths 1 and 4
-
-**Silent abandonment**
-- **Consequence:** Work deleted without the human's awareness
-- **Correction:** Require typed "abandon" before any destructive action
+| Rationalisation | Truth |
+|---|---|
+| "Tests passed earlier in the session" | A green run proves only the tree it ran on. Run it on this one. |
+| "They obviously want it merged" | Integration is the user's call. Present the paths and wait. |
+| "The trunk is obviously main" | Confirm the fork point. Wrong-base merges are costly to unwind. |
+| "'Get rid of it' is confirmation enough" | Only the typed word authorises deletion. |
+| "Removal refused, force it to finish cleanup" | Refusal means files exist only there. Forcing destroys them. Ask. |
+| "Push rejected, force-push fixes it" | The remote moved. Investigate; force-push only when the user explicitly asks. |
+| "The PR is open, the worktree is clutter" | Review fixes happen in that worktree. Keep it until the work lands. |
 
 ## Guardrails
 
-**Prohibited:**
-- Proceeding when tests fail
-- Merging without validating the integrated result
-- Deleting branches without explicit confirmation
-- Force-pushing unless the human specifically asks
+**Never:**
+- Present the paths before a green suite on the current tree.
+- Merge into a trunk you have not confirmed.
+- Abandon without the exact typed word.
+- Force-push, force-delete or force-remove on your own initiative.
+- Remove a worktree this run did not create.
+- Push the trunk unless the user asked.
 
-**Mandatory:**
-- Run suite before presenting paths
-- Present exactly four options
-- Obtain typed confirmation for Path 4
-- Tear down worktree only for Paths 1 and 4
+**Always:**
+- Capture the worktree path before changing directory.
+- Run the suite again on the merged result for path 1.
+- Put verification evidence, rulings and deferred minors in the PR body.
+- Report exactly what was removed and what was left.
 
-## Integration
+## Connections
 
-**Invoked by:**
-- **godmode:delegated-execution** (final step) — After all delegated tasks finish
-- **godmode:task-runner** (final step) — After all execution batches complete
-
-**Complements:**
-- **godmode:workspace-isolation** — Tears down the worktree created by that skill
+- `godmode:delegated-execution`, `godmode:inline-execution`: hand off here after their final review.
+- `godmode:completion-gate`: the evidence rule behind "suite green".
+- `godmode:cross-model-review`: run before this skill when the user wants a second model family to review first.
+- `godmode:workspace-isolation`: created the worktree this skill tears down.
+- `godmode:review-response`: handling pull-request feedback after path 2.

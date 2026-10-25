@@ -1,314 +1,152 @@
 ---
 name: environment-awareness
-description: Use when starting a session, running shell commands, installing packages, or diagnosing platform-specific failures - detects OS, shell, runtime, package manager, and toolchain before any command execution
+description: "Use when about to run the first shell command in a session or a new project, when installing dependencies, when a command fails with not found or not recognised, when writing platform-specific code or paths, or when entering a container, virtual machine, remote host or CI runner."
 ---
 
 # Environment Awareness
 
-## Overview
-
-The most common AI agent failure mode: running Linux commands on Windows, using npm when the project uses pnpm, ignoring active virtual environments. Every wrong command wastes time and can cause real damage.
-
-**Core principle:** DETECT the environment before issuing ANY shell command. One probe now prevents ten failed commands later.
-
-**No exceptions. No workarounds. No shortcuts.**
+Most wasted commands in an agent session come from a wrong guess about where the command runs: Unix syntax in PowerShell, npm in a pnpm project, a global Python instead of the project's virtual environment. You find out where you are with a few cheap probes and then write every command for that place. **Probe once, then act on what you saw, not on what is typical.**
 
 ## The Prime Directive
 
 ```
-NO SHELL COMMANDS WITHOUT KNOWING THE TARGET ENVIRONMENT
+NO SHELL COMMAND UNTIL YOU KNOW THE OS, THE SHELL AND THE PACKAGE MANAGER
 ```
 
-If you have not confirmed OS, shell, and package manager, you are not authorized to run commands.
+No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
-**Mandatory at session start:**
-- First interaction in any new conversation
-- Switching to a different project or repository
-- After entering a container, VM, or remote machine
+**Required:**
+- The first command of a session, and the first command after switching project, repository, container, VM or remote host.
+- Before installing, upgrading or removing any dependency.
+- When a command fails with "command not found", "is not recognized", exit code 127, or a path that does not exist.
+- When writing code or scripts that touch paths, processes, line endings, permissions or the network.
+- When giving the user a command to paste: it must fit the user's terminal, which may differ from yours.
 
-**Also required when:**
-- A command fails with "not found" or "not recognized"
-- Installing dependencies or running build scripts
-- Writing platform-specific code (file paths, process management, networking)
-- Diagnosing "works on my machine" problems
+**Skip:**
+- You already probed this environment in this session and nothing has changed since (no new install, no new shell, no new directory tree).
+- Pure reading and editing of files with no command execution.
 
-**Do not skip when:**
-- You think you already know the environment (verify, do not assume)
-- The user mentions their OS casually (confirm shell and toolchain too)
-- Working in CI/CD (runners have different environments than local machines)
+## The Protocol
 
-## The Entry Protocol
+1. **Read what the harness already tells you.** Many harnesses state the platform, shell and working directory in the session context. Treat that as the first probe result, not as a guess, and note it. If it names two shells (for example a primary PowerShell and a POSIX shell for scripts), record which one each command will run in.
 
-```
-BEFORE running any shell command:
+2. **Confirm the OS and shell with one probe** in the shell you will actually use. Pick the probe for that shell from [references/platform-commands.md](references/platform-commands.md). The evidence is the probe output, for example `MINGW64_NT-10.0` from `uname -s` (Git Bash on Windows) or a `PSVersion` of 7.x.
 
-1. PLATFORM: Have you confirmed OS and architecture?
-2. SHELL: Do you know which shell is interpreting your commands?
-3. PACKAGE MANAGER: Have you checked for lockfiles?
-4. RUNTIMES: Do you know which language runtimes are available?
-5. VIRTUAL ENV: Are there active virtual environments or version managers?
+3. **Detect the package manager from the lockfile, never from habit.** List the project root and match lockfiles to managers with the table below. If two lockfiles disagree, stop and ask the user which one is authoritative; do not pick one.
 
-If any answer is NO: probe first, command second.
-```
+4. **Detect pinned runtimes and active environments.** Look for version pins (`.nvmrc`, `.node-version`, `.python-version`, `.tool-versions`, `rust-toolchain.toml`, the `engines` or `packageManager` field in `package.json`, `requires-python` in `pyproject.toml`) and for a present or active virtual environment (a `.venv/` directory, the `VIRTUAL_ENV` or `CONDA_DEFAULT_ENV` variables). Probe a runtime's version only when you are about to use it.
 
-## Detection Flowchart
+5. **Check for a container or remote context** only when the project hints at one (a `Dockerfile`, a `.devcontainer/`, CI configuration) or when behaviour is unexpected. Probes are in the reference file.
 
-```dot
-digraph env_detect {
-    rankdir=TB;
-    node [shape=box, style=filled, fillcolor="#e8e8e8"];
+6. **Write down the result in one line** and use it for every later command in the session:
 
-    start [label="Session Start", shape=oval, fillcolor="#ccffcc"];
-    os [label="1. Detect OS\nprocess.platform\nor uname", shape=diamond, fillcolor="#ffffcc"];
-    shell [label="2. Detect Shell\n$SHELL / $PSVersionTable\n/ COMSPEC", shape=diamond, fillcolor="#ffffcc"];
-    pkg [label="3. Detect Package Manager\nCheck lockfiles\nin project root", shape=diamond, fillcolor="#ffffcc"];
-    runtime [label="4. Detect Runtimes\nnode/python/go\n--version", shape=diamond, fillcolor="#ffffcc"];
-    venv [label="5. Check Virtual Envs\nVIRTUAL_ENV / CONDA\nnvm / rbenv", shape=diamond, fillcolor="#ffffcc"];
-    container [label="6. Container Check\n/.dockerenv\nor cgroup", shape=diamond, fillcolor="#ffffcc"];
-    ready [label="Environment Known\nProceed with\ncorrect commands", shape=oval, fillcolor="#ccffcc"];
-
-    start -> os -> shell -> pkg -> runtime -> venv -> container -> ready;
-}
-```
-
-## Detection Checklist
-
-Run this sequence once per session. Results inform every subsequent command.
-
-### 1. Operating System
-
-| Method | Works On | Command |
-|--------|----------|---------|
-| Environment variable | Claude Code / Node | Check `process.platform` in tool context |
-| uname | Linux, macOS, Git Bash | `uname -s` |
-| System info | Windows (any shell) | `systeminfo` or `ver` |
-
-**Key distinctions:**
-- `win32` = Windows (regardless of 32/64-bit)
-- `darwin` = macOS
-- `linux` = Linux or WSL (check further with `grep -i microsoft /proc/version` for WSL)
-
-### 2. Shell
-
-**NEVER assume bash.** Windows alone has CMD, PowerShell, Git Bash, and WSL.
-
-| Check | Command | Reveals |
-|-------|---------|---------|
-| Shell variable | `echo $SHELL` | Default shell (Unix) |
-| PowerShell test | `$PSVersionTable` | PowerShell version |
-| Process name | `echo $0` | Current shell (Unix) |
-| COMSPEC | `echo %COMSPEC%` | CMD path (Windows) |
-
-**Critical:** On Windows, the Claude Code / AI agent shell context is often Git Bash, but the user's terminal may be PowerShell. Commands you generate for the user to copy must match THEIR shell.
-
-### 3. Package Manager
-
-**Detection priority -- check lockfiles first:**
-
-| Lockfile | Package Manager |
-|----------|----------------|
-| `bun.lockb` or `bun.lock` | bun |
-| `pnpm-lock.yaml` | pnpm |
-| `yarn.lock` | yarn |
-| `package-lock.json` | npm |
-
-**If no lockfile found:**
-1. Check `packageManager` field in `package.json`
-2. Check for global install: `which pnpm || which yarn || which bun`
-3. Default to npm only as last resort
-
-**For non-JS projects:**
-| File | Manager |
-|------|---------|
-| `Pipfile.lock` | pipenv |
-| `poetry.lock` | poetry |
-| `uv.lock` | uv |
-| `requirements.txt` | pip |
-| `go.sum` | go modules |
-| `Cargo.lock` | cargo |
-| `Gemfile.lock` | bundler |
-
-### 4. Runtime Versions
-
-Probe on first use, not eagerly. Only check what the project actually needs.
-
-```
-node --version      # Node.js
-python3 --version   # Python (use python3, not python, on macOS/Linux)
-go version          # Go
-rustc --version     # Rust
-java --version      # Java
-ruby --version      # Ruby
-```
-
-### 5. Virtual Environments
-
-| Signal | Indicates |
-|--------|-----------|
-| `$VIRTUAL_ENV` is set | Python venv/virtualenv active |
-| `$CONDA_DEFAULT_ENV` is set | Conda environment active |
-| `.python-version` file | pyenv version pinned |
-| `.nvmrc` or `.node-version` file | Node version pinned |
-| `.ruby-version` file | rbenv/rvm version pinned |
-| `.tool-versions` file | asdf version manager |
-
-**When a version manager is detected:** Use its commands (`nvm use`, `pyenv shell`) instead of assuming the global runtime is correct.
-
-### 6. Container Detection
-
-| Check | Inside Container? |
-|-------|-------------------|
-| `/.dockerenv` exists | Docker |
-| `grep -q container /proc/1/cgroup 2>/dev/null` | Docker/Podman |
-| `$container` env var is set | Podman |
-| `printenv KUBERNETES_SERVICE_HOST` | Kubernetes pod |
-
-## System Inventory
-
-After confirming the platform and shell, discover what tools, databases, cloud CLIs, and services the user has installed. This inventory feeds directly into planning -- if the user has SQLite but not PostgreSQL, or Docker but not Podman, downstream skills like `deployment-advisor` and `task-planning` can make smarter recommendations instead of guessing.
-
-### When to Run
-
-- **Always:** Git, GitHub CLI (needed by many GodMode skills)
-- **If the project touches data:** Database CLIs
-- **If the project will be deployed:** Cloud and container tools
-- **If the project processes media or structured data:** ffmpeg, jq, curl
-- **Never run the full list blindly.** Match checks to project type. A static site does not need a MongoDB probe.
-
-### Inventory Checks
-
-Run each relevant check silently, redirecting stderr so missing tools do not produce noise:
-
-**Databases:**
-
-| Tool | Check | Notes |
-|------|-------|-------|
-| PostgreSQL | `psql --version 2>/dev/null` | Check for `pg_dump` too if backups matter |
-| MySQL / MariaDB | `mysql --version 2>/dev/null` | MariaDB identifies itself in the version string |
-| SQLite | `sqlite3 --version 2>/dev/null` | Often pre-installed on macOS and Linux |
-| MongoDB | `mongod --version 2>/dev/null` | Also check `mongosh` for the modern shell |
-| Redis | `redis-server --version 2>/dev/null` | Also check `redis-cli` |
-
-**Cloud & Hosting CLIs:**
-
-| Tool | Check |
-|------|-------|
-| AWS CLI | `aws --version 2>/dev/null` |
-| Google Cloud | `gcloud --version 2>/dev/null` |
-| Azure CLI | `az --version 2>/dev/null` |
-| Vercel | `vercel --version 2>/dev/null` |
-| Supabase | `supabase --version 2>/dev/null` |
-| Fly.io | `fly version 2>/dev/null` |
-| Netlify | `netlify --version 2>/dev/null` |
-| Railway | `railway --version 2>/dev/null` |
-
-**Container Tools:**
-
-| Tool | Check |
-|------|-------|
-| Docker | `docker --version 2>/dev/null` |
-| Docker Compose | `docker compose version 2>/dev/null` |
-| Podman | `podman --version 2>/dev/null` |
-
-**Developer Tools:**
-
-| Tool | Check |
-|------|-------|
-| Git | `git --version 2>/dev/null` |
-| GitHub CLI | `gh --version 2>/dev/null` |
-| curl | `curl --version 2>/dev/null` |
-| jq | `jq --version 2>/dev/null` |
-| ffmpeg | `ffmpeg -version 2>/dev/null` |
-
-### Reporting Format
-
-Report findings concisely. Do not dump raw version output -- extract the version number and summarize:
-
-```
-Available: PostgreSQL 16.2, Docker 27.1, gh 2.45, SQLite 3.43
-Not found: Redis, AWS CLI, Podman
-```
-
-### Principles
-
-1. **Silence errors and force exit code 0.** Always redirect stderr to `/dev/null` AND append `; true` at the end of chained version checks. Missing tools produce non-zero exit codes that surface as red errors in Claude Code. A missing tool is information, not a failure — the output must never show red.
-   ```bash
-   # WRONG: last missing tool causes exit 127 (red error in Claude Code)
-   psql --version 2>/dev/null; redis-server --version 2>/dev/null; mongod --version 2>/dev/null
-
-   # RIGHT: force clean exit regardless of which tools are missing
-   psql --version 2>/dev/null; redis-server --version 2>/dev/null; mongod --version 2>/dev/null; true
    ```
-2. **Scope to project.** Only check categories relevant to the codebase. Read the project's config files, Dockerfile, CI config, or deployment manifests to decide what matters.
-3. **Check once, reference often.** Store results in your working context. Do not re-probe mid-session unless the user installs something new.
-4. **Feed downstream skills.** The inventory directly informs `deployment-advisor` (what can we deploy to?), `task-planning` (what constraints exist?), and `project-bootstrap` (what do we need to install?).
+   Env: Windows 11, Git Bash (MINGW64) for commands, user terminal PowerShell 7, pnpm (pnpm-lock.yaml), Node 24 (.nvmrc), Python via .venv
+   ```
 
-## Platform-Specific Command Mappings
+7. **Re-probe on change.** A new install, a new shell, moving into a different repository, or an unexplained failure invalidates the line. Probe again rather than patching commands by trial and error.
 
-Use the correct command for the detected environment:
+## Lockfiles and Managers
 
-| Operation | Linux/macOS | Windows CMD | Windows PowerShell | Git Bash on Windows |
-|-----------|-------------|-------------|-------------------|-------------------|
-| List files | `ls -la` | `dir` | `Get-ChildItem` | `ls -la` |
-| Find process | `ps aux \| grep` | `tasklist` | `Get-Process` | `ps aux \| grep` |
-| Set env var | `export VAR=val` | `set VAR=val` | `$env:VAR = "val"` | `export VAR=val` |
-| Null device | `/dev/null` | `NUL` | `$null` | `/dev/null` |
-| Path separator | `:` | `;` | `;` | `:` |
-| Delete file | `rm file` | `del file` | `Remove-Item file` | `rm file` |
-| Find files | `find . -name` | `dir /s /b` | `Get-ChildItem -Recurse` | `find . -name` |
-| Check port | `lsof -i :PORT` | `netstat -an` | `Get-NetTCPConnection` | `netstat -an` |
+<!-- Verified 2026-10-25: bun.lock is the text default since Bun 1.2 (https://bun.sh/docs/install/lockfile); uv.lock and .venv (https://docs.astral.sh/uv/guides/projects/). -->
 
-## When to Probe vs Assume
+| File in project root | Use | Never |
+|---|---|---|
+| `bun.lock` (or legacy `bun.lockb`) | `bun` | npm, which ignores the lockfile and writes its own |
+| `pnpm-lock.yaml` | `pnpm` | npm or yarn |
+| `yarn.lock` | `yarn` | npm |
+| `package-lock.json` | `npm` | another manager |
+| `uv.lock` | `uv` (`uv sync`, `uv run`) | bare `pip install` into the venv |
+| `poetry.lock` | `poetry` | pip |
+| `Pipfile.lock` | `pipenv` | pip |
+| `requirements*.txt` only | `pip` inside the project venv | the system interpreter |
+| `go.sum` | `go` modules | |
+| `Cargo.lock` | `cargo` | |
+| `Gemfile.lock` | `bundle` | `gem install` for project dependencies |
+| `composer.lock` | `composer` | |
 
-| Category | Action | Reason |
-|----------|--------|--------|
-| OS | ALWAYS probe | Affects every command's syntax |
-| Shell | ALWAYS probe | Determines quoting, piping, redirection |
-| Package manager | ALWAYS probe | Wrong manager corrupts lockfile |
-| Runtime versions | Probe on first use | Only matters when running that runtime |
-| Virtual environments | Probe when relevant | Wrong env installs to wrong location |
-| Container | Probe when behavior is unexpected | Containers lack many host tools |
+No lockfile: read the `packageManager` field of `package.json`, then the README and CI configuration, then ask. Default to npm only for a brand-new project where the user has stated no preference.
+
+<!-- Corepack is not distributed with Node.js from v25 (https://nodejs.org/dist/latest/docs/api/corepack.html). -->
+The `packageManager` field pins a manager version through Corepack. Corepack is no longer bundled with Node.js 25 and later, so on those versions run `corepack --version` before relying on it; the user may need to install it or the manager directly.
+
+## Windows Specifics
+
+Windows is where guessing fails most often. Check these five facts every time.
+
+1. **Three shells, three syntaxes.** cmd, PowerShell (Windows PowerShell 5.1 and PowerShell 7) and Git Bash (an MSYS2 bash) can all exist on one machine. Quoting, variables, redirection and chaining differ; the mapping table in the reference file shows how. PowerShell gained `&&` and `||` only in version 7, so a chained command that works in `pwsh` fails in Windows PowerShell 5.1.
+   <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_pipeline_chain_operators -->
+
+2. **The `bash` on PATH may be the WSL launcher.** Windows can carry a `bash.exe` that starts WSL (in `C:\Windows\System32` or under `WindowsApps`), and it can resolve before Git Bash. Calling it enters a different Linux environment without the user's tools, keys or files, or fails silently. Check which binary resolves with `where.exe bash`; call Git Bash by its full path (normally `C:\Program Files\Git\bin\bash.exe`); never start WSL unless the user asked for it.
+   <!-- https://claudeissues.com/issue/23556-bug-windows-hook-sh-auto-detection-resolves-to-wsl-bash-exe-instead-of-git-bash ; https://github.com/gitpython-developers/GitPython/pull/2201 -->
+
+3. **Paths have three forms.** `C:\Users\me` (Windows), `C:/Users/me` (mixed, accepted by most Windows programs and by Node, Python and Git) and `/c/Users/me` (Git Bash). Convert inside Git Bash with `cygpath -w`, `cygpath -m` or `cygpath -u`. Quote every path, because `Program Files` contains a space. In files you write for others, use forward slashes or the language's path API instead of hand-built backslashes.
+   <!-- https://www.msys2.org/docs/filesystem-paths/ -->
+
+4. **Git Bash rewrites arguments that start with `/`.** Passing `/opt/x`, or a flag such as `-L/regex/`, to a native Windows program turns it into a Windows path. Prefix the command with `MSYS_NO_PATHCONV=1`, or double the leading slash, when you need the literal text.
+   <!-- https://github.com/git-for-windows/build-extra/blob/main/ReleaseNotes.md (Known issues) -->
+
+5. **`python` and `python3` may be Store aliases.** On Windows these names can be app execution aliases that open the Microsoft Store instead of running Python. Use the `py` launcher or the project venv's `Scripts\python.exe`, and confirm with `--version` that a real interpreter answers.
+   <!-- https://docs.python.org/3/using/windows.html -->
+
+Also: virtual environments keep executables in `Scripts\` on Windows and `bin/` elsewhere; PowerShell may refuse to run `Activate.ps1` until the user allows local scripts; and activation is rarely needed, because calling the venv's interpreter by path is enough. `VIRTUAL_ENV` is set only by activation, so its absence does not prove there is no venv.
+<!-- https://docs.python.org/3/library/venv.html -->
+
+## When to Probe and When to Assume
+
+| Fact | Action | Why |
+|---|---|---|
+| OS | Probe once per environment | Changes every command's syntax |
+| Shell | Probe once per shell you use | Quoting, chaining and redirection differ |
+| Package manager | Read the lockfile in every new project | The wrong manager rewrites or corrupts the lockfile |
+| Runtime version | Probe on first use | Only matters when that runtime runs |
+| Virtual environment | Check before any install or run | Installs land in the wrong interpreter otherwise |
+| Container or remote | Probe when hinted or when behaviour is odd | Containers lack host tools and paths |
+| Installed tools (databases, cloud CLIs, container tools) | Probe only the tools the task needs | A static site needs no database probe |
+
+Inventory probes print versions and must not turn missing tools into red failures: send errors to the null device and end the chain with a command that succeeds (examples in the reference file). A missing tool is information, not an error. Report the inventory compactly:
+
+```
+Available: PostgreSQL 17, Docker 28, gh 2.80
+Not found: Redis, AWS CLI
+```
 
 ## Cognitive Traps
 
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "It's probably Linux" | 30% of developers use Windows. macOS is another 25%. Probe first. |
-| "bash is universal" | Windows CMD and PowerShell have fundamentally different syntax. Git Bash exists but is not guaranteed. |
-| "npm is the default" | Using npm in a pnpm project corrupts the lockfile and breaks CI. |
-| "I'll fix it if the command fails" | A failed `rm -rf` with wrong path syntax can still delete data. Failed installs leave broken state. |
-| "The user said Windows, so PowerShell" | Could be CMD, Git Bash, WSL, or Cygwin. Confirm the shell, not just the OS. |
-| "CI and local are the same" | CI runners use different OS, different shell, different tool versions. Probe there too. |
+| Rationalisation | Truth |
+|---|---|
+| "It's probably Linux." | You have no evidence. The session context or one `uname -s` settles it in a second. |
+| "The user said Windows, so PowerShell." | Windows has cmd, two PowerShells, Git Bash and WSL. Confirm the shell, not just the OS. |
+| "npm is the default." | npm in a pnpm, yarn or bun project writes a second lockfile and breaks CI installs. |
+| "I'll fix it if the command fails." | A destructive command with the wrong path syntax can succeed on the wrong target. Failed installs leave half-written state. |
+| "`bash` is bash." | On Windows a bare `bash` can start WSL, in effect a different machine. Check which binary resolves. |
+| "The venv is probably active." | Activation is optional and invisible to a fresh shell. Call the venv's interpreter by path, or check first. |
+| "CI runs the same as my machine." | Runners differ in OS, shell, tool versions and file-system case sensitivity. Read the CI configuration. |
+| "I probed an hour ago." | A new install, shell or directory makes the old result stale. Re-probe after any change. |
 
-## Guardrails -- HALT and Detect
+## Guardrails
 
-Stop and run detection if you catch yourself:
+**Never:**
+- Run an install command before reading the project's lockfiles.
+- Call a bare `bash` on Windows, or start WSL, without the user asking for it.
+- Hand the user a command written for your shell when their terminal is a different one.
+- Install into the system interpreter when the project has a virtual environment.
+- Build Windows paths by string concatenation in code; use the language's path API.
+- Assume GNU flags for `sed`, `grep` or `date` on macOS; check, or use portable forms.
 
-- Running `ls` without knowing if the shell supports it
-- Using `/dev/null` without confirming Unix-like shell
-- Running `npm install` without checking for other lockfiles
-- Using `python` instead of `python3` without version checking
-- Assuming `~` expands correctly (it does not in CMD)
-- Writing path strings with `/` without confirming OS
-- Using `grep` flags without confirming GNU vs BSD
-- Piping commands without knowing if the shell supports `|`
+**Always:**
+- Record the one-line environment summary and reuse it.
+- Quote paths, and use forward slashes in files meant for several platforms.
+- Use the manager the lockfile names and the runtime version the pin names.
+- Re-probe after an unexplained "not found" before changing the command again.
+- Check exact command forms in [references/platform-commands.md](references/platform-commands.md) when crossing shells.
 
-**Every item on this list means: halt command execution. Probe first.**
+## Connections
 
-## Integration
-
-**Complementary skills:**
-- **godmode:project-bootstrap** -- Environment detection runs during project setup
-- **godmode:fault-diagnosis** -- Environment mismatch is a common root cause of mysterious failures
-- **godmode:workspace-isolation** -- Worktree and container setup needs correct platform commands
-- **godmode:deployment-advisor** -- System inventory results feed directly into deployment recommendations and platform selection
-
-## The Bottom Line
-
-```
-One detection probe now > ten failed commands later
-```
-
-Know the OS. Know the shell. Know the package manager. Before the first command. Every single session.
+- `godmode:project-bootstrap`: a new project needs this probe first, so the scaffold uses tools that exist here.
+- `godmode:fault-diagnosis`: an environment mismatch is a common root cause; hand off when the probe does not explain a failure.
+- `godmode:workspace-isolation`: worktrees and containers are new environments; probe inside them.
+- `godmode:system-design`: the inventory of installed databases, container tools and cloud CLIs feeds hosting decisions.
+- `godmode:grounding`: tool flags and versions that the probe does not show are verified against current documentation, not memory.

@@ -1,296 +1,134 @@
 ---
 name: fault-diagnosis
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+description: "Use when a test fails, a build breaks, a bug is reported, behaviour is unexpected, performance degrades or an integration stops working, before proposing or making any fix."
 ---
 
 # Fault Diagnosis
 
-## Overview
-
-Guessing at fixes wastes time and introduces new defects. Quick patches mask underlying problems.
-
-**Core principle:** ALWAYS identify root cause before attempting any fix. Treating symptoms is failure.
-
-**No exceptions. No workarounds. No shortcuts.**
+A fix that is not aimed at the root cause is a guess, and guesses pile up: each one adds a change, hides a symptom and makes the next failure harder to read. Diagnosis runs in four phases (reproduce, isolate, find the root cause, fix with a regression test) and each phase leaves evidence behind. **No fix until you can say what is broken, where, and why.**
 
 ## The Prime Directive
 
 ```
-NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
+NO FIX WITHOUT A REPRODUCED FAILURE AND A ROOT CAUSE YOU CAN STATE
 ```
 
-If you have not completed Phase 1, you are not authorized to propose fixes.
+No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
-Apply to ANY technical issue:
-- Test failures
-- Production bugs
-- Unexpected behavior
-- Performance degradation
-- Build failures
-- Integration breakdowns
+**Required:**
+- Any failing test, broken build, crash, error message or wrong output.
+- A bug report from the user or from production.
+- Flaky behaviour: passes sometimes, fails sometimes.
+- Performance that got worse, and integrations that stopped working.
+- Especially when the fix "looks obvious", when time is short, and when a previous fix did not work.
 
-**Especially important when:**
-- Under time pressure (urgency makes guessing tempting)
-- "Just one quick fix" seems obvious
-- You have already attempted multiple fixes
-- A previous fix did not resolve the issue
-- You do not fully understand the problem
+**Skip:**
+- Nothing. For a simple bug the four phases take minutes; the process is fast exactly when the problem is simple.
 
-**Do not skip when:**
-- The issue appears simple (simple bugs have root causes too)
-- You are in a hurry (systematic investigation is faster than flailing)
-- Someone wants it resolved NOW (methodical work is faster than thrashing)
+## The Protocol
 
-## The Four Phases
+### Phase 1: Reproduce
 
-You MUST complete each phase before advancing to the next.
+1. **Read the whole error.** The full message, the full stack trace, the exit code, the lines just before the failure. Note file paths, line numbers and error codes. Errors often state the answer outright.
+2. **Reproduce it on demand.** Find the exact steps, inputs and environment that trigger it, and write them down. Run them and see the failure yourself. If you cannot reproduce it, you are not ready to fix it: gather more data (logs, inputs, versions, timing) instead of guessing.
+3. **Make the reproduction small and fast.** Strip away everything that does not affect the failure until you have the shortest command or test that shows it. Ideally it is already a failing automated test.
+4. **Check what changed.** `git log` and `git diff` since the last known-good state, dependency and lockfile changes, configuration, environment, data. If a known-good commit exists, `git bisect run <reproduction command>` finds the first bad commit mechanically.
 
-### Phase 1: Root Cause Investigation
+Evidence: the reproduction steps and the failing output.
 
-**BEFORE attempting ANY fix:**
+### Phase 2: Isolate
 
-1. **Read Error Messages Thoroughly**
-   - Do not skip past errors or warnings
-   - They frequently contain the exact answer
-   - Read stack traces completely
-   - Note line numbers, file paths, error codes
+5. **Find the failing component.** In a system with several layers (CI, build script, signing step; API, service, database), add temporary logging at each boundary: what goes in, what comes out, which configuration and environment each layer sees. Run once. The first boundary where the data goes wrong is where you look next.
+6. **Trace the bad value backwards.** When the error surfaces deep in the call stack, follow the bad value up the chain to where it was created. The method is in [root cause tracing](references/root-cause-tracing.md).
+7. **Compare with something that works.** Find similar code in the same codebase that works, or the reference implementation of the pattern you are using, and read it completely. List every difference, however small. Do not decide in advance which differences "cannot matter".
+8. **For test pollution** (a test passes alone, fails in the suite, or the suite leaves files behind), bisect the test files: run halves of the suite in a fixed order until one file produces the effect. The root cause tracing reference describes the method.
 
-2. **Reproduce Reliably**
-   - Can you trigger it consistently?
-   - What are the exact reproduction steps?
-   - Does it happen every time?
-   - If not reproducible, gather more data -- do not guess
+Evidence: the component, the line or the commit where good data turns bad.
 
-3. **Examine Recent Changes**
-   - What changed that could cause this?
-   - Git diff, recent commits
-   - New dependencies, configuration changes
-   - Environmental differences
+### Phase 3: Root Cause
 
-4. **Gather Evidence in Multi-Component Systems**
+9. **State one hypothesis** in writing: "X is the root cause because Y." It must explain every symptom you have seen, not just the most visible one.
+10. **Test it with the smallest possible change or observation.** One variable at a time: a log line, an assertion, a changed input. Predict the result before you run it.
+11. **Confirmed:** go to phase 4. **Refuted:** discard the hypothesis, keep what you learned, form a new one. Do not stack a second change on top of the first.
+12. **If you do not know, say so.** "I do not understand why X" is a valid state. Research it (read the library source, its issue tracker, its current documentation via `godmode:grounding`) or ask the user, rather than pretending.
 
-   **WHEN the system has multiple components (CI -> build -> signing, API -> service -> database):**
+Evidence: the hypothesis, the prediction and the observation that confirmed it.
 
-   **BEFORE proposing fixes, add diagnostic instrumentation:**
-   ```
-   For EACH component boundary:
-     - Log what data enters the component
-     - Log what data exits the component
-     - Verify environment/config propagation
-     - Check state at each layer
+### Phase 4: Fix with a Regression Test
 
-   Run once to collect evidence showing WHERE it breaks
-   THEN analyze evidence to identify the failing component
-   THEN investigate that specific component
-   ```
+13. **Write the failing test first.** It reproduces the bug through the same entry point, and you watch it fail for the reason you identified (`godmode:test-first`).
+14. **Fix the root cause, once.** One change, at the source, not at the place the symptom appeared. No unrelated clean-ups in the same change.
+15. **Verify.** The new test passes, the full suite passes, the original reproduction from phase 1 no longer fails. Revert the fix and watch the test fail again; restore it. Report this evidence through `godmode:completion-gate`.
+16. **Harden where it pays.** If bad data reached deep code, add validation at the layers it crossed so the same class of bug cannot recur: see [defense in depth](references/defense-in-depth.md). If the failure was timing-related, replace sleeps with [condition-based waiting](references/condition-based-waiting.md); a complete helper is in [the waiting example](references/condition-based-waiting-example.ts).
 
-   **Example (multi-layer system):**
-   ```bash
-   # Layer 1: Orchestrator
-   echo "=== Orchestrator state: ==="
-   echo "TOKEN: ${TOKEN:+SET}${TOKEN:-UNSET}"
+### When fixes keep failing
 
-   # Layer 2: Build script
-   echo "=== Build environment: ==="
-   env | grep TOKEN || echo "TOKEN not in environment"
+Count your fix attempts for this issue. After **two** failed fixes, the next attempt must come from a new pass through phases 1 to 3, not from a variation of the last fix. After **three**, stop and invoke `godmode:error-recovery`: repeated failures that each reveal a new problem somewhere else usually mean the design is wrong, not the last line you edited. Discuss the design with the user before a fourth attempt.
 
-   # Layer 3: Signing module
-   echo "=== Certificate state: ==="
-   security list-keychains
-   security find-identity -v
+## When There Is No Root Cause in the Code
 
-   # Layer 4: Actual operation
-   codesign --sign "$IDENTITY" --verbose=4 "$ARTIFACT"
-   ```
+Sometimes the cause really is outside the code: a provider outage, a clock skew, an external rate limit, a race in a dependency you cannot change. You may conclude this only after phases 1 to 3, with evidence. Then:
 
-   **This reveals:** Which layer fails (secrets -> orchestrator OK, orchestrator -> build FAIL)
+1. Write down what you investigated and what ruled the code out.
+2. Handle it explicitly: a bounded retry with backoff, a timeout, a clear error message, a fallback the user agreed to.
+3. Add logging or monitoring that will catch it next time with more detail.
 
-5. **Trace Data Flow**
+Most "it must be the environment" conclusions are unfinished investigations. Treat the conclusion as a hypothesis like any other and test it.
 
-   **WHEN the error is deep in the call stack:**
+## Signals That You Have Skipped a Phase
 
-   See `root-cause-tracing.md` in this directory for the complete backward tracing method.
+From your own thoughts:
+- "Quick fix for now, investigate later."
+- "Let me just try changing X."
+- "I will change a few things and run the tests."
+- "It is probably X." (without evidence)
+- Listing fixes before you have reproduced the failure.
 
-   **Short version:**
-   - Where does the bad value originate?
-   - What called this function with the bad value?
-   - Keep tracing upward until you find the source
-   - Fix at the source, not at the symptom
+From the user:
+- "Is that actually happening?" You assumed without checking.
+- "Stop guessing." You are proposing fixes without a root cause.
+- "Will that show us anything?" You should be collecting evidence, not changing code.
+- "We are going round in circles." Your approach is not converging; go to `godmode:error-recovery`.
 
-### Phase 2: Pattern Analysis
-
-**Find the pattern before fixing:**
-
-1. **Locate Working Examples**
-   - Find similar working code in the same codebase
-   - What works that resembles what is broken?
-
-2. **Compare Against References**
-   - If implementing a pattern, read the reference implementation COMPLETELY
-   - Do not skim -- read every line
-   - Understand the pattern fully before applying
-
-3. **Identify Differences**
-   - What differs between working and broken?
-   - List every difference, no matter how small
-   - Do not assume "that cannot matter"
-
-4. **Understand Dependencies**
-   - What other components does this require?
-   - What settings, configuration, environment?
-   - What assumptions does it make?
-
-### Phase 3: Hypothesis and Testing
-
-**Scientific method:**
-
-1. **Form a Single Hypothesis**
-   - State clearly: "I believe X is the root cause because Y"
-   - Write it down
-   - Be specific, not vague
-
-2. **Test Minimally**
-   - Make the SMALLEST possible change to test the hypothesis
-   - One variable at a time
-   - Do not fix multiple things simultaneously
-
-3. **Verify Before Continuing**
-   - Did it work? Yes -> Phase 4
-   - Did not work? Form a NEW hypothesis
-   - DO NOT pile additional fixes on top
-
-4. **When You Do Not Know**
-   - Say "I do not understand X"
-   - Do not pretend to know
-   - Ask for help
-   - Research further
-
-### Phase 4: Implementation
-
-**Fix the root cause, not the symptom:**
-
-1. **Create a Failing Test Case**
-   - Simplest possible reproduction
-   - Automated test if possible
-   - One-off test script if no framework available
-   - MUST exist before fixing
-   - Use the `godmode:test-first` skill for writing proper failing tests
-
-2. **Implement a Single Fix**
-   - Address the root cause identified
-   - ONE change at a time
-   - No "while I'm here" improvements
-   - No bundled refactoring
-
-3. **Verify the Fix**
-   - Test passes now?
-   - No other tests broken?
-   - Issue actually resolved?
-
-4. **If the Fix Does Not Work**
-   - STOP
-   - Count: How many fixes have you attempted?
-   - If < 3: Return to Phase 1, re-analyze with new information
-   - **If >= 3: STOP and question the architecture (step 5 below)**
-   - DO NOT attempt fix #4 without architectural discussion
-
-5. **If 3+ Fixes Failed: Question Architecture**
-
-   **Pattern indicating an architectural problem:**
-   - Each fix reveals new shared state/coupling/problems in different locations
-   - Fixes require "massive refactoring" to implement
-   - Each fix creates new symptoms elsewhere
-
-   **STOP and question fundamentals:**
-   - Is this pattern fundamentally sound?
-   - Are we persisting through sheer inertia?
-   - Should we refactor the architecture vs. continue fixing symptoms?
-
-   **Discuss with your human partner before attempting more fixes**
-
-   This is NOT a failed hypothesis -- this is a flawed architecture.
-
-## Guardrails - STOP and Follow Process
-
-If you catch yourself thinking:
-- "Quick fix for now, investigate later"
-- "Just try changing X and see what happens"
-- "Apply multiple changes, run tests"
-- "Skip the test, I'll verify manually"
-- "It's probably X, let me fix that"
-- "I don't fully understand but this might work"
-- "Pattern says X but I'll adapt differently"
-- "Here are the main problems: [lists fixes without investigation]"
-- Proposing solutions before tracing data flow
-- **"One more fix attempt" (when already tried 2+)**
-- **Each fix reveals new problems in different places**
-
-**ALL of these mean: STOP. Return to Phase 1.**
-
-**If 3+ fixes failed:** Question the architecture (see Phase 4, step 5)
-
-## Human Partner Signals You Are Off Track
-
-**Watch for these redirections:**
-- "Is that not happening?" - You assumed without verifying
-- "Will it show us...?" - You should have added evidence gathering
-- "Stop guessing" - You are proposing fixes without understanding
-- "Think deeper" - Question fundamentals, not just symptoms
-- "We're stuck?" (frustrated) - Your approach is not working
-
-**When you see these:** STOP. Return to Phase 1.
+Any of these: stop and go back to phase 1.
 
 ## Cognitive Traps
 
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "Issue is simple, process not needed" | Simple issues have root causes too. The process is fast for simple bugs. |
-| "Emergency, no time for process" | Systematic diagnosis is FASTER than guess-and-check flailing. |
-| "Just try this first, then investigate" | The first fix sets the pattern. Do it right from the start. |
-| "I'll write the test after confirming the fix works" | Untested fixes do not hold. Test first proves it. |
-| "Multiple fixes at once saves time" | Cannot isolate what worked. Creates new bugs. |
-| "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
-| "I see the problem, let me fix it" | Seeing symptoms is not the same as understanding root cause. |
-| "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. Question the pattern, do not fix again. |
+| Rationalisation | Truth |
+|---|---|
+| "The bug is simple; the process is overkill." | Simple bugs have root causes too, and for them the phases take minutes. |
+| "This is urgent; no time for diagnosis." | Guess-and-check under pressure is the slowest way to fix anything. |
+| "I can see the problem; let me fix it." | You can see a symptom. The root cause is what explains all the symptoms. |
+| "Several changes at once will save time." | When it works you will not know which change did it, and when it fails you will not know which one broke it. |
+| "I will add the test once the fix works." | A fix without a failing test first has no proof it fixes this bug. |
+| "The reference is long; I will adapt the pattern from memory." | Half-read patterns are a reliable source of new bugs. Read it all. |
+| "One more attempt." (after two failures) | Two failures are a signal. Go back to phase 1, or after three, to error recovery. |
+| "It must be a caching or environment issue." | Maybe. Prove it with a clean run before you build on it. |
 
-## Quick Reference
+## Guardrails
 
-| Phase | Key Activities | Success Criteria |
-|-------|---------------|------------------|
-| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
-| **2. Pattern** | Find working examples, compare | Identify differences |
-| **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
-| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+**Never:**
+- Propose or make a fix before the failure is reproduced and the root cause stated.
+- Change more than one variable per experiment.
+- Fix at the symptom when you can trace to the source.
+- Delete, skip or weaken a failing test to make the suite pass.
+- Leave temporary diagnostic logging in the final change.
+- Attempt a fourth fix without stepping back with the user.
 
-## When Investigation Reveals No Root Cause
+**Always:**
+- Read the full error and keep the failing output.
+- Write the hypothesis down and predict the result of each experiment.
+- Reproduce the bug as a failing test before the fix.
+- Verify with the new test, the full suite and the original reproduction.
+- Report what you found, including the parts you could not explain.
 
-If systematic investigation reveals the issue is truly environmental, timing-dependent, or external:
+## Connections
 
-1. You have completed the process
-2. Document what you investigated
-3. Implement appropriate handling (retry, timeout, error message)
-4. Add monitoring/logging for future investigation
-
-**But:** 95% of "no root cause" cases are incomplete investigation.
-
-## Supporting Methods
-
-These methods are part of fault diagnosis and available in this directory:
-
-- **`root-cause-tracing.md`** - Trace bugs backward through the call stack to find the original trigger
-- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
-- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
-
-**Related skills:**
-- **godmode:test-first** - For creating failing test case (Phase 4, Step 1)
-- **godmode:completion-gate** - Verify fix worked before declaring success
-
-## Real-World Impact
-
-From diagnosis sessions:
-- Systematic approach: 15-30 minutes to resolution
-- Random fix approach: 2-3 hours of flailing
-- First-attempt fix rate: 95% vs 40%
-- New bugs introduced: Near zero vs common
+- `godmode:test-first`: the failing regression test in phase 4.
+- `godmode:error-recovery`: takes over after three failed fixes or when diagnosis stops converging.
+- `godmode:completion-gate`: evidence that the fix holds before you say it is fixed.
+- `godmode:grounding`: current documentation, changelogs and issue trackers when a library or platform behaves unexpectedly.
+- `godmode:performance-tuning`: when the fault is slowness rather than wrong output.
+- `godmode:environment-awareness`: shell, path, line-ending and platform differences that cause "works on my machine".

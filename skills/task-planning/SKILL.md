@@ -1,26 +1,16 @@
 ---
 name: task-planning
-description: Use when you have a spec or requirements for a multi-step task, before touching code
+description: "Use when an approved design, specification or clear requirement exists for work that touches more than one file or behaviour, before any implementation code is written"
 ---
 
 # Task Planning
 
-## Overview
-
-Produce thorough implementation plans written for an engineer with zero familiarity with the codebase and unreliable design instincts. Spell out everything: which files to touch per task, exact code, testing procedures, relevant documentation, how to verify each step. Deliver the plan as granular, self-contained tasks. DRY. YAGNI. TDD. Frequent commits.
-
-Assume the engineer is technically competent but knows almost nothing about the project's tooling or problem domain. Assume their test design skills are weak.
-
-**Announce at start:** "I'm applying the task-planning skill to build the implementation plan."
-
-**Context:** This should run in a dedicated worktree (created during the intent-discovery phase).
-
-**Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
+Write the implementation plan for a builder who has never seen this codebase or the conversation. They write good code once they know the exact interface and the exact test; what they cannot know is what was decided. **Put every decision in the plan: which files, which names and signatures, which values, which test proves each task, and which command shows it passed.**
 
 ## The Prime Directive
 
 ```
-NO IMPLEMENTATION WITHOUT A PLAN FIRST
+NO IMPLEMENTATION WITHOUT A SAVED PLAN OF ATOMIC, VERIFIABLE TASKS
 ```
 
 No exceptions. No workarounds. No shortcuts.
@@ -28,196 +18,171 @@ No exceptions. No workarounds. No shortcuts.
 ## When to Use
 
 **Required:**
-- Multi-step features (touching more than one file or behavior)
-- Bug fixes spanning multiple components
-- Refactoring across module boundaries
-- Any task requiring coordinated test + code + commit across files
-- When an intent-discovery session produces a spec or design
+- A design was approved in `godmode:intent-discovery`.
+- A multi-file feature, refactor or migration.
+- A bug fix that spans components, once `godmode:fault-diagnosis` has found the root cause.
+- Any work another agent will execute.
 
-**Not required:**
-- Single-line fixes with obvious scope (typo, config value)
-- Adding a single test for existing code
-- Documentation-only changes
-- Renaming a variable in one file
+**Skip:**
+- One-file changes with obvious scope (a typo, a config value, one added test).
+- Documentation-only edits.
+- Work sized "quick, clear task" in intent discovery.
 
-Tempted to think "this is too simple for a plan"? If it touches more than one file, write the plan.
+## Entry Check
 
-## The Entry Protocol
+Confirm before writing. If any item fails, go back to `godmode:intent-discovery` or ask the user one question.
 
-Before writing a plan, confirm ALL of these:
+1. The design is approved, and you have its path.
+2. You can list every component that will change.
+3. "Done" is defined by acceptance criteria, not impressions.
+4. The stack is known, and every version and interface the plan relies on was verified with `godmode:grounding`.
+5. You know how each piece will be tested.
 
-1. **Design is approved** - An intent-discovery session or human partner has confirmed the approach
-2. **Scope is defined** - You can enumerate every component that will change
-3. **Requirements are concrete** - You know what "done" looks like (acceptance criteria, not feelings)
-4. **Tech stack is identified** - You know the languages, frameworks, and libraries involved
-5. **Test strategy is defined** - You know how each piece will be verified
-6. **Worktree is active** - You are working in an isolated branch, not main
+## The Protocol
 
-**Any item unclear?** Stop. Return to intent-discovery or consult your human partner. Do NOT write a plan with gaps -- gaps become defects.
+1. **Scope check.** If the design covers independent subsystems, write one plan per subsystem; each plan must produce working, testable software on its own.
+2. **Map the files.** List every file to create, modify or delete and the one responsibility of each. Follow the codebase's existing layout (`godmode:codebase-conventions`). Prefer small focused files; files that change together live together.
+3. **Cut the tasks.** A task is the smallest unit with its own test cycle that a reviewer could reject while approving its neighbour. Fold setup and config into the task that needs them. Each task ends with something testable.
+4. **Write the steps.** Each step is one action of 2-5 minutes with a checkable result: write the failing test; run it and see it fail; write the minimal code; run it and see it pass; commit.
+5. **Write complete content.** Every code step contains the actual code, not a description of it. Every command states the expected output. Every path is exact, with line ranges for modifications.
+6. **Self-review the plan** against the checklist below and fix the gaps.
+7. **Save** to `docs/plans/YYYY-MM-DD-<feature>.md` and commit it (the user's preferred location overrides this).
+8. **Hand off** with a recommended execution mode (see Handoff).
 
-## Cognitive Traps
+## Plan Header
 
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "Too simple for a plan" | Simple tasks contain hidden complexity. Plans take 5 minutes. Debugging takes hours. |
-| "I'll figure it out as I go" | That is called hacking. You will miss edge cases and skip verification steps. |
-| "The spec IS the plan" | Specs describe WHAT. Plans describe HOW, step by step, with file paths and commands. |
-| "I already know what to do" | Excellent. Write it down. If it is obvious, the plan writes itself in 2 minutes. |
-| "Plans slow me down" | Rework slows you down. Plans prevent rework. Net time saved every time. |
-| "I'll add the plan after" | A plan written after implementation is documentation, not a plan. It cannot prevent mistakes already made. |
-
-## Guardrails
-
-**Never:**
-- Write ambiguous steps like "implement the feature" or "add validation" -- specify exact code
-- Omit test commands or expected output from plan steps
-- Leave out file paths -- every step must reference exact paths
-- Begin implementing before the plan is saved and reviewed
-
-**Always:**
-- Include complete code snippets, not descriptions of code
-- Specify exact shell commands with expected output for every verification step
-- List every file that will be created, modified, or deleted
-- End each task with a commit step including the precise commit message
-
-## Task Granularity
-
-**Each step is one action (2-5 minutes):**
-- "Write the failing test" -- step
-- "Run it to confirm it fails" -- step
-- "Implement the minimal code to pass" -- step
-- "Run the tests to confirm they pass" -- step
-- "Commit" -- step
-
-## Plan Document Header
-
-**Every plan MUST open with this header:**
+Every plan opens with:
 
 ```markdown
-# [Feature Name] Implementation Plan
+# <Feature> Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use godmode:task-runner to implement this plan task-by-task.
+> For the executing agent: use godmode:inline-execution or godmode:delegated-execution
+> to run this plan task by task. Steps use checkboxes for tracking.
 
-**Goal:** [One sentence describing what this builds]
+**Goal:** <one sentence>
+**Design:** docs/plans/YYYY-MM-DD-<topic>-design.md
+**Architecture:** <two or three sentences>
+**Stack:** <languages, frameworks, key libraries with versions>
 
-**Architecture:** [2-3 sentences about the approach]
+## Global Constraints
+<Project-wide requirements copied verbatim from the design: version floors, dependency limits,
+naming rules, platform requirements. Every task implicitly includes this section.>
 
-**Tech Stack:** [Key technologies/libraries]
+## Sources
+<Each external fact the plan relies on: URL and date checked.>
 
----
+## File Map
+| File | Action | Responsibility |
 ```
 
 ## Task Template
 
 ````markdown
-### Task N: [Component Name]
+### Task N: <component>
 
 **Files:**
-- Create: `exact/path/to/file.py`
-- Modify: `exact/path/to/existing.py:123-145`
-- Test: `tests/exact/path/to/test.py`
+- Create: `src/exact/path/file.ts`
+- Modify: `src/exact/path/existing.ts:40-62`
+- Test: `tests/exact/path/file.test.ts`
 
-**Step 1: Write the failing test**
+**Covers:** acceptance criteria 2 and 3 from the design.
 
-```python
-def test_specific_behavior():
-    result = function(input)
-    assert result == expected
+- [ ] **Step 1: Write the failing test**
+
+```ts
+import { parseDuration } from '../src/duration';
+test('parses minutes', () => {
+  expect(parseDuration('5m')).toBe(300);
+});
 ```
 
-**Step 2: Run test to verify failure**
+- [ ] **Step 2: Run it and confirm it fails**
 
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: FAIL with "function not defined"
+Run: `npx vitest run tests/duration.test.ts`
+Expected: FAIL, "parseDuration is not a function"
 
-**Step 3: Write minimal implementation**
+- [ ] **Step 3: Write the minimal implementation**
 
-```python
-def function(input):
-    return expected
+```ts
+export function parseDuration(s: string): number {
+  const m = /^(\d+)m$/.exec(s);
+  if (!m) throw new Error(`bad duration: ${s}`);
+  return Number(m[1]) * 60;
+}
 ```
 
-**Step 4: Run test to verify it passes**
+- [ ] **Step 4: Run it and confirm it passes**
 
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: PASS
+Run: `npx vitest run tests/duration.test.ts`
+Expected: PASS, 1 test
 
-**Step 5: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add tests/path/test.py src/path/file.py
-git commit -m "feat: add specific feature"
+git add src/duration.ts tests/duration.test.ts
+git commit -m "feat: parse minute durations"
 ```
 ````
 
-## Reminders
-- Exact file paths in every step
-- Complete code in the plan (not "add validation")
-- Exact commands with expected output
-- Reference relevant skills by name (e.g., `godmode:test-first`)
-- DRY, YAGNI, TDD, frequent commits
+## Self-Review Checklist
 
-## Execution Handoff
+- Every path is exact; every modification has a line range or an anchor.
+- Every code step has complete code; no "add validation here" or "similar to Task 2".
+- Every run step has the exact command and the expected output, including the failing run.
+- Every acceptance criterion in the design maps to at least one task.
+- Names and signatures are consistent across tasks.
+- Each task ends with a commit and a message.
+- No task needs knowledge that exists only in the conversation.
+- Tasks of the same shape (five similar endpoints, ten similar migrations) are marked as a batch so the executor can group them.
 
-After saving the plan, offer the user a choice:
+## Handoff
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
+After saving, recommend one execution mode and let the user choose:
 
-**1. Delegated Execution (this session)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
+| Mode | Recommend when |
+|---|---|
+| `godmode:inline-execution` | few tasks, small and sequential, context will hold; the cheapest mode |
+| `godmode:delegated-execution` | many tasks, or tasks large enough to flood one context; a fresh subagent per task with reviews between |
+| `godmode:parallel-execution` | groups of tasks touch disjoint files and need no coordination |
 
-**2. Separate Session** - Open a new session with task-runner, batch execution with checkpoints
+Say it like: "Plan saved to `docs/plans/<file>.md`: N tasks. I recommend inline execution because the tasks are small and sequential. Delegated execution is the alternative if you want a review between every task."
 
-**Which approach?"**
+If the work should happen on a branch or worktree, invoke `godmode:workspace-isolation` before execution starts.
 
-**If Delegated Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use godmode:delegated-execution
-- Stay in this session
-- Fresh subagent per task + code review
+## Cognitive Traps
 
-**If Separate Session chosen:**
-- Guide them to open a new session in the worktree
-- **REQUIRED SUB-SKILL:** New session uses godmode:task-runner
+| Rationalisation | Truth |
+|---|---|
+| "It's too simple for a plan" | If it touches more than one file, the plan takes minutes and saves the rework. |
+| "The design is the plan" | The design says what. The plan says which file, which code, which command. |
+| "I'll describe the code, the builder can write it" | Descriptions get interpreted. Complete code does not. |
+| "Expected output is obvious" | The failing run's message is what proves the test tests the right thing. Write it. |
+| "I'll figure it out while building" | That is improvising with no checkpoint. Edge cases get skipped. |
+| "One big task is easier to review" | Reviewers cannot reject half of a task. Cut it smaller. |
+| "The version I remember is fine" | Plans spread a wrong version to every task. Ground it first. |
+
+## Guardrails
+
+**Never:**
+- Write a step like "implement the feature", "handle errors" or "add tests".
+- Omit a command's expected output.
+- Leave a path vague ("the config file", "the utils folder").
+- Start implementing before the plan is saved.
+- Put a fact that can change in the plan without its source.
+
+**Always:**
+- Open with the header, global constraints and sources.
+- Follow test-first order inside each task (`godmode:test-first`).
+- End every task with a commit.
+- Recommend an execution mode at handoff.
 
 ## Connections
 
-**Required workflow skills:**
-- **godmode:intent-discovery** - Produces the spec/design that feeds into this skill
-- **godmode:workspace-isolation** - REQUIRED: Set up isolated workspace before planning
-- **godmode:task-runner** - Executes the plan this skill produces
-- **godmode:delegated-execution** - Alternative execution via subagents in same session
-- **godmode:test-first** - Every task in the plan follows TDD cycle
-- **godmode:merge-protocol** - Completes development after plan execution
-
-## Plan Construction Workflow
-
-```dot
-digraph plan_construction {
-    rankdir=TB;
-    node [shape=box, style=filled, fontname="Helvetica"];
-
-    start [label="Task received", shape=ellipse, fillcolor="#e0e0e0"];
-    check_scope [label="Multi-step?\nMultiple files?", shape=diamond, fillcolor="#ffffcc"];
-    no_plan [label="No plan needed\nJust do it", fillcolor="#ccffcc"];
-    gate [label="Entry Protocol\nAll 6 items verified?", shape=diamond, fillcolor="#ffffcc"];
-    go_back [label="Return to\nintent-discovery\nor ask human", fillcolor="#ffcccc"];
-    write_header [label="Write plan header\nGoal / Architecture / Stack", fillcolor="#cce5ff"];
-    write_tasks [label="Write granular tasks\nFiles / Test / Implement / Verify / Commit", fillcolor="#cce5ff"];
-    review [label="Review plan\nAll paths exact?\nAll code complete?", shape=diamond, fillcolor="#ffffcc"];
-    fix_plan [label="Fill gaps\nin plan", fillcolor="#ffcccc"];
-    save [label="Save to\ndocs/plans/", fillcolor="#ccffcc"];
-    handoff [label="Offer execution\nchoice to human", fillcolor="#ccffcc"];
-
-    start -> check_scope;
-    check_scope -> no_plan [label="no"];
-    check_scope -> gate [label="yes"];
-    gate -> go_back [label="gaps"];
-    gate -> write_header [label="all verified"];
-    go_back -> gate [label="resolved"];
-    write_header -> write_tasks;
-    write_tasks -> review;
-    review -> fix_plan [label="gaps found"];
-    fix_plan -> review;
-    review -> save [label="complete"];
-    save -> handoff;
-}
-```
+- `godmode:intent-discovery`: produces the approved design this skill plans from.
+- `godmode:grounding`: verifies every interface and version before it enters the plan.
+- `godmode:codebase-conventions`: sets file layout and naming for the file map.
+- `godmode:test-first`: the cycle every task follows.
+- `godmode:workspace-isolation`: sets up the branch or worktree before execution.
+- `godmode:inline-execution`: runs the plan in one context.
+- `godmode:delegated-execution`: runs the plan with a subagent per task.
+- `godmode:parallel-execution`: runs independent task groups at once.
