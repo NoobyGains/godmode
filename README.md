@@ -243,8 +243,8 @@ Every skill has a Prime Directive (the rule that cannot be broken), a Protocol, 
 
 | Harness | Install | Bootstrap at session start | Status |
 |---|---|---|---|
-| Claude Code | one-step `/plugin install` line above | SessionStart hook | Verified: hook tested on sh, with an empty PATH, and through cmd.exe on Windows; `claude plugin validate` passes |
-| Antigravity CLI (`agy`) | `agy plugin install <repo url>` | Always-on plugin rule plus the skill index | Verified on agy 1.4.7 (Windows): installed as a native plugin, and a headless "Let's make a react todo list" answered with `intent-discovery` and a question, no code ([evidence](docs/verification/)) |
+| Claude Code | one-step `/plugin install` line above | SessionStart hook, plus a one-line reminder on each prompt | Verified on 2.1.310: hook tested on sh, with an empty PATH and through cmd.exe; in a clean profile a headless "Let's make a react todo list" invoked `rationale` first and answered with options, no code ([evidence](docs/verification/)) |
+| Antigravity CLI (`agy`) | `agy plugin install <repo url>` | Always-on plugin rule plus the skill index | Verified on agy 1.4.7 (Windows): installed as a native plugin with all 33 skills; a headless "Let's make a react todo list" on Gemini Flash answered with the `rationale` analysis, no code ([evidence](docs/verification/)) |
 | Codex CLI and App | `codex plugin marketplace add` + `codex plugin add` | Native skill discovery (`$godmode:using-godmode`) | Verified on Codex CLI 0.163: marketplace registered from this repo and `godmode@godmode` 2.0.0 installed and enabled ([evidence](docs/verification/)) |
 | Gemini CLI | `gemini extensions install <repo url>` | Extension context file | Manifest shipped, untested |
 | Cursor | plugin from repository | `sessionStart` hook | Manifest shipped, untested |
