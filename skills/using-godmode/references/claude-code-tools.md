@@ -1,0 +1,73 @@
+# Claude Code tool mapping
+
+<!-- Sources (fetched 2026-10-25): docs/research/2026-10-25-claude-code-plugin-spec.md;
+https://code.claude.com/docs/en/plugins-reference ; https://code.claude.com/docs/en/skills ;
+https://code.claude.com/docs/en/sub-agents ; https://code.claude.com/docs/en/agent-teams ;
+https://code.claude.com/docs/en/memory ; tool names and parameters checked against the live
+tool list of Claude Code 2.1.310 on 2026-10-25 (`claude --version`, `claude --help`). -->
+
+GodMode skills speak in actions. On Claude Code they resolve to these tools.
+
+## Action vocabulary
+
+| Action in a skill | Claude Code |
+|---|---|
+| Invoke a skill | `Skill` tool with `godmode:<skill>`; the user types `/godmode:<skill>` |
+| Dispatch a subagent | `Agent` tool: `description`, `prompt`, `subagent_type` (`general-purpose`, `Explore`, `Plan`, or a plugin agent such as `code-reviewer`), `model`, `effort` |
+| Dispatch in the background | `Agent` with `run_in_background: true`; a notification arrives when it finishes |
+| Dispatch several in parallel | several `Agent` calls in one message |
+| Dispatch into its own worktree | `Agent` with `isolation: "worktree"` |
+| Create and track tasks | `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate` (older builds: `TodoWrite`) |
+| Message a teammate | `SendMessage` with `to: "<name>"` |
+| Form a team | see "Agent teams" below |
+| Create a worktree | `EnterWorktree` / `ExitWorktree`, or `git worktree add` in the shell |
+| Search the web | `WebSearch` |
+| Fetch a page | `WebFetch` |
+| Fetch library docs | the Context7 MCP server when installed (`resolve-library-id`, then `query-docs`); otherwise `WebFetch` on the official docs |
+| Ask the user a question | `AskUserQuestion` in the main session; a subagent cannot reach the user and reports the question back instead |
+| Load a deferred tool | `ToolSearch` with `select:<name>` before the first call |
+
+## Invoking GodMode skills
+
+- Install: `/plugin install godmode --marketplace NoobyGains/godmode` (one step on recent builds), or `/plugin marketplace add NoobyGains/godmode` then `/plugin install godmode@godmode`.
+- Model: the `Skill` tool. Plugin skills are namespaced `godmode:<skill>`.
+- User: `/godmode:<skill>`.
+- Fallback: read `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/SKILL.md`. The variable is substituted inside skill bodies but is not set in Bash-tool commands, so take the install path from `/plugin` if you need it in the shell.
+- The SessionStart hook injects `using-godmode`. Injected text is capped at 10,000 characters; overflow is replaced by a file path the model is not told to read.
+
+## Models and effort (for `godmode:model-routing`)
+
+- `model` on a dispatch: `haiku`, `sonnet`, `opus`, `fable`, a full model ID, or `inherit`.
+- `effort` on a dispatch: `low`, `medium`, `high`, `xhigh`, `max`.
+- Session: `claude --model <alias>`, `claude --effort <level>`; `/model` inside a session.
+- Agent files (`agents/*.md`) take `model` and `effort` in frontmatter. A dispatch that names a model overrides the file.
+- Teammate model order: the spawn prompt, then the agent definition's `model`, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the lead's model.
+- Seat map: `haiku` for mechanical search and transcription; `sonnet` for scoped implementation and task review; `opus` at high effort for substantial builds and the whole-branch review; `fable` only when `opus` at high effort has clearly failed. Aliases always point at the newest model of each tier; check with `/model`.
+
+## Agent teams
+
+- Experimental and off by default. Enable with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in the environment or in `settings.json` under `env`. Interactive sessions only, not `claude -p`.
+- A team forms by naming agents: with teams enabled, an `Agent` call that sets `name` launches a teammate. There is no separate create-team call in current builds.
+- Teammates talk with `SendMessage` and share one task list (`TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`). Mailboxes live in `~/.claude/teams/{team}/inboxes/`, tasks in `~/.claude/tasks/{team}/`.
+- Limits: one team per session, no nested teams, the lead is fixed, permissions are inherited at spawn, in-process teammates cannot be resumed. Guidance is 3-5 teammates with 5-6 tasks each.
+- Display: `teammateMode` `in-process` (default), `auto`, `tmux`, `iterm2`, or `--teammate-mode`. Split panes do not work in the VS Code terminal, Windows Terminal or Ghostty.
+- Hooks: `TeammateIdle`, `TaskCreated`, `TaskCompleted` (exit code 2 sends feedback).
+- Flag not set: use `godmode:parallel-execution` or `godmode:delegated-execution` with subagents that report back.
+
+## Memory (for `godmode:knowledge-capture`)
+
+- Auto memory: `~/.claude/projects/<project>/memory/`, one fact per file with a `MEMORY.md` index. The first 200 lines or 25 KB of the index load every session. One directory per repository, shared across its worktrees. Toggle with `/memory` (`autoMemoryEnabled`).
+- Instructions the user owns: `CLAUDE.md` (project, user, organisation) and `.claude/rules/`; a repository `AGENTS.md` can be read in place of CLAUDE.md. Propose edits to these; do not make them unasked.
+
+## Reaching another model family (for `godmode:cross-model-review`)
+
+Run the other family's CLI from the shell when it is installed (`command -v codex`, `command -v agy`):
+
+```bash
+codex exec --skip-git-repo-check -s read-only -m <model> -o review.md "$(cat review-brief.md)"
+agy -p "$(cat review-brief.md)" --model <model> --output-format text --print-timeout 10m > review.md
+```
+
+- Codex: `codex exec` runs non-interactively; `-s read-only` stops it editing; `-o` writes its last message to a file; `codex exec review` runs Codex's own review. Model names at the time of writing: `gpt-6.1-sol`, `gpt-6-luna`, `gpt-6-astra`.
+- Antigravity: `agy -p` runs one headless prompt and decides instead of asking; `agy models` lists names (for example `gemini-4-argon-high`).
+- Neither installed: dispatch a fresh `Agent` on a different tier from the author with the same brief, and record that the review stayed in one family.

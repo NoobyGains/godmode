@@ -262,7 +262,7 @@ GodMode grew out of [superpowers](https://github.com/obra/superpowers) and share
 | Project | What it is | Use it instead when |
 |---|---|---|
 | [superpowers](https://github.com/obra/superpowers) | 15 tightly tuned skills, 17 harnesses, an eval lab and a Discord | You want the smallest core with the longest track record |
-| [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) | 36 skills with a learning loop that writes solutions back into the repo | You want every fix to compound into a project knowledge base |
+| [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) | Thirty-six skills with a learning loop that writes solutions back into the repo | You want every fix to compound into a project knowledge base |
 | [spec-kit](https://github.com/github/spec-kit) | A CLI-driven spec-first workflow with verdict states | Your team wants formal specifications as the primary artefact |
 | [agent-skills](https://github.com/addyosmani/agent-skills) | 25 lifecycle skills installed with `npx skills add` | You want a lighter set without a bootstrap hook |
 | **GodMode** | 33 skills, 6 harness manifests, web-grounded facts, per-seat model routing, cross-model review | You want the agent to verify instead of remember, spend tokens deliberately, and prove results |

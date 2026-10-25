@@ -155,8 +155,8 @@ def main():
         return 1
     dates = fetch_star_dates(repo, token)
     OUT_LIGHT.parent.mkdir(parents=True, exist_ok=True)
-    OUT_LIGHT.write_text(render_svg(dates, repo, dark=False), encoding="utf-8")
-    OUT_DARK.write_text(render_svg(dates, repo, dark=True), encoding="utf-8")
+    OUT_LIGHT.write_text(render_svg(dates, repo, dark=False), encoding="utf-8", newline="\n")
+    OUT_DARK.write_text(render_svg(dates, repo, dark=True), encoding="utf-8", newline="\n")
     print(f"Rendered {len(dates)} stars into {OUT_LIGHT.name} / {OUT_DARK.name}")
     return 0
 
