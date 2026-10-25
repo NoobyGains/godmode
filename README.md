@@ -251,7 +251,7 @@ Every skill has a Prime Directive (the rule that cannot be broken), a Protocol, 
 | OpenCode V1 and V2 | `opencode.json` plugin entry | Plugin injects into the first user message | Plugin shipped, syntax-checked, untested on a live install |
 | Copilot CLI, Windsurf, others | `npx skills add NoobyGains/godmode` | None (skills trigger from their descriptions) | Skills only |
 
-"Untested" means no maintainer has run it on a live install yet. If you do, open an issue with the transcript and the row changes.
+"Untested" means no maintainer has run it on a live install yet. If you do, open an issue with the transcript and the row changes. The per-prompt reminder is a `UserPromptSubmit` hook, which fires in interactive sessions; in our headless `claude -p` runs it did not fire, so the session-start bootstrap alone produced the verified behaviour.
 
 Limits worth knowing: agent teams exist only on Claude Code and are experimental and opt-in there; Antigravity has no todo tool, so plans are tracked in a task artifact; OpenCode V2 has no todo tool either; Codex needs multi-agent enabled for subagent dispatch. Each `references/<harness>-tools.md` spells out the substitutions.
 
