@@ -114,7 +114,6 @@ Each harness has its own command and tool. Read your harness's file once per ses
 - Codex: `$godmode:<skill>`; [references/codex-tools.md](references/codex-tools.md)
 - Antigravity: `/<skill>`; [references/antigravity-tools.md](references/antigravity-tools.md)
 - Cursor: `/<skill>`; [references/cursor-tools.md](references/cursor-tools.md)
-- Gemini CLI: model activation; [references/gemini-tools.md](references/gemini-tools.md)
 - OpenCode: skill loading; [references/opencode-tools.md](references/opencode-tools.md)
 - Copilot CLI: `/<skill>` in a prompt; [references/copilot-tools.md](references/copilot-tools.md)
 

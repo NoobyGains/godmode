@@ -12,7 +12,7 @@
   <a href="https://github.com/NoobyGains/godmode/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/NoobyGains/godmode/validate.yml?style=flat-square&label=validate" alt="Validate"></a>
   <img src="https://img.shields.io/badge/skills-33-38bdf8?style=flat-square" alt="33 skills">
   <img src="https://img.shields.io/badge/dependencies-zero-22c55e?style=flat-square" alt="Zero dependencies">
-  <img src="https://img.shields.io/badge/Claude%20Code%20%C2%B7%20Codex%20%C2%B7%20Antigravity%20%C2%B7%20Cursor%20%C2%B7%20Gemini%20CLI%20%C2%B7%20OpenCode-64748b?style=flat-square" alt="Harnesses">
+  <img src="https://img.shields.io/badge/Claude%20Code%20%C2%B7%20Codex%20%C2%B7%20Antigravity%20%C2%B7%20Cursor%20%C2%B7%20OpenCode-64748b?style=flat-square" alt="Harnesses">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/NoobyGains/godmode?style=flat-square&color=0ea5e9" alt="License"></a>
 </p>
 
@@ -61,7 +61,7 @@ codex plugin marketplace add NoobyGains/godmode
 codex plugin add godmode@godmode
 ```
 
-**Any agent that reads skills** (Cursor, Gemini CLI, OpenCode, Copilot CLI, Windsurf and others)
+**Any agent that reads skills** (Cursor, OpenCode, Copilot CLI, Windsurf and others)
 
 ```bash
 npx skills add NoobyGains/godmode
@@ -73,9 +73,8 @@ This installs the skills into the agent's skills directory. The bootstrap that m
 > Nothing to configure. GodMode is Markdown skills plus two small hooks (a session-start bootstrap and a one-line reminder per prompt); it never calls a network service, never collects telemetry, and has zero runtime dependencies.
 
 <details>
-<summary><b>Gemini CLI, Cursor, OpenCode, updating, uninstalling</b></summary>
+<summary><b>Cursor, OpenCode, updating, uninstalling</b></summary>
 
-- **Gemini CLI**: `gemini extensions install https://github.com/NoobyGains/godmode`. The extension's `GEMINI.md` carries the bootstrap.
 - **Cursor**: install the plugin from this repository (the repo ships `.cursor-plugin/plugin.json` and `.cursor-plugin/marketplace.json`); a `sessionStart` hook injects the bootstrap.
 - **OpenCode**: add `"godmode@git+https://github.com/NoobyGains/godmode.git"` to the `plugin` (V1) or `plugins` (V2) array of `opencode.json`. Details in [.opencode/INSTALL.md](.opencode/INSTALL.md).
 - **Update**: Claude Code `/plugin update godmode@godmode` (third-party marketplaces do not auto-update); Antigravity: run the install command again; Codex: `codex plugin marketplace upgrade` then `codex plugin add godmode@godmode`.
@@ -111,7 +110,7 @@ This installs the skills into the agent's skills directory. The bootstrap that m
     </td>
     <td width="33%" valign="top">
       <h3>🧩 One repo, every harness</h3>
-      Identical skills on Claude Code, Antigravity, Codex, Cursor, Gemini CLI and OpenCode. Skill bodies name actions; a per-harness reference maps them to real tools.
+      Identical skills on Claude Code, Antigravity, Codex, Cursor and OpenCode. Skill bodies name actions; a per-harness reference maps them to real tools.
     </td>
   </tr>
 </table>
@@ -246,12 +245,11 @@ Every skill has a Prime Directive (the rule that cannot be broken), a Protocol, 
 | Claude Code | one-step `/plugin install` line above | SessionStart hook, plus a one-line reminder on each prompt | Verified on 2.1.310: hook tested on sh, with an empty PATH and through cmd.exe; in a clean profile (only Claude Code's bundled plugins present) a headless "Let's make a react todo list" invoked `rationale` first and answered with options, no code; `completion-gate`'s stop check registers, evaluates and removes itself ([evidence](docs/verification/)). In the default permission mode the first `completion-gate` call asks to execute the skill because it arms that check; answer once |
 | Antigravity CLI (`agy`) | `agy plugin install <repo url>` | Always-on plugin rule plus the skill index | Verified on agy 1.4.7 (Windows): installed as a native plugin with all 33 skills; a headless "Let's make a react todo list" on Gemini Flash answered with the `rationale` analysis, no code ([evidence](docs/verification/)) |
 | Codex CLI and App | `codex plugin marketplace add` + `codex plugin add` | Native skill discovery (`$godmode:using-godmode`); `doctor` is the onboarding skill | Verified on Codex CLI 0.163: marketplace registered from this repo and `godmode@godmode` installed and enabled, with the manifest in the `extensions.com.openai` shape the Codex plugin docs specify ([evidence](docs/verification/)) |
-| Gemini CLI | `gemini extensions install <repo url>` | Extension context file | Manifest shipped, untested |
 | Cursor | plugin from repository | `sessionStart` hook | Manifest shipped, untested |
 | OpenCode V1 and V2 | `opencode.json` plugin entry | V1: injected into the first user message; V2: session context hook | Plugin shipped and module-loads under Node; untested on a live install |
 | Copilot CLI, Windsurf, others | `npx skills add NoobyGains/godmode` | None (skills trigger from their descriptions) | Skills only |
 
-"Untested" means no maintainer has run it on a live install yet. If you do, open an issue with the transcript and the row changes. The per-prompt reminder is a `UserPromptSubmit` hook, which fires in interactive sessions; in our headless `claude -p` runs it did not fire, so the session-start bootstrap alone produced the verified behaviour.
+Gemini CLI is not listed: Google [retired it for individual users on 18 June 2026](https://developers.googleblog.com/en/an-important-update-transitioning-gemini-cli-to-antigravity-cli/) and moved extensions to Antigravity plugins, which is the row above. "Untested" means no maintainer has run it on a live install yet. If you do, open an issue with the transcript and the row changes. The per-prompt reminder is a `UserPromptSubmit` hook, which fires in interactive sessions; in our headless `claude -p` runs it did not fire, so the session-start bootstrap alone produced the verified behaviour.
 
 Limits worth knowing: agent teams exist only on Claude Code and are experimental and opt-in there; Antigravity has no todo tool, so plans are tracked in a task artifact; OpenCode V2 has no todo tool either; Codex needs multi-agent enabled for subagent dispatch. Each `references/<harness>-tools.md` spells out the substitutions.
 
@@ -265,7 +263,7 @@ Plenty of skill packs teach an agent to design before it codes and to review bef
 | [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) | Thirty-six skills with a learning loop that writes solutions back into the repo | You want every fix to compound into a project knowledge base |
 | [spec-kit](https://github.com/github/spec-kit) | A CLI-driven spec-first workflow with verdict states | Your team wants formal specifications as the primary artefact |
 | [agent-skills](https://github.com/addyosmani/agent-skills) | 25 lifecycle skills installed with `npx skills add` | You want a lighter set without a bootstrap hook |
-| **GodMode** | 33 skills, 6 harness manifests, web-grounded facts, per-seat model routing, cross-model review | You want the agent to verify instead of remember, spend tokens deliberately, and prove results |
+| **GodMode** | 33 skills, 5 harness manifests, web-grounded facts, per-seat model routing, cross-model review | You want the agent to verify instead of remember, spend tokens deliberately, and prove results |
 
 ## Evals
 

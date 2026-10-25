@@ -13,7 +13,7 @@
  *   - hook scripts are executable in git and hooks.json double-quotes the
  *     plugin root (the 1.0 bug behind issues #1, #2 and #4);
  *   - the version is identical in every manifest and every manifest is listed
- *     in .version-bump.json;
+ *     in scripts/version-files.json;
  *   - the README names every skill and states the right skill count;
  *   - the icon is a square PNG between 512 and 2048 px.
  *
@@ -262,7 +262,6 @@ const MANIFESTS = [
   ['.codex-plugin/plugin.json', (j) => j.version],
   ['.cursor-plugin/plugin.json', (j) => j.version],
   ['.cursor-plugin/marketplace.json', (j) => j.plugins?.[0]?.version],
-  ['gemini-extension.json', (j) => j.version],
 ];
 const versions = new Map();
 for (const [rel, get] of MANIFESTS) {
@@ -274,10 +273,10 @@ for (const [rel, get] of MANIFESTS) {
 }
 const distinct = new Set([...versions.values()].filter(Boolean));
 if (distinct.size > 1) err('versions', `manifests disagree: ${[...versions].map(([k, v]) => `${k}=${v}`).join(', ')}`);
-if (exists('.version-bump.json')) {
-  const listed = new Set(json('.version-bump.json').files.map((f) => f.path));
-  for (const [rel] of MANIFESTS) if (!listed.has(rel)) err('.version-bump.json', `does not list ${rel}`);
-} else err('.version-bump.json', 'missing');
+if (exists('scripts/version-files.json')) {
+  const listed = new Set(json('scripts/version-files.json').files.map((f) => f.path));
+  for (const [rel] of MANIFESTS) if (!listed.has(rel)) err('scripts/version-files.json', `does not list ${rel}`);
+} else err('scripts/version-files.json', 'missing');
 
 for (const rel of ['.claude-plugin/plugin.json', '.antigravity-plugin/plugin.json', '.codex-plugin/plugin.json', '.cursor-plugin/plugin.json']) {
   if (!exists(rel)) continue;

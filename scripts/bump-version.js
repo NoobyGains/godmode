@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Set the same version in every manifest listed in .version-bump.json.
+ * Set the same version in every manifest listed in scripts/version-files.json.
  *
  *   node scripts/bump-version.js 2.0.1
  *
@@ -18,7 +18,7 @@ if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(version ?? '')) {
   process.exit(2);
 }
 
-const spec = JSON.parse(fs.readFileSync(path.join(ROOT, '.version-bump.json'), 'utf8'));
+const spec = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'version-files.json'), 'utf8'));
 for (const { path: rel, field } of spec.files) {
   const file = path.join(ROOT, rel);
   const data = JSON.parse(fs.readFileSync(file, 'utf8'));

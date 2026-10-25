@@ -2,6 +2,14 @@
 
 All notable changes to GodMode. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [Semantic Versioning](https://semver.org/).
 
+## [2.1.2] - 2026-10-25
+
+### Changed
+- The repository root holds only what a harness looks for there. The version list moved from `.version-bump.json` to `scripts/version-files.json`; the OpenCode entry point is `.opencode/plugins/godmode.js` directly (`package.json` `main` and `exports`), so the root `index.js` shim is gone.
+
+### Removed
+- Gemini CLI support (`gemini-extension.json`, `GEMINI.md`, the Gemini tool reference). Google retired Gemini CLI for individual users on 18 June 2026 and moved extensions to Antigravity plugins; GodMode's Antigravity plugin is that route. The manifest had never been verified on a live install.
+
 ## [2.1.1] - 2026-10-25
 
 The one-round Codex review of the 2.1.0 diff (`docs/verification/codex-review-2.1.0.md`) found two validator bugs and five wording problems; all are fixed here.
@@ -68,6 +76,7 @@ A ground-up rebuild. GodMode 1.0 was a 36-skill derivative of superpowers whose 
 
 Initial release: 36 skills for Claude Code, Cursor, Codex and OpenCode.
 
+[2.1.2]: https://github.com/NoobyGains/godmode/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/NoobyGains/godmode/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/NoobyGains/godmode/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/NoobyGains/godmode/compare/v1.0.0...v2.0.0

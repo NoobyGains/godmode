@@ -14,7 +14,7 @@ echo "repository validator"
 if node scripts/validate.js --ci --quiet; then pass "node scripts/validate.js"; else fail "node scripts/validate.js (run it for details)"; fi
 
 echo "manifests parse"
-for f in package.json .claude-plugin/plugin.json .claude-plugin/marketplace.json .antigravity-plugin/plugin.json .codex-plugin/plugin.json .agents/plugins/marketplace.json .cursor-plugin/plugin.json hooks/hooks-cursor.json gemini-extension.json .version-bump.json; do
+for f in package.json .claude-plugin/plugin.json .claude-plugin/marketplace.json .antigravity-plugin/plugin.json .codex-plugin/plugin.json .agents/plugins/marketplace.json .cursor-plugin/plugin.json hooks/hooks-cursor.json scripts/version-files.json; do
   if [ -f "$f" ] && node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" 2>/dev/null; then pass "$f"; else fail "$f missing or invalid"; fi
 done
 
@@ -24,9 +24,9 @@ if command -v claude >/dev/null 2>&1; then
 else echo "  [SKIP] claude not installed"; fi
 if command -v agy >/dev/null 2>&1; then
   # Not --strict: a multi-harness repo always carries files agy does not load
-  # (root GEMINI.md for Gemini CLI, root AGENTS.md for contributors, hooks/hooks.json
+  # (root AGENTS.md for contributors, hooks/hooks.json
   # for Claude Code) and agy warns about each. Errors must be zero.
-  if agy plugin validate . >/tmp/godmode-agy-validate.txt 2>&1; then pass "agy plugin validate . (warnings about Claude Code and Gemini CLI files are expected)"; else fail "agy plugin validate . (see /tmp/godmode-agy-validate.txt)"; fi
+  if agy plugin validate . >/tmp/godmode-agy-validate.txt 2>&1; then pass "agy plugin validate . (warnings about Claude Code files are expected)"; else fail "agy plugin validate . (see /tmp/godmode-agy-validate.txt)"; fi
 else echo "  [SKIP] agy not installed"; fi
 
 echo

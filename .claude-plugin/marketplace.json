@@ -9,7 +9,7 @@
     {
       "name": "godmode",
       "description": "Engineering discipline for AI coding agents: question the request, verify against current docs instead of memory, plan, build test-first on the cheapest capable model, review with a second model family, prove it before saying done",
-      "version": "2.1.1",
+      "version": "2.1.2",
       "source": "./",
       "category": "development",
       "author": {

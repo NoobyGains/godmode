@@ -1,11 +1,11 @@
 {
   "name": "godmode",
-  "version": "2.1.1",
-  "description": "Engineering discipline for AI coding agents: skills for Claude Code, Codex, Antigravity, Cursor, Gemini CLI, OpenCode and Copilot CLI",
+  "version": "2.1.2",
+  "description": "Engineering discipline for AI coding agents: skills for Claude Code, Codex, Antigravity, Cursor, OpenCode and Copilot CLI",
   "type": "module",
-  "main": "index.js",
+  "main": ".opencode/plugins/godmode.js",
   "exports": {
-    ".": "./index.js",
+    ".": "./.opencode/plugins/godmode.js",
     "./plugin": "./.opencode/plugins/godmode.js"
   },
   "author": "David Innes",
