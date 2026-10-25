@@ -45,6 +45,7 @@ out="$(CLAUDE_PLUGIN_ROOT="$ROOT" sh -c '"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.c
 check_json "hookSpecificOutput.additionalContext present" "$out" "'EXTREMELY_IMPORTANT' in d['hookSpecificOutput']['additionalContext'] and d['hookSpecificOutput']['hookEventName']=='SessionStart'"
 check_json "only the Claude shape is emitted" "$out" "set(d)=={'hookSpecificOutput'}"
 check_json "bootstrap carries the using-godmode skill" "$out" "'godmode:using-godmode' in d['hookSpecificOutput']['additionalContext'] and len(d['hookSpecificOutput']['additionalContext'])>2000"
+check_json "bootstrap is under the 10,000-character SessionStart cap" "$out" "len(d['hookSpecificOutput']['additionalContext'])<=10000"
 
 echo "Cursor shape (CURSOR_PLUGIN_ROOT)"
 out="$(CURSOR_PLUGIN_ROOT="$ROOT" CLAUDE_PLUGIN_ROOT="$ROOT" bash "$ROOT/hooks/session-start" 2>&1)"

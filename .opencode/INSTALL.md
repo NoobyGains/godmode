@@ -1,119 +1,39 @@
 # Installing GodMode for OpenCode
 
-## Prerequisites
+OpenCode installs plugins from a git-backed package spec. GodMode's plugin registers every skill and injects the `using-godmode` bootstrap at the start of each top-level session.
 
-- [OpenCode.ai](https://opencode.ai) installed
-- Git installed
+## OpenCode V1 (1.x)
 
-## Installation Steps
+Add to `opencode.json`:
 
-### 1. Clone GodMode
-
-```bash
-git clone https://github.com/NoobyGains/godmode.git ~/.config/opencode/godmode
+```json
+{
+  "plugin": ["godmode@git+https://github.com/NoobyGains/godmode.git"]
+}
 ```
 
-### 2. Register the Plugin
+## OpenCode V2 (2.0.4 or later)
 
-Create a symlink so OpenCode discovers the plugin:
-
-```bash
-mkdir -p ~/.config/opencode/plugins
-rm -f ~/.config/opencode/plugins/godmode.js
-ln -s ~/.config/opencode/godmode/.opencode/plugins/godmode.js ~/.config/opencode/plugins/godmode.js
+```json
+{
+  "plugins": ["godmode@git+https://github.com/NoobyGains/godmode.git"]
+}
 ```
 
-### 3. Symlink Skills
+Restart OpenCode, then ask: "Tell me about GodMode". A working install names the `using-godmode` skill and the execution modes.
 
-Create a symlink so OpenCode's native skill tool discovers godmode skills:
+To pin a release, append a tag: `godmode@git+https://github.com/NoobyGains/godmode.git#v2.0.0`.
 
-```bash
-mkdir -p ~/.config/opencode/skills
-rm -rf ~/.config/opencode/skills/godmode
-ln -s ~/.config/opencode/godmode/skills ~/.config/opencode/skills/godmode
-```
+## Skills without the plugin
 
-### 4. Restart OpenCode
-
-Restart OpenCode. The plugin will automatically inject godmode context.
-
-Verify by asking: "do you have godmode?"
-
-## Usage
-
-### Finding Skills
-
-Use OpenCode's native `skill` tool to list available skills:
-
-```
-use skill tool to list skills
-```
-
-### Loading a Skill
-
-Use OpenCode's native `skill` tool to load a specific skill:
-
-```
-use skill tool to load godmode/intent-discovery
-```
-
-### Personal Skills
-
-Create your own skills in `~/.config/opencode/skills/`:
-
-```bash
-mkdir -p ~/.config/opencode/skills/my-skill
-```
-
-Create `~/.config/opencode/skills/my-skill/SKILL.md`:
-
-```markdown
----
-name: my-skill
-description: Use when [condition] - [what it does]
----
-
-# My Skill
-
-[Your skill content here]
-```
-
-### Project Skills
-
-Create project-specific skills in `.opencode/skills/` within your project.
-
-**Skill Priority:** Project skills > Personal skills > GodMode skills
-
-## Updating
-
-```bash
-cd ~/.config/opencode/godmode
-git pull
-```
+OpenCode also reads skills from `~/.agents/skills/` and `.agents/skills/`, so `npx skills add NoobyGains/godmode` installs the skills alone. Without the plugin the bootstrap is not injected: skills only trigger when the model picks them from their descriptions.
 
 ## Troubleshooting
 
-### Plugin not loading
+- V1 logs: `opencode run --print-logs "hello" 2>&1 | grep -i godmode`
+- V2 logs: `opencode run --standalone --print-logs "hello" 2>&1 | grep -i godmode`, or `~/.local/share/opencode/log/opencode.log` filtered for `role=server`.
+- Some Windows OpenCode builds cannot install `git+https` specs. Install the package with npm (`npm install godmode@git+https://github.com/NoobyGains/godmode.git --prefix "$HOME\.config\opencode"`) and put the absolute package path in `opencode.json`; OpenCode does not expand `~`.
 
-1. Check plugin symlink: `ls -l ~/.config/opencode/plugins/godmode.js`
-2. Check source exists: `ls ~/.config/opencode/godmode/.opencode/plugins/godmode.js`
-3. Check OpenCode logs for errors
+## Status
 
-### Skills not found
-
-1. Check skills symlink: `ls -l ~/.config/opencode/skills/godmode`
-2. Verify it points to: `~/.config/opencode/godmode/skills`
-3. Use `skill` tool to list what's discovered
-
-### Tool mapping
-
-When skills reference Claude Code tools:
-- `TodoWrite` → `update_plan`
-- `Task` with subagents → `@mention` syntax
-- `Skill` tool → OpenCode's native `skill` tool
-- File operations → your native tools
-
-## Getting Help
-
-- Report issues: https://github.com/NoobyGains/godmode/issues
-- Full documentation: https://github.com/NoobyGains/godmode/blob/main/docs/README.opencode.md
+The plugin follows the pattern the superpowers project ships for OpenCode V1 and V2 (MIT). GodMode's own copy has been checked for syntax with Node but has not yet been exercised against a live OpenCode install; see the README's harness table for the current test status.

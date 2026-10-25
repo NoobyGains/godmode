@@ -154,6 +154,30 @@ for (const name of skillNames) {
   }
 }
 
+// The bootstrap is injected whole by the SessionStart hook; Claude Code caps
+// additionalContext at 10,000 characters and replaces anything longer with a
+// file path, which the model is not told to read. Keep headroom for the wrapper.
+if (exists('skills/using-godmode/SKILL.md')) {
+  const n = read('skills/using-godmode/SKILL.md').length;
+  if (n > 9000) err('skills/using-godmode/SKILL.md', `${n} characters; the SessionStart bootstrap is capped at 10,000 including the wrapper (limit 9,000)`);
+} else err('skills/using-godmode/SKILL.md', 'missing: the bootstrap skill');
+
+// Descriptions are quoted so YAML never misreads a colon (Antigravity < 1.3.6 dropped such skills).
+for (const name of skillNames) {
+  const rel = `skills/${name}/SKILL.md`;
+  if (!exists(rel)) continue;
+  const m = read(rel).match(/^description:\s*(.*)$/m);
+  if (m && !/^(["']).*\1\s*$/.test(m[1])) err(rel, 'description must be wrapped in double quotes');
+}
+
+// Antigravity rules need a valid trigger or they are silently discarded.
+if (exists('rules')) {
+  for (const f of fs.readdirSync(path.join(ROOT, 'rules')).filter((f) => f.endsWith('.md'))) {
+    const fm = parseFrontmatter(read(`rules/${f}`));
+    if (!fm || !['always_on', 'model_decision', 'glob', 'manual'].includes(fm.data.trigger)) err(`rules/${f}`, 'needs frontmatter with trigger: always_on | model_decision | glob | manual');
+  }
+}
+
 // Duplicate names are impossible with directories, but check case-insensitive clashes.
 const lower = skillNames.map((s) => s.toLowerCase());
 if (new Set(lower).size !== lower.length) err('skills/', 'skill names clash when case is ignored');
@@ -199,6 +223,7 @@ const MANIFESTS = [
   ['.antigravity-plugin/plugin.json', (j) => j.version],
   ['.codex-plugin/plugin.json', (j) => j.version],
   ['.cursor-plugin/plugin.json', (j) => j.version],
+  ['.cursor-plugin/marketplace.json', (j) => j.plugins?.[0]?.version],
   ['gemini-extension.json', (j) => j.version],
 ];
 const versions = new Map();
