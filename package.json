@@ -1,6 +1,6 @@
 {
   "name": "godmode",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Engineering discipline for AI coding agents: skills for Claude Code, Codex, Antigravity, Cursor, Gemini CLI, OpenCode and Copilot CLI",
   "type": "module",
   "main": "index.js",

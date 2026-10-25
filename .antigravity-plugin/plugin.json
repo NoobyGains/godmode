@@ -1,7 +1,7 @@
 {
   "name": "godmode",
   "displayName": "GodMode",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Engineering discipline for AI coding agents: question, verify against current docs, plan, test first, review, prove it",
   "logo": "assets/icon.png",
   "suggestedPrompts": [

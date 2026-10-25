@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "godmode",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Engineering discipline for AI coding agents: question the request, verify against current docs instead of memory, plan, build test-first, review with a second model family, prove it before saying done.",
   "author": {
     "name": "David Innes",

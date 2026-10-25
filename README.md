@@ -136,11 +136,11 @@ GodMode is a gated pipeline. The agent cannot move to the next phase until the c
   </picture>
 </p>
 
-1. **Define.** `rationale` challenges the request. `intent-discovery` asks one question at a time, presents two or three approaches, and writes the design document. `grounding` verifies every fact that can change.
+1. **Define.** `rationale` challenges the request. `intent-discovery` reads the project before its first question, asks one question at a time, presents two or three approaches, writes the design document and has a fresh builder check it. `grounding` verifies every fact that can change.
 2. **Plan.** `reference-first` finds the proven implementation to build on. `task-planning` writes tasks of two to five minutes with exact files, signatures, the tests as code, commands and expected output, plus the interfaces each task consumes and produces.
 3. **Execute.** `delegated-execution` runs the plan with a fresh subagent per task, a ledger on disk that survives context loss, and a bounded fix loop; `inline-execution` is the cheap single-context mode; `parallel-execution` and `team-orchestration` cover independent and collaborating work. Every task is `test-first`.
 4. **Review.** `code-review` runs spec compliance then quality on each task; `cross-model-review` brings in another model family before landing; `review-response` handles feedback with evidence instead of reflexive agreement.
-5. **Ship.** `quality-gates` are machine-checked, `completion-gate` demands fresh output, `merge-protocol` lands the branch and cleans up the worktree.
+5. **Ship.** `quality-gates` are machine-checked, `completion-gate` demands fresh output (on Claude Code it also arms a one-shot stop check that reads the final message and sends an unsupported claim back), `merge-protocol` lands the branch and cleans up the worktree.
 
 ### Grounding: the skill nobody else makes the headline
 
@@ -243,9 +243,9 @@ Every skill has a Prime Directive (the rule that cannot be broken), a Protocol, 
 
 | Harness | Install | Bootstrap at session start | Status |
 |---|---|---|---|
-| Claude Code | one-step `/plugin install` line above | SessionStart hook, plus a one-line reminder on each prompt | Verified on 2.1.310: hook tested on sh, with an empty PATH and through cmd.exe; in a clean profile (only Claude Code's bundled plugins present) a headless "Let's make a react todo list" invoked `rationale` first and answered with options, no code ([evidence](docs/verification/)) |
+| Claude Code | one-step `/plugin install` line above | SessionStart hook, plus a one-line reminder on each prompt | Verified on 2.1.310: hook tested on sh, with an empty PATH and through cmd.exe; in a clean profile (only Claude Code's bundled plugins present) a headless "Let's make a react todo list" invoked `rationale` first and answered with options, no code; `completion-gate`'s stop check registers, evaluates and removes itself ([evidence](docs/verification/)). In the default permission mode the first `completion-gate` call asks to execute the skill because it arms that check; answer once |
 | Antigravity CLI (`agy`) | `agy plugin install <repo url>` | Always-on plugin rule plus the skill index | Verified on agy 1.4.7 (Windows): installed as a native plugin with all 33 skills; a headless "Let's make a react todo list" on Gemini Flash answered with the `rationale` analysis, no code ([evidence](docs/verification/)) |
-| Codex CLI and App | `codex plugin marketplace add` + `codex plugin add` | Native skill discovery (`$godmode:using-godmode`) | Verified on Codex CLI 0.163: marketplace registered from this repo and `godmode@godmode` 2.0.0 installed and enabled ([evidence](docs/verification/)) |
+| Codex CLI and App | `codex plugin marketplace add` + `codex plugin add` | Native skill discovery (`$godmode:using-godmode`); `doctor` is the onboarding skill | Verified on Codex CLI 0.163: marketplace registered from this repo and `godmode@godmode` installed and enabled, with the manifest in the `extensions.com.openai` shape the Codex plugin docs specify ([evidence](docs/verification/)) |
 | Gemini CLI | `gemini extensions install <repo url>` | Extension context file | Manifest shipped, untested |
 | Cursor | plugin from repository | `sessionStart` hook | Manifest shipped, untested |
 | OpenCode V1 and V2 | `opencode.json` plugin entry | V1: injected into the first user message; V2: session context hook | Plugin shipped and module-loads under Node; untested on a live install |
@@ -292,6 +292,7 @@ claude plugin eval . --trust-plugin --runs 3 --model sonnet --judge-model haiku 
 - `bash tests/test-hooks.sh` on Linux, macOS and Windows Git Bash, and `tests/test-hooks-windows.ps1` through cmd.exe.
 - `claude plugin validate .` and `agy plugin validate .`.
 - A headless acceptance session per verified harness: the prompt "Let's make a react todo list" must trigger `rationale` or `intent-discovery` before any code.
+- `bash tests/acceptance/claude-code-stop-check.sh`: invoking `completion-gate` registers its stop check, the check evaluates the final message, and it removes itself after one pass.
 - One review of the release diff by a different model family than the author.
 
 ## What GodMode is not
