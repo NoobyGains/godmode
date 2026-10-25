@@ -63,7 +63,8 @@ echo "ledger and status"
 godmode ledger "$WS" "Task 1: complete (commits a..b, review clean)" >/dev/null
 godmode ledger "$WS" "Ruling: keep parseRange / matches exports / one rename" >/dev/null
 head -n 1 "$WS/progress.md" | grep -q "^# GodMode ledger: plan docs/plans/2026-01-01-demo.md" && pass "ledger header names the plan" || fail "ledger header"
-godmode status "$WS" | grep -q "next task: 2" && pass "status computes the next task" || fail "status"
+STATUS="$(godmode status "$WS")"
+printf '%s\n' "$STATUS" | grep -q "next task: 2" && pass "status computes the next task" || { fail "status"; printf '%s\n' "$STATUS"; }
 [ "$(git status --short | wc -l)" -eq 0 ] && pass "workspace stays out of git status" || fail "git status not clean"
 
 echo
