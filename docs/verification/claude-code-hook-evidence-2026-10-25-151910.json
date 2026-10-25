@@ -1,0 +1,93 @@
+[
+  {
+    "type": "system",
+    "subtype": "hook_started",
+    "hook_id": "749cdab8-86d5-439a-8a07-dc041b9a139a",
+    "hook_name": "SessionStart:startup",
+    "hook_event": "SessionStart",
+    "uuid": "1451e291-1a43-46db-9d5e-d54fbbeef650",
+    "session_id": "f332a0ea-1f0a-4deb-8e4c-3440a12b5e1f"
+  },
+  {
+    "type": "system",
+    "subtype": "hook_response",
+    "hook_id": "749cdab8-86d5-439a-8a07-dc041b9a139a",
+    "hook_name": "SessionStart:startup",
+    "hook_event": "SessionStart",
+    "output": "{\n  \"hookSpecificOutput\": {\n    \"hookEventName\": \"SessionStart\",\n    \"additionalContext\": \"<EXTREMELY_IMPORTANT>\\nYou have GodMode.\\n\\n**Below is the full content of your 'godmode:using-godmode' skill, your introduction to using skills. For every other skill, use the harness's skill mechanism as that skill describes:**\\n\\n---\\nname: using-godmode\\ndescription: \\\"Use when starting any conversation, before the first response or action, including clarifying questions, to find which GodMode skill applies and how to invoke it on the current harness\\\"\\n---\\n\\n# Using GodMode\\n\\n<SUBAGENT-STOP>\\nIf y... (7724 chars total)",
+    "stdout": "{\n  \"hookSpecificOutput\": {\n    \"hookEventName\": \"SessionStart\",\n    \"additionalContext\": \"<EXTREMELY_IMPORTANT>\\nYou have GodMode.\\n\\n**Below is the full content of your 'godmode:using-godmode' skill, your introduction to using skills. For every other skill, use the harness's skill mechanism as that skill describes:**\\n\\n---\\nname: using-godmode\\ndescription: \\\"Use when starting any conversation, before the first response or action, including clarifying questions, to find which GodMode skill applies and how to invoke it on the current harness\\\"\\n---\\n\\n# Using GodMode\\n\\n<SUBAGENT-STOP>\\nIf you were dispatched as a subagent to do one specific task, ignore this skill and follow your brief.\\n</SUBAGENT-STOP>\\n\\nGodMode is a set of engineering-discipline skills. **Check for a relevant skill before you answer, ask, explore or act; if one might apply, invoke it and follow it.**\\n\\n## The Prime Directive\\n\\n```\\nINVOKE THE RELEVANT SKILL BEFORE ANY RESPONSE OR ACTION\\n```\\n\\nNo exceptions. No workarounds. No shortcuts.\\n\\n## When to Use\\n\\n**Required:**\\n- At the start of every conversation and on every new user request.\\n- Before asking a clarifying question, reading files or running a command.\\n- When the work changes phase (design to plan, plan to build, build to review).\\n\\n**Skip:**\\n- Never skip the check. Skip a skill only when it clearly does not apply or the user said not to use it.\\n\\n## The Protocol\\n\\n1. Read the request. Ask: could any skill below apply, even partly?\\n2. If yes, invoke it now (see \\\"Invoking a skill\\\"). Announce: \\\"Using godmode:<skill> to <goal>.\\\"\\n3. Follow the skill exactly. If it has a checklist, create one task per item and track them.\\n4. Several apply: challenge first (`rationale`), then process (`intent-discovery`, `fault-diagnosis`), then build skills, then quality gates.\\n5. Pick the execution mode with the routing table before any build starts.\\n6. A skill turns out wrong for the situation: say so and move on.\\n\\n## Skill Index\\n\\n**Start and decide**\\n- `godmode:rationale` - should this be built at all; options A/B/C/D.\\n- `godmode:intent-discovery` - turn a request into an approved design with a specification.\\n- `godmode:grounding` - verify every fact that can change against a current source.\\n- `godmode:reference-first` - find the proven implementation before designing one.\\n- `godmode:codebase-conventions` - survey and match the existing codebase.\\n\\n**Design**\\n- `godmode:system-design` - architecture and hosting choices.\\n- `godmode:ui-research` - templates and UX patterns before any UI.\\n- `godmode:ui-engineering` - components inside the project's design system.\\n\\n**Plan and run**\\n- `godmode:task-planning` - atomic tasks with paths, code and commands.\\n- `godmode:inline-execution` - run a plan in one context, one final review.\\n- `godmode:delegated-execution` - a fresh subagent per task, reviews between.\\n- `godmode:parallel-execution` - independent tasks at the same time.\\n- `godmode:team-orchestration` - teammates that must coordinate mid-work.\\n- `godmode:agent-briefing` - briefs and handoffs for any dispatch.\\n- `godmode:model-routing` - cheapest capable model per seat.\\n- `godmode:workspace-isolation` - a separate worktree or branch.\\n\\n**Build**\\n- `godmode:test-first` - failing test before code.\\n- `godmode:project-bootstrap` - start a new project.\\n- `godmode:environment-awareness` - OS, shell, package manager.\\n- `godmode:performance-tuning` - measure before optimising.\\n- `godmode:security-protocol` - secrets, input, auth, dependencies.\\n\\n**Prove and land**\\n- `godmode:code-review` - spec compliance, then quality.\\n- `godmode:cross-model-review` - one review by another model family.\\n- `godmode:quality-gates` - lint, types, coverage, build.\\n- `godmode:completion-gate` - fresh evidence before \\\"done\\\".\\n- `godmode:review-response` - handle review feedback.\\n- `godmode:merge-protocol` - finish and integrate the branch.\\n\\n**When things break**\\n- `godmode:fault-diagnosis` - root cause before fixes.\\n- `godmode:error-recovery` - stuck after repeated failures.\\n\\n**Meta**\\n- `godmode:knowledge-capture` - keep what was learned in native memory.\\n- `godmode:writing-skills` - author or change a skill.\\n- `godmode:doctor` - check the install when skills do not trigger.\\n\\n## Execution Modes\\n\\nChoose the lightest mode that fits. Agent teams are a tool, not a default.\\n\\n| Mode | Pick it when | Skill |\\n|---|---|---|\\n| Direct | One small step, obvious scope, no plan needed | none |\\n| Inline | A plan exists; tasks are sequential and small; context will hold | `godmode:inline-execution` |\\n| Delegated | Many tasks, or tasks big enough to flood your context | `godmode:delegated-execution` |\\n| Parallel | Two or more tasks touch disjoint files and need no talk | `godmode:parallel-execution` |\\n| Team | Workers must exchange findings while they work | `godmode:team-orchestration` |\\n\\nAsk in order: Is it one step? Is there a plan? Will the work overflow one context? Are the parts independent? Must the workers talk to each other? Stop at the first answer that settles it. Every dispatch names its model (`godmode:model-routing`).\\n\\n## Invoking a skill\\n\\nEach harness has its own command and tool. Read your harness's file once per session.\\n\\n- Claude Code: `/godmode:<skill>`; [references/claude-code-tools.md](references/claude-code-tools.md)\\n- Codex: `$godmode:<skill>`; [references/codex-tools.md](references/codex-tools.md)\\n- Antigravity: `/<skill>`; [references/antigravity-tools.md](references/antigravity-tools.md)\\n- Cursor: `/<skill>`; [references/cursor-tools.md](references/cursor-tools.md)\\n- Gemini CLI: model activation; [references/gemini-tools.md](references/gemini-tools.md)\\n- OpenCode: skill loading; [references/opencode-tools.md](references/opencode-tools.md)\\n- Copilot CLI: `/<skill>` in a prompt; [references/copilot-tools.md](references/copilot-tools.md)\\n\\nIf no skill command works, read `skills/<skill>/SKILL.md` from the plugin root and follow it. When a reference names a capability your harness lacks, do the work inline or keep a plan file.\\n\\n## User Instructions\\n\\nThe user's instructions (direct requests, CLAUDE.md, AGENTS.md, GEMINI.md, rules) override skills; skills override default behaviour. A request says what to do, not to skip the discipline: \\\"add X\\\" still goes through the gates unless the user says to skip them.\\n\\n## Cognitive Traps\\n\\n| Rationalisation | Truth |\\n|---|---|\\n| \\\"It is only a question\\\" | Questions are tasks. Check for a skill. |\\n| \\\"I need context first\\\" | The skill says how to get context. Invoke it first. |\\n| \\\"Let me look at the files quickly\\\" | Files lack the conversation's intent. Check skills first. |\\n| \\\"No skill is needed for this\\\" | If one exists for it, use it. |\\n| \\\"I remember what the skill says\\\" | Skills change. Read the current version. |\\n| \\\"The skill is overkill here\\\" | Small things grow. The skill scales down. |\\n| \\\"Just this one thing first\\\" | Check before doing anything. |\\n| \\\"A team will be faster\\\" | Teams cost the most tokens. Use the lightest mode. |\\n\\n## Guardrails\\n\\n**Never:**\\n- Act or reply before the skill check.\\n- Paraphrase a skill from memory instead of loading it.\\n- Start a build without choosing an execution mode.\\n\\n**Always:**\\n- Announce the skill you are using.\\n- Track checklist items as tasks.\\n- Let user instructions win over skills.\\n\\n## Connections\\n\\n- `godmode:rationale`: first gate for new work.\\n- `godmode:intent-discovery`: next, for anything creative.\\n- `godmode:fault-diagnosis`: first for bugs.\\n- `godmode:model-routing`: on every dispatch.\\n- `godmode:doctor`: when skills never trigger.\\n</EXTREMELY_IMPORTANT>\"\n  }\n}\n",
+    "stderr": "",
+    "exit_code": 0,
+    "outcome": "success",
+    "uuid": "e8872cc6-075e-4d46-ba07-ac1d0b70d7a9",
+    "session_id": "f332a0ea-1f0a-4deb-8e4c-3440a12b5e1f"
+  },
+  {
+    "type": "system",
+    "subtype": "init",
+    "session_id": "f332a0ea-1f0a-4deb-8e4c-3440a12b5e1f",
+    "model": "claude-sonnet-5-5",
+    "permissionMode": "plan",
+    "claude_code_version": "2.1.310",
+    "plugins": [
+      {
+        "name": "godmode",
+        "path": "D:\\Projects\\GodMode",
+        "source": "godmode@inline",
+        "version": "2.0.0"
+      },
+      {
+        "name": "huggingface-skills",
+        "path": "C:\\Users\\David\\.claude\\plugins\\synced\\3fdd60ea-de88-4e42-b234-7322bd369449_d1a7c5fc-87bf-4db6-afda-1d78581c7482\\5d62d4be-37d5-4741-9f28-24b4b2ae34f1~g2",
+        "source": "huggingface-skills@synced",
+        "version": "1.0.36"
+      },
+      {
+        "name": "modern-web-guidance",
+        "path": "C:\\Users\\David\\.claude\\plugins\\synced\\3fdd60ea-de88-4e42-b234-7322bd369449_d1a7c5fc-87bf-4db6-afda-1d78581c7482\\modern-web-guidance~g2",
+        "source": "modern-web-guidance@synced",
+        "version": "0.0.194"
+      },
+      {
+        "name": "gitkraken",
+        "path": "C:\\Users\\David\\.claude\\plugins\\synced\\3fdd60ea-de88-4e42-b234-7322bd369449_d1a7c5fc-87bf-4db6-afda-1d78581c7482\\gitkraken~g2",
+        "source": "gitkraken@synced",
+        "version": "1.0.0"
+      },
+      {
+        "name": "desktop-commander",
+        "path": "C:\\Users\\David\\.claude\\plugins\\synced\\3fdd60ea-de88-4e42-b234-7322bd369449_d1a7c5fc-87bf-4db6-afda-1d78581c7482\\desktop-commander",
+        "source": "desktop-commander@synced",
+        "version": "0.2.0"
+      },
+      {
+        "name": "design",
+        "path": "C:\\Users\\David\\.claude\\plugins\\synced\\3fdd60ea-de88-4e42-b234-7322bd369449_d1a7c5fc-87bf-4db6-afda-1d78581c7482\\design~g2",
+        "source": "design@synced",
+        "version": "1.2.0"
+      },
+      {
+        "name": "engineering",
+        "path": "C:\\Users\\David\\.claude\\plugins\\synced\\3fdd60ea-de88-4e42-b234-7322bd369449_d1a7c5fc-87bf-4db6-afda-1d78581c7482\\engineering",
+        "source": "engineering@synced",
+        "version": "1.2.0"
+      },
+      {
+        "name": "cc-plugin-agents-md",
+        "path": "builtin",
+        "source": "cc-plugin-agents-md@builtin"
+      },
+      {
+        "name": "cc-plugin-telemetry",
+        "path": "builtin",
+        "source": "cc-plugin-telemetry@builtin"
+      },
+      {
+        "name": "cc-plugin-plugin-authoring",
+        "path": "builtin",
+        "source": "cc-plugin-plugin-authoring@builtin"
+      }
+    ],
+    "godmode_skills_visible": 0
+  }
+]

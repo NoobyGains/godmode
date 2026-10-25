@@ -24,11 +24,15 @@ cd "$WORK" && git init -q . 2>/dev/null
 echo "plugin dir: $ROOT"
 echo "work dir:   $WORK"
 echo "prompt:     $PROMPT"
+# Default permission mode (plan mode makes the model write a plan file instead
+# of invoking skills). Write, edit and shell tools are disallowed so the only
+# way to make progress on the request is a skill or a question to the user.
 claude -p "$PROMPT" \
   --plugin-dir "$ROOT" \
   --model "$MODEL" \
   --max-turns "$MAX_TURNS" \
-  --permission-mode plan \
+  --permission-mode default \
+  --disallowedTools Write Edit MultiEdit NotebookEdit Bash \
   --output-format stream-json --verbose \
   > "$TRANSCRIPT" 2> "$OUT_DIR/claude-code-$STAMP.stderr.log"
 rc=$?
