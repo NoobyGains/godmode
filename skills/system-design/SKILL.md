@@ -1,231 +1,213 @@
 ---
 name: system-design
-description: Use when making technology or structural decisions - selecting databases, APIs, auth strategies, caching layers, file organization, or weighing monolith against services
+description: "Use when choosing or changing architecture, a database, an API style, authentication, caching, queues or background jobs, file and module organisation, hosting, or any external service, or when the user asks what to use, where to deploy, how to scale, or whether to split into services."
 ---
 
 # System Design
 
-## Overview
-
-Select the simplest architecture that satisfies requirements. Introduce complexity only when evidence demands it.
-
-**Core principle:** Every structural decision must be driven by a current requirement, not a speculative future one.
-
-**No exceptions. No workarounds. No shortcuts.**
+Every component in an architecture is code to maintain, a bill, and a way to fail. This skill picks the simplest structure that meets a requirement the project has now, prefers what the user already runs over anything new, and records why. **Complexity must be paid for by a current, named requirement; "we might need it" pays for nothing.**
 
 ## The Prime Directive
 
 ```
-NO STRUCTURAL COMPLEXITY WITHOUT AN ESTABLISHED REQUIREMENT
+NO STRUCTURAL COMPLEXITY WITHOUT A CURRENT, NAMED REQUIREMENT
 ```
 
-If you cannot point to a concrete, current requirement that demands the complexity, choose the simpler option.
+No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
-**Always before:**
-- Selecting a database
-- Designing an API
-- Organizing a new project
-- Introducing a caching layer
-- Adding message queues or event systems
-- Choosing authentication strategy
-- Deciding on monolith vs services
+**Required:**
+- Choosing a database, API style, auth approach, cache, queue or job runner.
+- Deciding monolith versus services, or adding a new deployable.
+- Choosing hosting, storage, email, search, payments or any managed service.
+- Organising a new project's files and modules.
+- The user asks "what should I use", "where should I host", "how do we scale", or "should we migrate to X".
 
-**Especially when:**
-- "We might need to scale" (might = do not add complexity)
-- "What if we need X later?" (later = not now)
-- Multiple valid approaches exist
+**Skip:**
+- The user has already chosen the stack and wants it implemented: respect the choice and build (flag a serious risk once, then proceed).
+- Bug fixes and small changes inside an existing architecture.
 
-## The Entry Protocol
+## The Protocol
 
-```
-BEFORE making ANY structural decision:
+1. **List the requirements and classify each.** For every need (data, auth, files, jobs, real-time, email, payments, search, hosting), mark it **required now** (cannot launch without it), **required soon** (needed within the first weeks of real use, with evidence), **nice to have**, or **speculative**. Design only for the first two. Ask the user one question at a time when a classification is unclear.
 
-1. IDENTIFY: What concrete requirement drives this choice?
-2. COMPARE: What is the simplest option that satisfies it?
-3. JUSTIFY: Why is anything more complex necessary?
-   - If no justification: Use the simple option
-   - If justified: Record the requirement driving complexity
-4. DECIDE: Choose. Document. Move on.
+2. **Inventory what the user already has.** Invoke `godmode:environment-awareness` for the machine and project inventory: installed databases and runtimes, container tools, cloud and hosting CLIs that are logged in, running services, existing dependencies, configuration that references services. Also ask what accounts or platforms the user or their organisation already pays for. What exists and fits wins over anything new.
 
-Skip any step = over-engineering
-```
+3. **Start from the defaults** in the decision tables below. Each default is the simplest option that covers most projects.
 
-## Decision Frameworks
+4. **Move off a default only for a named requirement.** Write the requirement next to the deviation: "Queue, because image processing takes 40 s and must not block the request." If you cannot write that sentence, keep the default.
 
-### Monolith vs Services
+5. **Verify every changeable fact** behind the choice (a service's limits, free tier, pricing, region, runtime support) on the vendor's current page through `godmode:grounding`, and cite it. Hosting terms change often; never quote a price or limit from memory.
 
-```dot
-digraph structure_decision {
-    start [label="New project?", shape=diamond];
-    team [label="Multiple teams\nown separate\ndomains?", shape=diamond];
-    scale [label="Components need\nindependent\nscaling NOW?", shape=diamond];
-    deploy [label="Components need\nindependent\ndeploy cycles?", shape=diamond];
-    mono [label="MONOLITH\nSimplest path", shape=box, style=filled, fillcolor="#ccffcc"];
-    services [label="SERVICES\nEstablished need", shape=box, style=filled, fillcolor="#ffcccc"];
+6. **Look for a reference architecture** when the system is unusual (`godmode:reference-first`, architecture references).
 
-    start -> mono [label="yes"];
-    start -> team [label="existing"];
-    team -> services [label="yes"];
-    team -> scale [label="no"];
-    scale -> services [label="yes"];
-    scale -> deploy [label="no"];
-    deploy -> services [label="yes"];
-    deploy -> mono [label="no"];
-}
-```
+7. **Present the recommendation** in the format below, with an alternative and the trigger for switching, and what you deliberately left out.
 
-**Default: Monolith.** Extract services only when a specific component demonstrates it requires independent scaling or deployment.
+8. **Record the decision** as a short decision record (context, decision, consequences, sources) in the project's docs, so the reason survives the conversation.
 
-### Database Selection
+## Decision Tables
 
-| Requirement | Select | Rationale |
-|-------------|--------|-----------|
-| Structured data, relationships, transactions | PostgreSQL | ACID guarantees, mature, covers 90% of use cases |
-| Document-oriented, genuinely variable schema per record | MongoDB | Only when schema truly differs per document |
-| Key-value, caching, session storage | Redis | In-memory speed, built-in TTL |
-| Full-text search at volume | Elasticsearch | Purpose-built for search workloads |
-| Time-series data (metrics, logs) | TimescaleDB / InfluxDB | Optimized for time-indexed writes |
-| Graph traversal is the primary query model | Neo4j | Only when traversal IS the product |
-| Embedded, zero-config, single-user | SQLite | Simplest possible, no server needed |
+### Monolith or services
 
-**Default: PostgreSQL.** It handles JSON, full-text search, and most workloads adequately. Switch only when PostgreSQL demonstrably cannot meet a requirement.
+| Situation | Choose |
+|---|---|
+| New project, one team | **Monolith** (default), organised by capability |
+| A growing codebase where teams step on each other | Modular monolith with enforced module boundaries |
+| A component needs independent scaling or deploys **now**, with evidence | Extract that one component |
+| Separate teams own separate domains with separate release cycles | Services along those team boundaries |
 
-### API Design
+Martin Fowler's observation: successful microservice systems almost always started as a monolith; systems built as microservices from scratch often got into serious trouble. Shopify chose a modular monolith over microservices for one of the largest Rails codebases. <!-- https://martinfowler.com/bliki/MonolithFirst.html https://shopify.engineering/deconstructing-monolith-designing-software-maximizes-developer-productivity -->
 
-| Context | Select | Rationale |
-|---------|--------|-----------|
-| CRUD operations, public-facing API | REST | Universal, cacheable, well-understood |
-| Complex nested data, client-controlled shape | GraphQL | Eliminates over/under-fetching |
-| Internal service-to-service, high throughput | gRPC | Binary protocol, generated stubs, streaming |
-| Real-time bidirectional communication | WebSockets | Persistent connection, low latency |
-| Simple webhooks, event notification | REST callbacks | Stateless, easy to troubleshoot |
+### Database
 
-**Default: REST.** Adopt GraphQL only when clients genuinely need flexible queries. Adopt gRPC only for internal services where throughput is measured and proven insufficient with REST.
+| Requirement | Choose |
+|---|---|
+| Relational data, transactions, multiple users (most applications) | **PostgreSQL** (default) |
+| Single server or embedded, modest write concurrency, simplest operations | SQLite: one writer at a time, but writes take milliseconds; the SQLite authors say sites under 100K hits a day should work fine <!-- https://www.sqlite.org/whentouse.html --> |
+| Some records with variable shape | PostgreSQL `jsonb` columns before a document database <!-- https://www.postgresql.org/docs/current/datatype-json.html --> |
+| Text search over application data | PostgreSQL full-text search before a search engine <!-- https://www.postgresql.org/docs/current/textsearch.html --> |
+| Cache, sessions, rate-limit counters, ephemeral data | Redis or a compatible store, only once needed |
+| Search relevance, facets and scale beyond the database | A dedicated search engine |
+| Time-series, graph or analytics workloads that dominate the product | A specialised store, chosen with evidence |
 
-### Authentication Strategy
+Use the database the user already runs if it fits. One database until a second access pattern clearly needs its own store.
 
-| Context | Select | Rationale |
-|---------|--------|-----------|
-| Standard web application | Session-based (cookies) | Simple, secure, server-controlled revocation |
-| SPA + API on different origins | JWT (short-lived) + refresh tokens | Stateless API auth across domains |
-| Third-party login | OAuth 2.0 / OIDC | Delegated authentication standard |
-| Machine-to-machine | API keys + HMAC | Simple, auditable |
-| Multi-tenant SaaS | OIDC + tenant-scoped tokens | Isolation per tenant |
+### API style
 
-**Default: Session-based auth with httpOnly cookies.** JWTs are not inherently more secure. Use them only when stateless authentication across domains is a concrete requirement.
+| Context | Choose |
+|---|---|
+| CRUD, public or partner API, browser clients | **REST** with JSON (default); design details from `godmode:reference-first` |
+| Many client shapes over nested data, client-controlled queries | GraphQL |
+| Internal service-to-service calls with measured throughput needs, streaming | gRPC |
+| Server pushes to the browser | Server-sent events for one-way streams; WebSockets for two-way <!-- https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events --> |
+| Notifying other systems of events | Signed webhooks (Standard Webhooks) |
 
-### Caching Strategy
+A full-stack framework's built-in server functions are fine for its own front end; add a separate API only when another client needs it.
 
-```
-BEFORE introducing a cache:
+### Authentication
 
-1. Is there actually a measured performance problem?
-2. Can the database query be optimized instead?
-3. Is the data read-heavy with infrequent writes?
+| Context | Choose |
+|---|---|
+| A web app with its own users on one site | **Server-side sessions in secure, HttpOnly cookies** (default), via the framework's established auth library <!-- https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html --> |
+| Social or enterprise sign-in | OAuth 2.0 / OpenID Connect through a maintained library or provider |
+| A separate API used by third parties or other origins | Short-lived access tokens with refresh, or API keys for server-to-server |
+| Polished hosted UI, organisations and SSO wanted quickly | A managed identity provider, if the user accepts the cost and lock-in |
 
-Only if YES to 1, NO to 2, YES to 3: Introduce cache.
-```
+Never write password hashing, session handling or token validation from scratch. Stateless tokens cannot be revoked before expiry without extra machinery; sessions can. Security review goes to `godmode:security-protocol` (and the OWASP Authentication Cheat Sheet). <!-- https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html -->
 
-| Layer | Mechanism | Use When |
-|-------|-----------|----------|
-| Application | In-memory (LRU) | Single instance, small dataset |
-| Distributed | Redis / Memcached | Multi-instance, shared state |
-| HTTP | CDN / reverse proxy | Static assets, public pages |
-| Database | Query cache / materialized views | Expensive aggregations |
+### Caching
 
-**Default: No cache.** Optimize queries first. Introduce caching only after measuring a bottleneck.
+Add a cache only when all three hold: a performance problem has been **measured**; the query or code cannot simply be fixed; the data is read far more than it is written and can be slightly stale.
 
-### Event-Driven Architecture
+| Layer | When |
+|---|---|
+| HTTP caching and a CDN | Static assets and public pages (first and cheapest) |
+| In-process memory | One instance, small data |
+| Shared cache (Redis or compatible) | Several instances need the same cached data |
+| Materialised views | Expensive aggregations in the database |
 
-```
-BEFORE introducing a message queue:
+Default: no cache. Every cache needs an invalidation rule written down before it ships.
 
-1. Do you need asynchronous processing? (Email delivery, image processing)
-2. Do producers and consumers need to scale independently?
-3. Do you need guaranteed delivery across service boundaries?
+### Queues and background jobs
 
-If NO to all: Direct function calls are sufficient.
-```
+| Need | Choose |
+|---|---|
+| Work fits in the request | **Direct call** (default) |
+| Occasional slow work, retries, already on PostgreSQL | A Postgres-backed job queue (for example pg-boss for Node.js) <!-- https://github.com/timgit/pg-boss --> |
+| Many jobs, Redis already present | A Redis-backed queue (BullMQ for Node.js, Celery for Python) <!-- https://docs.bullmq.io https://docs.celeryq.dev --> |
+| Multi-step workflows that must resume after failure, serverless hosting | A durable-workflow service (for example Inngest, which retries from the failed step) <!-- https://www.inngest.com/docs --> |
+| Event streaming with replay, many consumers, high volume | A log-based broker such as Kafka, with evidence of the volume |
+| Scheduled tasks | The host's cron or scheduler first |
 
-| Need | Mechanism | Rationale |
-|------|-----------|-----------|
-| Simple task queue | Redis + BullMQ / Celery | Lightweight, familiar |
-| Event streaming, replay | Kafka | High throughput, log-based |
-| Cloud-native messaging | SQS / Cloud Pub/Sub | Managed, serverless |
-| Complex routing | RabbitMQ | Flexible routing, mature |
+### Hosting and services
 
-**Default: Direct function calls.** Queues add operational complexity. Introduce them only when async processing or decoupling is an established requirement.
+Choose by what the user already uses, then by the shape of the workload. The comparison, with links to each vendor's current limits and pricing pages, is in [hosting-and-services.md](references/hosting-and-services.md). Rules:
 
-## File Organization Conventions
+- Already deploying somewhere that fits: stay there.
+- Framework with a first-party host and the user is happy with it: that host is the default.
+- Steady traffic, containers, full control wanted: a VPS or container platform.
+- Spiky or low traffic, static-heavy: static hosting plus serverless functions.
+- One provider that covers database, auth and storage beats three providers glued together, if it fits.
 
-**Organize by capability, not by layer:**
+## File Organisation
+
+Organise by capability, not by technical layer, so one change touches one directory:
 
 ```
-# AVOID: organized by layer
 src/
-  controllers/
-  models/
-  services/
-  validators/
-
-# PREFER: organized by capability
-src/
-  users/
-    user.controller.ts
-    user.service.ts
-    user.model.ts
-    user.test.ts
-  orders/
-    order.controller.ts
-    order.service.ts
-    order.model.ts
-    order.test.ts
+  billing/
+    billing.routes.ts
+    billing.service.ts
+    billing.repository.ts
+    billing.test.ts
+  accounts/
+    ...
   shared/
-    database.ts
+    db.ts
     auth.middleware.ts
+    logger.ts
 ```
 
-Capability-based organization keeps related code together. Changing one capability touches one directory.
+In an existing project, follow its layout (`godmode:codebase-conventions`), even if it is by layer. For a new project, set it up with `godmode:project-bootstrap`.
+
+## Presenting the Recommendation
+
+```
+Requirements
+- <need>: required now / required soon / nice to have (deferred) / speculative (dropped)
+
+Already available
+- <databases, runtimes, CLIs, accounts found>
+
+Recommended
+| Layer | Choice | Why (requirement, and what the user already has) | Source |
+Expected running cost: <from the vendor's current pricing page, dated>, or "free tier covers current scale" with the limit cited.
+
+Alternative and when to switch
+| Layer | Alternative | Switch when <measurable trigger> |
+
+Deliberately not used
+- <service or pattern>: <why it is not needed now>
+```
+
+Keep it proportional: a weekend project gets five lines.
 
 ## Cognitive Traps
 
-| Rationalization | Truth |
-|-----------------|-------|
-| "We might need microservices later" | Extract when needed. Monolith-first is faster to build and debug. |
-| "NoSQL is more flexible" | PostgreSQL handles JSON. Schema flexibility usually means schema confusion. |
-| "GraphQL is the modern choice" | REST is simpler for CRUD. Modern does not mean appropriate. |
-| "JWTs are more secure" | JWTs are harder to revoke. Sessions are simpler and server-controlled. |
-| "We need a cache for performance" | Have you optimized your queries? Measure first. |
-| "Event-driven is more scalable" | Direct calls are simpler. Scaling concerns are future concerns. |
-| "This architecture handles future growth" | The future is unpredictable. Solve current problems. |
+| Rationalisation | Truth |
+|---|---|
+| "We might need microservices later." | Extracting later is possible; merging a premature split is painful. Start with a monolith. |
+| "NoSQL is more flexible." | PostgreSQL stores JSON. Flexibility without a schema usually becomes confusion. |
+| "Everyone uses X now." | Popularity is not a requirement. What does this project need, and what does the user already run? |
+| "JWTs are more secure." | They are harder to revoke. Sessions are simpler for a single site. |
+| "We need a cache for speed." | Measure first. Most slowness is a query or an N+1, not a missing cache. |
+| "A queue makes it scalable." | A queue adds a moving part. Use one when work cannot fit in the request. |
+| "Serverless is always cheaper." | It depends on the traffic shape. Check the current pricing for this workload. |
+| "I remember the free tier." | Free tiers and limits change. Read the vendor page today and cite it. |
 
-## Guardrails - HALT and Simplify
+## Guardrails
 
-- Adding infrastructure for "future scale"
-- Selecting technology because it is "modern" or "industry standard"
-- Architecture diagram has more than 5 components for an MVP
-- Multiple databases without distinct access patterns
-- Message queues for synchronous workflows
-- Microservices with a single team
-- "Flexible" schemas without concrete varying fields
-- Caching before measuring
+**Never:**
+- Add infrastructure for speculative scale.
+- Recommend a new service without first checking what the user already has.
+- Quote a price, limit or free tier without a current source.
+- Stack several managed services where one that the user already uses would do.
+- Override a stack the user has chosen; state the risk once and build.
 
-**All of these mean: Simplify. Use the boring, proven option.**
+**Always:**
+- Classify every requirement before choosing.
+- Write the requirement next to every deviation from a default.
+- Give an alternative with a measurable switch trigger.
+- Say what you left out and why.
+- Record the decision with its sources.
 
-## Integration
+## Connections
 
-**Complements:**
-- **godmode:performance-tuning** — When structural choices affect performance
-- **godmode:security-protocol** — Auth patterns and data flow security
-- **godmode:project-bootstrap** — File organization and initial setup
-- **godmode:task-planning** — Structural decisions during planning phase
-
-## The Bottom Line
-
-```
-Simplest architecture that works > "best" architecture that might be needed
-```
-
-PostgreSQL. REST. Monolith. Sessions. No cache. Direct calls. Start there. Introduce complexity only when you have evidence it is necessary.
+- `godmode:environment-awareness`: supplies the inventory of what the user already runs; always first for hosting and service choices.
+- `godmode:rationale`: questions whether the feature needs building at all, before this skill decides how.
+- `godmode:reference-first`: reference architectures and API, schema and CI references.
+- `godmode:grounding`: verifies vendor limits, pricing and capabilities.
+- `godmode:security-protocol`: reviews auth, data flow and secrets handling.
+- `godmode:performance-tuning`: measures before any cache or scaling change.
+- `godmode:project-bootstrap`: sets up the chosen structure in a new repository.

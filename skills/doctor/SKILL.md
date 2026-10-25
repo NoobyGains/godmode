@@ -1,6 +1,6 @@
 ---
 name: doctor
-description: Use when GodMode skills do not seem to trigger, when the user asks whether GodMode is installed or working, or after installing or updating the plugin on any harness
+description: "Use when GodMode skills do not seem to trigger, when the user asks whether GodMode is installed or working, or after installing or updating the plugin on any harness"
 disable-model-invocation: true
 ---
 
