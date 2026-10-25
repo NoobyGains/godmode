@@ -48,6 +48,15 @@ check_json "only the Claude shape is emitted" "$out" "set(d)=={'hookSpecificOutp
 check_json "bootstrap carries the using-godmode skill" "$out" "'godmode:using-godmode' in d['hookSpecificOutput']['additionalContext'] and len(d['hookSpecificOutput']['additionalContext'])>2000"
 check_json "bootstrap is under the 10,000-character SessionStart cap" "$out" "len(d['hookSpecificOutput']['additionalContext'])<=10000"
 
+echo "JSON escaping of control characters, quotes and backslashes"
+TMPROOT="$(mktemp -d)"
+mkdir -p "$TMPROOT/hooks" "$TMPROOT/skills/using-godmode"
+cp "$ROOT/hooks/session-start" "$TMPROOT/hooks/"
+printf -- '---\nname: using-godmode\ndescription: "x"\n---\nquote " backslash \\ tab\t bell \001 bs \010 vt \013 ff \014 us \037 del \177 end\n' > "$TMPROOT/skills/using-godmode/SKILL.md"
+out="$(CLAUDE_PLUGIN_ROOT="$TMPROOT" bash "$TMPROOT/hooks/session-start" 2>&1)"
+check_json "payload with control characters is still valid JSON" "$out" "'quote \" backslash \\\\ tab\\t bell  bs  vt  ff  us  del \\x7f end' in d['hookSpecificOutput']['additionalContext']"
+rm -rf "$TMPROOT"
+
 echo "UserPromptSubmit nudge"
 out="$(CLAUDE_PLUGIN_ROOT="$ROOT" sh -c '"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd" prompt-nudge' 2>&1)"; rc=$?
 [ $rc -eq 0 ] && pass "exit 0" || fail "exit $rc"

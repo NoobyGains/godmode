@@ -47,16 +47,31 @@ export function parseFrontmatter(content) {
   const block = content.slice(4, end);
   const data = {};
   let key = null;
+  const raw = {};
   for (const line of block.split(/\r?\n/)) {
     const m = line.match(/^([A-Za-z][\w-]*):\s*(.*)$/);
     if (m) {
       key = m[1];
-      data[key] = m[2].trim().replace(/^(['"])(.*)\1$/, '$2');
+      raw[key] = m[2].trim();
+      data[key] = unquoteScalar(raw[key]);
     } else if (key && /^\s+\S/.test(line)) {
+      raw[key] = (raw[key] + ' ' + line.trim()).trim();
       data[key] = (data[key] + ' ' + line.trim()).trim();
     }
   }
-  return { data, body: content.slice(end + 4) };
+  return { data, raw, body: content.slice(end + 4) };
+}
+
+// A double-quoted YAML scalar on one line: "..." with only \" and \\ escapes
+// inside, optionally followed by a comment. Anything else that starts with a
+// quote is malformed (an unescaped quote in the middle, a missing closer).
+const QUOTED_SCALAR = /^"((?:[^"\\]|\\.)*)"\s*(?:#.*)?$/;
+
+function unquoteScalar(value) {
+  const q = value.match(QUOTED_SCALAR);
+  if (q) return q[1].replace(/\\(["\\])/g, '$1');
+  if (/^'([^']*)'\s*(?:#.*)?$/.test(value)) return value.match(/^'([^']*)'/)[1];
+  return value.replace(/\s+#.*$/, '').trim();   // plain scalar; drop a trailing comment
 }
 
 // ---------------------------------------------------------------------------
@@ -162,12 +177,21 @@ if (exists('skills/using-godmode/SKILL.md')) {
   if (n > 9000) err('skills/using-godmode/SKILL.md', `${n} characters; the SessionStart bootstrap is capped at 10,000 including the wrapper (limit 9,000)`);
 } else err('skills/using-godmode/SKILL.md', 'missing: the bootstrap skill');
 
-// Descriptions are quoted so YAML never misreads a colon (Antigravity < 1.3.6 dropped such skills).
+// Descriptions are quoted so YAML never misreads a colon (Antigravity < 1.3.6
+// dropped such skills), and the quoting must be well formed: one double-quoted
+// string, inner quotes escaped, nothing after it but an optional comment.
 for (const name of skillNames) {
   const rel = `skills/${name}/SKILL.md`;
   if (!exists(rel)) continue;
-  const m = read(rel).match(/^description:\s*(.*)$/m);
-  if (m && !/^(["']).*\1\s*$/.test(m[1])) err(rel, 'description must be wrapped in double quotes');
+  const fm = parseFrontmatter(read(rel));
+  const rawDesc = fm?.raw?.description;
+  if (rawDesc !== undefined && !QUOTED_SCALAR.test(rawDesc)) err(rel, 'description must be one well-formed double-quoted string (escape inner quotes as \\")');
+}
+
+// The bootstrap is injected as JSON by the hook; control characters other than
+// newline, carriage return and tab are dropped there, so none may be relied on.
+if (exists('skills/using-godmode/SKILL.md') && /[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(read('skills/using-godmode/SKILL.md'))) {
+  err('skills/using-godmode/SKILL.md', 'contains a control character the hook would drop');
 }
 
 // Antigravity rules need a valid trigger or they are silently discarded.
@@ -246,6 +270,19 @@ for (const rel of ['.claude-plugin/plugin.json', '.antigravity-plugin/plugin.jso
   const j = json(rel);
   if (j.name !== 'godmode') err(rel, `name must be "godmode", got "${j.name}"`);
   if (!j.description) err(rel, 'missing description');
+  // Every file path a manifest points at must exist in the repository.
+  const paths = [j.icon, j.logo, j.skills, j.hooks, j.interface?.logo, j.interface?.composerIcon].filter((v) => typeof v === 'string');
+  for (const p of paths) {
+    const clean = p.replace(/^\.\//, '').replace(/\/$/, '');
+    if (!exists(clean)) err(rel, `references a path that does not exist: ${p}`);
+  }
+}
+// package.json entry points (the OpenCode package route resolves them).
+if (exists('package.json')) {
+  const pj = json('package.json');
+  const entries = [pj.main, ...Object.values(pj.exports ?? {})].filter((v) => typeof v === 'string');
+  for (const e of entries) if (!exists(e.replace(/^\.\//, ''))) err('package.json', `entry point does not exist: ${e}`);
+  if (!pj.main) err('package.json', 'missing "main": the OpenCode plugin route needs a resolvable entry point');
 }
 if (exists('.antigravity-plugin/plugin.json')) {
   const j = json('.antigravity-plugin/plugin.json');
@@ -275,7 +312,7 @@ if (exists('README.md')) {
   for (const name of skillNames) {
     if (!readme.includes(`\`${name}\``)) err('README.md', `does not mention skill \`${name}\``);
   }
-  const counts = [...readme.matchAll(/\b(\d{2})\s+skills\b/gi)].map((m) => Number(m[1]));
+  const counts = [...readme.matchAll(/\b(\d+)\s+skills\b/gi)].map((m) => Number(m[1]));
   for (const c of counts) if (c !== skillNames.length) err('README.md', `says "${c} skills" but skills/ has ${skillNames.length}`);
   if (!readme.includes('/plugin install godmode --marketplace NoobyGains/godmode')) err('README.md', 'missing the one-step Claude Code install line');
 } else err('README.md', 'missing');

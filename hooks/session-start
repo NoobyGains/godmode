@@ -34,6 +34,13 @@ fi
 
 escape_for_json() {
   local s="$1"
+  # JSON forbids raw control characters. Newline, carriage return and tab are
+  # escaped below; every other control character (U+0001-U+0008, U+000B,
+  # U+000C, U+000E-U+001F) is dropped, since none belongs in a skill file.
+  # NUL cannot be stored in a bash variable, so it never reaches this point.
+  s="${s//[$'\x01'-$'\x08']/}"
+  s="${s//[$'\x0b'$'\x0c']/}"
+  s="${s//[$'\x0e'-$'\x1f']/}"
   s="${s//\\/\\\\}"
   s="${s//\"/\\\"}"
   s="${s//$'\n'/\\n}"

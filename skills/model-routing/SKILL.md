@@ -49,7 +49,7 @@ This skill speaks in three tiers. Each harness reference maps them to that harne
 | Implementer, task described in prose | Mid, medium | it needs design judgment or broad codebase understanding | it is one file with an exact spec |
 | Batched same-shape edits | Cheap, low | the edits are not truly identical in shape | |
 | Task reviewer | Mid, medium (the floor for reviewers) | the diff is subtle: concurrency, security, data migration | never below mid |
-| Scoped re-review of a small fix | Cheap to mid, low to medium | the fix is larger than the finding implied | |
+| Scoped re-review of a small fix | Mid, low effort (the reviewer floor holds; only the effort drops) | the fix is larger than the finding implied | never below mid |
 | Final whole-branch review | Top, high | | never; this is the one fresh context the run buys |
 | Fix rounds 4-5 implementer | One tier above the stuck implementer | | |
 | Bulk reading, searching, summarising for the lead | Cheap, low | the summary needs judgment | |

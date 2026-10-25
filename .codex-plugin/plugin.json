@@ -9,7 +9,15 @@
   "homepage": "https://github.com/NoobyGains/godmode",
   "repository": "https://github.com/NoobyGains/godmode",
   "license": "MIT",
-  "keywords": ["skills", "engineering-discipline", "tdd", "planning", "code-review", "grounding", "workflow"],
+  "keywords": [
+    "skills",
+    "engineering-discipline",
+    "tdd",
+    "planning",
+    "code-review",
+    "grounding",
+    "workflow"
+  ],
   "skills": "./skills/",
   "hooks": {},
   "interface": {
@@ -18,7 +26,11 @@
     "longDescription": "GodMode makes a coding agent work like a senior engineer: it questions whether the work is worth doing, designs before coding, verifies every fact that can change against current documentation, plans atomic tasks, builds test-first on the cheapest capable model, reviews each task twice and with a second model family, and proves the result with fresh output before claiming completion.",
     "developerName": "David Innes",
     "category": "Developer Tools",
-    "capabilities": ["Interactive", "Read", "Write"],
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
     "defaultPrompt": [
       "I want to add a feature to this project.",
       "Something is broken and I don't know why."
@@ -27,7 +39,6 @@
     "privacyPolicyURL": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
     "termsOfServiceURL": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
     "brandColor": "#8B5CF6",
-    "composerIcon": "./assets/icon.svg",
     "logo": "./assets/icon.png",
     "screenshots": []
   }

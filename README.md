@@ -70,7 +70,7 @@ npx skills add NoobyGains/godmode
 This installs the skills into the agent's skills directory. The bootstrap that makes them trigger automatically needs the harness-specific route in the [harness table](#harnesses).
 
 > [!TIP]
-> Nothing to configure. GodMode is Markdown skills plus one session-start hook; it never calls a network service, never collects telemetry, and has zero runtime dependencies.
+> Nothing to configure. GodMode is Markdown skills plus two small hooks (a session-start bootstrap and a one-line reminder per prompt); it never calls a network service, never collects telemetry, and has zero runtime dependencies.
 
 <details>
 <summary><b>Gemini CLI, Cursor, OpenCode, updating, uninstalling</b></summary>
@@ -243,12 +243,12 @@ Every skill has a Prime Directive (the rule that cannot be broken), a Protocol, 
 
 | Harness | Install | Bootstrap at session start | Status |
 |---|---|---|---|
-| Claude Code | one-step `/plugin install` line above | SessionStart hook, plus a one-line reminder on each prompt | Verified on 2.1.310: hook tested on sh, with an empty PATH and through cmd.exe; in a clean profile a headless "Let's make a react todo list" invoked `rationale` first and answered with options, no code ([evidence](docs/verification/)) |
+| Claude Code | one-step `/plugin install` line above | SessionStart hook, plus a one-line reminder on each prompt | Verified on 2.1.310: hook tested on sh, with an empty PATH and through cmd.exe; in a clean profile (only Claude Code's bundled plugins present) a headless "Let's make a react todo list" invoked `rationale` first and answered with options, no code ([evidence](docs/verification/)) |
 | Antigravity CLI (`agy`) | `agy plugin install <repo url>` | Always-on plugin rule plus the skill index | Verified on agy 1.4.7 (Windows): installed as a native plugin with all 33 skills; a headless "Let's make a react todo list" on Gemini Flash answered with the `rationale` analysis, no code ([evidence](docs/verification/)) |
 | Codex CLI and App | `codex plugin marketplace add` + `codex plugin add` | Native skill discovery (`$godmode:using-godmode`) | Verified on Codex CLI 0.163: marketplace registered from this repo and `godmode@godmode` 2.0.0 installed and enabled ([evidence](docs/verification/)) |
 | Gemini CLI | `gemini extensions install <repo url>` | Extension context file | Manifest shipped, untested |
 | Cursor | plugin from repository | `sessionStart` hook | Manifest shipped, untested |
-| OpenCode V1 and V2 | `opencode.json` plugin entry | Plugin injects into the first user message | Plugin shipped, syntax-checked, untested on a live install |
+| OpenCode V1 and V2 | `opencode.json` plugin entry | V1: injected into the first user message; V2: session context hook | Plugin shipped and module-loads under Node; untested on a live install |
 | Copilot CLI, Windsurf, others | `npx skills add NoobyGains/godmode` | None (skills trigger from their descriptions) | Skills only |
 
 "Untested" means no maintainer has run it on a live install yet. If you do, open an issue with the transcript and the row changes. The per-prompt reminder is a `UserPromptSubmit` hook, which fires in interactive sessions; in our headless `claude -p` runs it did not fire, so the session-start bootstrap alone produced the verified behaviour.

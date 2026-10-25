@@ -73,11 +73,15 @@ const _bootstrapCache = new Map();
 const getBootstrapContent = (toolMapping) => {
   if (_bootstrapCache.has(toolMapping)) return _bootstrapCache.get(toolMapping);
   const skillPath = path.join(skillsDir, 'using-godmode', 'SKILL.md');
-  if (!fs.existsSync(skillPath)) {
-    _bootstrapCache.set(toolMapping, null);
+  let raw;
+  try {
+    raw = fs.readFileSync(skillPath, 'utf8');
+  } catch (err) {
+    // Missing or unreadable bootstrap: inject nothing, do not cache, log once per attempt.
+    console.error('[godmode] cannot read using-godmode/SKILL.md:', err.message);
     return null;
   }
-  const { content } = extractAndStripFrontmatter(fs.readFileSync(skillPath, 'utf8'));
+  const { content } = extractAndStripFrontmatter(raw);
   _bootstrapCache.set(toolMapping, `<EXTREMELY_IMPORTANT>
 You have GodMode.
 
@@ -136,14 +140,19 @@ export const GodModePlugin = async ({ client }) => {
       if (!config.skills.paths.includes(skillsDir)) config.skills.paths.push(skillsDir);
     },
     'experimental.chat.messages.transform': async (_input, output) => {
-      const bootstrap = getBootstrapContent(V1_MAPPING);
-      if (!bootstrap || !output.messages.length) return;
-      const firstUser = output.messages.find((m) => m.info.role === 'user');
-      if (!firstUser || !firstUser.parts.length) return;
-      if (firstUser.parts.some((p) => p.type === 'text' && p.text.includes('EXTREMELY_IMPORTANT'))) return;
-      if (client && await isChildSession((id) => client.session.get({ path: { id } }), firstUser.info.sessionID)) return;
-      const ref = firstUser.parts[0];
-      firstUser.parts.unshift({ ...ref, type: 'text', text: bootstrap });
+      try {
+        const bootstrap = getBootstrapContent(V1_MAPPING);
+        if (!bootstrap || !output.messages.length) return;
+        const firstUser = output.messages.find((m) => m.info.role === 'user');
+        if (!firstUser || !firstUser.parts.length) return;
+        if (firstUser.parts.some((p) => p.type === 'text' && p.text.includes('EXTREMELY_IMPORTANT'))) return;
+        if (client && await isChildSession((id) => client.session.get({ path: { id } }), firstUser.info.sessionID)) return;
+        const ref = firstUser.parts[0];
+        firstUser.parts.unshift({ ...ref, type: 'text', text: bootstrap });
+      } catch (err) {
+        // Never let a bootstrap failure break the conversation.
+        console.error('[godmode] messages.transform failed:', err);
+      }
     },
   };
 };
