@@ -21,7 +21,7 @@
   "scripts": {
     "validate": "node scripts/validate.js",
     "validate:ci": "node scripts/validate.js --ci",
-    "test": "node scripts/validate.js --ci && bash tests/test-hooks.sh && bash tests/test-manifests.sh",
+    "test": "node scripts/validate.js --ci && bash tests/test-hooks.sh && bash tests/test-bin.sh && bash tests/test-manifests.sh",
     "bump": "node scripts/bump-version.js",
     "assets": "python scripts/readme_assets.py"
   }

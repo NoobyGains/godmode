@@ -1,6 +1,18 @@
 # Plan workspace and progress ledger
 
-Shared by `godmode:delegated-execution` and `godmode:inline-execution`. Same directory, same format, so a run can change mode mid-plan and the new executor resumes from the same ledger. Everything here is plain shell (Git Bash, macOS, Linux); no script is required.
+Shared by `godmode:delegated-execution` and `godmode:inline-execution`. Same directory, same format, so a run can change mode mid-plan and the new executor resumes from the same ledger.
+
+**Prefer the helper when it is on your PATH.** The plugin ships `bin/godmode`, and harnesses that add a plugin's `bin/` to the shell PATH (Claude Code, Antigravity) can call it directly; `command -v godmode` tells you. It wraps every command below and fails loudly on a missing task or an empty range:
+
+```bash
+godmode workspace docs/plans/2026-10-25-feature.md        # prints the workspace path
+godmode brief docs/plans/2026-10-25-feature.md 3 "$ws"    # writes task-3-brief.md, prints its path
+godmode review-package "$BASE" HEAD "$ws"                 # writes review-<a>..<b>.diff, prints its path
+godmode ledger "$ws" "Task 3: complete (commits a..b, review clean)"
+godmode status "$ws"                                      # completed tasks, next task, ruling count
+```
+
+Without the helper, the commands below do the same in plain shell (Git Bash, macOS, Linux).
 
 ## Contents
 

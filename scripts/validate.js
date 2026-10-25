@@ -217,7 +217,7 @@ function gitMode(rel) {
   } catch { return null; }
 }
 
-for (const rel of ['hooks/run-hook.cmd', 'hooks/session-start', 'hooks/prompt-nudge', 'hooks/doctor']) {
+for (const rel of ['hooks/run-hook.cmd', 'hooks/session-start', 'hooks/prompt-nudge', 'hooks/doctor', 'bin/godmode']) {
   if (!exists(rel)) { err(rel, 'missing'); continue; }
   const mode = gitMode(rel);
   if (mode === null) warn(rel, 'not tracked by git yet (exec bit cannot be checked)');

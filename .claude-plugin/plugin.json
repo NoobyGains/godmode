@@ -1,5 +1,6 @@
 {
   "name": "godmode",
+  "displayName": "GodMode",
   "description": "Engineering discipline for AI coding agents: question the request, verify against current docs instead of memory, plan, build test-first on the cheapest capable model, review with a second model family, prove it before saying done",
   "version": "2.0.0",
   "author": {
@@ -8,6 +9,8 @@
   },
   "homepage": "https://github.com/NoobyGains/godmode",
   "repository": "https://github.com/NoobyGains/godmode",
+  "documentationUrl": "https://github.com/NoobyGains/godmode#readme",
+  "supportUrl": "https://github.com/NoobyGains/godmode/issues",
   "license": "MIT",
   "icon": "assets/icon.png",
   "keywords": [

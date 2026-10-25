@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# godmode: helper for the plan workspace that delegated-execution and
+# inline-execution keep under <repo>/.godmode/runs/<plan-slug>/.
+#
+# Harnesses that put a plugin's bin/ on the shell PATH (Claude Code,
+# Antigravity) can call this directly; elsewhere the same commands are
+# written out in skills/delegated-execution/references/ledger-and-workspace.md.
+#
+#   godmode workspace <plan.md>                 print (and create) the plan's workspace
+#   godmode brief <plan.md> <N> [workspace]     extract Task N into task-N-brief.md, print its path
+#   godmode review-package <base> [head] [ws]   write the commits, stat and diff for base..head, print its path
+#   godmode ledger <workspace> <line...>        append one line to progress.md (creates the header)
+#   godmode status <workspace>                  show completed tasks and the next one to run
+#
+# Plain bash and git only; tested with Git Bash awk and GNU awk.
+set -euo pipefail
+
+usage() { sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+die() { printf 'godmode: %s\n' "$*" >&2; exit 1; }
+
+repo_root() { git rev-parse --show-toplevel 2>/dev/null || die "not inside a git repository"; }
+
+cmd_workspace() {
+  local plan="${1:-}"; [ -n "$plan" ] || usage
+  [ -f "$plan" ] || die "plan not found: $plan"
+  local root; root="$(repo_root)"
+  local slug; slug="$(basename "$plan" .md)"
+  local ws="$root/.godmode/runs/$slug"
+  mkdir -p "$ws"
+  [ -e "$root/.godmode/.gitignore" ] || printf '*\n' > "$root/.godmode/.gitignore"
+  if [ -e "$ws/plan-path" ] && [ "$(cat "$ws/plan-path")" != "$plan" ]; then
+    ws="$ws-$(basename "$(dirname "$plan")")"
+    mkdir -p "$ws"
+  fi
+  [ -e "$ws/plan-path" ] || printf '%s\n' "$plan" > "$ws/plan-path"
+  printf '%s\n' "$ws"
+}
+
+cmd_brief() {
+  local plan="${1:-}" n="${2:-}"; [ -n "$plan" ] && [ -n "$n" ] || usage
+  [ -f "$plan" ] || die "plan not found: $plan"
+  case "$n" in ''|*[!0-9]*) die "task number must be an integer, got '$n'";; esac
+  local ws="${3:-}"; [ -n "$ws" ] || ws="$(cmd_workspace "$plan")"
+  local out="$ws/task-$n-brief.md"
+  awk -v n="$n" '
+    /^```/ { fence = !fence; if (keep) print; next }
+    !fence && /^#+[ \t]/ {
+      match($0, /^#+/); lvl = RLENGTH
+      if ($0 ~ /^#+[ \t]+Task[ \t]+[0-9]+/) { keep = ($0 ~ ("^#+[ \t]+Task[ \t]+" n "([^0-9]|$)")); if (keep) tl = lvl }
+      else if (keep && lvl <= tl) keep = 0
+    }
+    keep { print }
+  ' "$plan" > "$out"
+  [ -s "$out" ] || { rm -f "$out"; die "Task $n not found in $plan"; }
+  printf '%s\n' "$out"
+}
+
+cmd_review_package() {
+  local base="${1:-}"; [ -n "$base" ] || usage
+  local head="${2:-HEAD}" ws="${3:-}"
+  local head_sha; head_sha="$(git rev-parse "$head")" || die "unknown head: $head"
+  git rev-parse --verify --quiet "$base^{commit}" >/dev/null || die "unknown base: $base"
+  git merge-base --is-ancestor "$base" "$head_sha" || die "HEAD is not built on $base"
+  [ "$(git rev-list --count "$base..$head_sha")" -gt 0 ] || die "empty range $base..$head_sha"
+  [ -n "$ws" ] || ws="$(pwd)"
+  mkdir -p "$ws"
+  local out="$ws/review-$(git rev-parse --short "$base")..$(git rev-parse --short "$head_sha").diff"
+  {
+    echo "# Review package $base..$head_sha"
+    echo; echo "## Commits"; git log --oneline "$base..$head_sha"
+    echo; echo "## Files changed"; git diff --stat "$base..$head_sha"
+    echo; echo "## Diff"; git diff -U10 "$base..$head_sha"
+  } > "$out"
+  printf '%s\n' "$out"
+}
+
+cmd_ledger() {
+  local ws="${1:-}"; [ -n "$ws" ] || usage; shift
+  [ $# -gt 0 ] || usage
+  [ -f "$ws/plan-path" ] || die "not a plan workspace (no plan-path): $ws"
+  local ledger="$ws/progress.md"
+  [ -e "$ledger" ] || printf '# GodMode ledger: plan %s\n' "$(cat "$ws/plan-path")" > "$ledger"
+  printf '%s\n' "$*" >> "$ledger"
+  tail -n 1 "$ledger"
+}
+
+cmd_status() {
+  local ws="${1:-}"; [ -n "$ws" ] || usage
+  local ledger="$ws/progress.md"
+  [ -f "$ledger" ] || die "no ledger yet at $ledger"
+  head -n 1 "$ledger"
+  local done; done="$(grep -E '^Task [0-9]+: complete' "$ledger" | sed -E 's/^Task ([0-9]+):.*/\1/' | sort -n | tr '\n' ' ')"
+  printf 'complete: %s\n' "${done:-none}"
+  local last; last="$(grep -E '^Task [0-9]+:' "$ledger" | tail -n 1 || true)"
+  printf 'last task line: %s\n' "${last:-none}"
+  local next=1; for t in $done; do [ "$t" -ge "$next" ] && next=$((t + 1)); done
+  printf 'next task: %s\n' "$next"
+  grep -c '^Ruling\|Ruling:' "$ledger" | sed 's/^/rulings: /'
+}
+
+case "${1:-}" in
+  workspace) shift; cmd_workspace "$@";;
+  brief) shift; cmd_brief "$@";;
+  review-package) shift; cmd_review_package "$@";;
+  ledger) shift; cmd_ledger "$@";;
+  status) shift; cmd_status "$@";;
+  -h|--help|help|'') usage;;
+  *) die "unknown command: $1";;
+esac

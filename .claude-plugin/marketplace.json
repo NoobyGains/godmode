@@ -15,7 +15,18 @@
       "author": {
         "name": "David Innes",
         "url": "https://github.com/NoobyGains"
-      }
+      },
+      "tags": [
+        "skills",
+        "engineering-discipline",
+        "tdd",
+        "planning",
+        "code-review",
+        "grounding",
+        "agent-teams",
+        "antigravity",
+        "codex"
+      ]
     }
   ]
 }
