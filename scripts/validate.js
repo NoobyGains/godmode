@@ -118,7 +118,8 @@ for (const name of skillNames) {
     if (WORKFLOW_WORDS.test(data.description)) warn(rel, 'description looks like a workflow summary; keep it to triggering conditions');
     if (/\b(I|me|my)\b/.test(data.description)) err(rel, 'description must be in the third person');
   }
-  const extra = Object.keys(data).filter((k) => !['name', 'description'].includes(k));
+  // Claude Code honours these two; other harnesses ignore them, which is harmless.
+  const extra = Object.keys(data).filter((k) => !['name', 'description', 'disable-model-invocation', 'allowed-tools'].includes(k));
   if (extra.length) warn(rel, `frontmatter fields beyond name/description are not honoured on every harness: ${extra.join(', ')}`);
 
   if (!/^# /m.test(body)) err(rel, 'body needs an H1 title');

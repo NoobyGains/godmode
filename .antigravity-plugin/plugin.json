@@ -9,8 +9,15 @@
     "Something is broken and I don't know why",
     "Before we build this, is it worth building?"
   ],
-  "category": "Developer Tools",
-  "keywords": ["skills", "agent-skills", "engineering-discipline", "tdd", "planning", "code-review", "grounding"],
+  "keywords": [
+    "skills",
+    "agent-skills",
+    "engineering-discipline",
+    "tdd",
+    "planning",
+    "code-review",
+    "grounding"
+  ],
   "author": {
     "name": "David Innes",
     "url": "https://github.com/NoobyGains"
