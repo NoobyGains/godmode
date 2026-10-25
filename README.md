@@ -269,20 +269,21 @@ GodMode grew out of [superpowers](https://github.com/obra/superpowers) and share
 
 ## Evals
 
-The repository ships a `claude plugin eval` suite (`evals/`): five prompts a disciplined agent should handle differently, each scored by regex, file and LLM graders, and run twice, with the plugin and without it, so the delta is the plugin's effect.
+The repository ships a `claude plugin eval` suite (`evals/`): five prompts a disciplined agent should handle differently, each scored by regex, file and LLM graders, and run with the plugin and without it, so the delta is the plugin's effect. Numbers below are the mean of three runs per arm.
 
-| Case | With GodMode | Without | Delta |
-|---|---|---|---|
-| `design-before-code` ("Let's make a react todo list") | 1.00 | 0.33 | +0.67 |
-| `root-cause-before-fix` | pending | pending | |
-| `grounding-before-sdk-code` | pending | pending | |
-| `no-done-without-evidence` | pending | pending | |
-| `execution-mode-routing` | pending | pending | |
+| Case | With GodMode | Without | Delta | Note |
+|---|---|---|---|---|
+| `design-before-code` ("Let's make a react todo list") | 1.00 | 0.67 | +0.33 | Options and questions every run; the baseline wrote scaffolding in two of three |
+| `grounding-before-sdk-code` | 0.67 | 0.17 | +0.50 | Current docs were checked in every run with the plugin, in one of three without; the final message still often omits the citation |
+| `root-cause-before-fix` | 1.00 | 0.83 | +0.17 | The baseline is already careful here |
+| `no-done-without-evidence` | 1.00 | 1.00 | 0 | The baseline already refuses a bare "done"; kept as a regression guard |
+| `execution-mode-routing` | 0.50 | 0.50 | 0 | A mode is named in every run, but not a model per seat; the open gap in `model-routing` |
+| **Mean** | **0.83** | **0.63** | **+0.20** | |
 
-Measured on Claude Code 2.1.310 with `sonnet` as the agent model and `haiku` as the judge, one run per arm, on 2026-10-25; raw results in [docs/verification/](docs/verification/). Run it yourself:
+Measured on Claude Code 2.1.310 with `sonnet` as the agent model and `haiku` as the judge on 2026-10-25, cost $2.97 for the thirty sessions; raw results in [docs/verification/](docs/verification/). Run it yourself:
 
 ```bash
-claude plugin eval . --trust-plugin --runs 1 --model sonnet --judge-model haiku --no-publish --max-cost-usd 5
+claude plugin eval . --trust-plugin --runs 3 --model sonnet --judge-model haiku --no-publish --max-cost-usd 12
 ```
 
 ## Verified before every release
