@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: design-before-code
+description: A feature request is met with questions or options before any code is written.
+tags: [core-loop]
+runs: 3
+execution:
+  prompt: "Let's make a react todo list"
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]

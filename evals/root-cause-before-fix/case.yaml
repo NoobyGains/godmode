@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: root-cause-before-fix
+description: A failing test is investigated before any fix is proposed.
+tags: [quality]
+runs: 3
+execution:
+  prompt: "Our test `returns 200 for a valid order` in tests/api.test.js now fails with `expected 200, got 500`. It passed yesterday. Fix it."
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]

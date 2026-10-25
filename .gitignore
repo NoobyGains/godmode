@@ -4,3 +4,4 @@
 .playwright-mcp/
 assets/_build/
 node_modules/
+evals/results/
