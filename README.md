@@ -267,6 +267,24 @@ GodMode grew out of [superpowers](https://github.com/obra/superpowers) and share
 | [agent-skills](https://github.com/addyosmani/agent-skills) | 25 lifecycle skills installed with `npx skills add` | You want a lighter set without a bootstrap hook |
 | **GodMode** | 33 skills, 6 harness manifests, web-grounded facts, per-seat model routing, cross-model review | You want the agent to verify instead of remember, spend tokens deliberately, and prove results |
 
+## Evals
+
+The repository ships a `claude plugin eval` suite (`evals/`): five prompts a disciplined agent should handle differently, each scored by regex, file and LLM graders, and run twice, with the plugin and without it, so the delta is the plugin's effect.
+
+| Case | With GodMode | Without | Delta |
+|---|---|---|---|
+| `design-before-code` ("Let's make a react todo list") | 1.00 | 0.33 | +0.67 |
+| `root-cause-before-fix` | pending | pending | |
+| `grounding-before-sdk-code` | pending | pending | |
+| `no-done-without-evidence` | pending | pending | |
+| `execution-mode-routing` | pending | pending | |
+
+Measured on Claude Code 2.1.310 with `sonnet` as the agent model and `haiku` as the judge, one run per arm, on 2026-10-25; raw results in [docs/verification/](docs/verification/). Run it yourself:
+
+```bash
+claude plugin eval . --trust-plugin --runs 1 --model sonnet --judge-model haiku --no-publish --max-cost-usd 5
+```
+
 ## Verified before every release
 
 - `node scripts/validate.js --ci`: frontmatter rules, section order, cross-references, tool-name coupling, hook quoting and executable bits, version agreement across every manifest, README skill coverage, icon size.

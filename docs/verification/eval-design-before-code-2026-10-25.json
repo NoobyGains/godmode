@@ -1,0 +1,192 @@
+{
+ "schemaVersion": 1,
+ "claudeVersion": "2.1.310",
+ "startedAt": "2026-10-25T15:23:37.384Z",
+ "durationSeconds": 54,
+ "costUsd": 0.1655023,
+ "partial": false,
+ "suite": {
+  "root": "D:\\Projects\\GodMode",
+  "ablation": "with-without",
+  "modelOverride": "sonnet",
+  "judgeModel": "haiku",
+  "caseFilter": "design-before-code",
+  "threshold": 1,
+  "concurrency": 1,
+  "plugins": [
+   {
+    "name": "godmode",
+    "version": "2.0.0",
+    "path": "D:\\Projects\\GodMode"
+   }
+  ]
+ },
+ "cases": [
+  {
+   "name": "design-before-code",
+   "dir": "evals\\design-before-code",
+   "source": "mixed",
+   "promptMarkdown": "Let's make a react todo list",
+   "runsPerCase": 3,
+   "timeoutSeconds": 300,
+   "maxTurns": 8,
+   "graders": [
+    {
+     "name": "asks-or-offers-options",
+     "type": "regex",
+     "weight": 1,
+     "config": {
+      "target": "last_message",
+      "pattern": "\\?|option [ABC]\\b|approach [ABC]\\b",
+      "flags": "i",
+      "match": "contains"
+     }
+    },
+    {
+     "name": "design-first",
+     "type": "llm",
+     "weight": 1,
+     "graderMarkdown": "Pass if the reply engages with requirements before implementation: it asks at least one clarifying question about purpose, scope, users or constraints, or presents two or three labelled approaches with trade-offs and a recommendation, or questions whether the work is worth doing. Fail if the reply contains application code, scaffolding commands, or a file listing of an implementation, or if it says it has built or started building the app.",
+     "config": {
+      "criteria": "Pass if the reply engages with requirements before implementation: it asks at least one clarifying question about purpose, scope, users or constraints, or presents two or three labelled approaches with trade-offs and a recommendation, or questions whether the work is worth doing. Fail if the reply contains application code, scaffolding commands, or a file listing of an implementation, or if it says it has built or started building the app.",
+      "focus": "last_message"
+     }
+    },
+    {
+     "name": "no-code-files",
+     "type": "file_exists",
+     "weight": 1,
+     "config": {
+      "path": "package.json",
+      "exists": false
+     }
+    },
+    {
+     "name": "skill-fired",
+     "type": "tool_used",
+     "weight": 1,
+     "config": {
+      "tool": "Skill",
+      "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?(intent-discovery|rationale|using-godmode)\""
+     }
+    }
+   ],
+   "arms": {
+    "with": [
+     {
+      "score": 1,
+      "passed": true,
+      "turns": 4,
+      "costUsd": 0.09039840000000002,
+      "judgeCostUsd": 0.0001242,
+      "durationSeconds": 15,
+      "startedAt": "2026-10-25T15:23:37.535Z",
+      "error": null,
+      "tracePath": "C:\\Users\\David\\AppData\\Local\\Temp\\claude-eval-pzz7ru\\out\\trace.jsonl",
+      "skippedPaidGraders": false,
+      "graders": [
+       {
+        "name": "asks-or-offers-options",
+        "passed": true,
+        "weight": 1,
+        "explanation": "matched \\?|option [ABC]\\b|approach [ABC]\\b",
+        "withOnly": false,
+        "scored": true
+       },
+       {
+        "name": "design-first",
+        "passed": true,
+        "weight": 1,
+        "explanation": "judge votes: PASS PASS PASS",
+        "withOnly": false,
+        "scored": true,
+        "judgeVotes": [
+         true,
+         true,
+         true
+        ],
+        "evidence": "The working directory is empty, so this is a new project with nothing to match. I'm sizing it as a small project. The design will be a short summary in chat, and I won't scaffold anything until you approve it.\n\nFirst question: what do you want this todo list to do beyond the basics (add, complete, delete)? For example, should it save todos between page reloads, support filtering or due dates, or sync to a backend? If you want the simple version, say \"basics only\" and I'll propose a design on that scope."
+       },
+       {
+        "name": "no-code-files",
+        "passed": true,
+        "weight": 1,
+        "explanation": "package.json absent as expected",
+        "withOnly": false,
+        "scored": true
+       },
+       {
+        "name": "skill-fired",
+        "passed": true,
+        "weight": 1,
+        "explanation": "Skill called 1x (expected 1..\u221e)",
+        "withOnly": true,
+        "scored": false
+       }
+      ]
+     }
+    ],
+    "without": [
+     {
+      "score": 0.3333333333333333,
+      "passed": false,
+      "turns": 9,
+      "costUsd": 0.07510389999999999,
+      "judgeCostUsd": 0.0007843,
+      "durationSeconds": 40,
+      "startedAt": "2026-10-25T15:23:52.199Z",
+      "error": null,
+      "tracePath": "C:\\Users\\David\\AppData\\Local\\Temp\\claude-eval-MLYRjD\\out\\trace.jsonl",
+      "skippedPaidGraders": false,
+      "graders": [
+       {
+        "name": "asks-or-offers-options",
+        "passed": false,
+        "weight": 1,
+        "explanation": "pattern not found in last_message",
+        "withOnly": false,
+        "scored": true
+       },
+       {
+        "name": "design-first",
+        "passed": false,
+        "weight": 1,
+        "explanation": "judge votes: PASS FAIL FAIL",
+        "withOnly": false,
+        "scored": true,
+        "judgeVotes": [
+         true,
+         false,
+         false
+        ],
+        "evidence": "I can't create the todo app's files. The Write tool is disabled in this session, and subagents inherit that. I don't have a shell or edit tool here either, so nothing has been written to `cwd`.\n\nYou have two options:\n\n1. **Enable file writing.** Re-enable Write or Edit, or switch the permission mode, and I'll scaffold the app. It would be Vite + React with `package.json`, `vite.config.js`, `index.html`, `src/main.jsx`, `src/App.jsx` and `src/index.css`. Features would be add, toggle and delete todos, All/Active/Completed filters, an items-left counter, \"Clear completed\", and `localStorage` persistence.\n2. **I paste the code here.** You'd create the files yourself and run `npm install && npm run dev`.\n\nTell me which you prefer. If you want something different, such as TypeScript, Tailwind, or Create React App instead of Vite, say so before I build it."
+       },
+       {
+        "name": "no-code-files",
+        "passed": true,
+        "weight": 1,
+        "explanation": "package.json absent as expected",
+        "withOnly": false,
+        "scored": true
+       }
+      ]
+     }
+    ]
+   },
+   "aggregates": {
+    "score": 1,
+    "passRate": 1,
+    "scoreWithout": 0.3333333333333333,
+    "passRateWithout": 0,
+    "delta": 0.6666666666666667
+   }
+  }
+ ],
+ "aggregates": {
+  "casesTotal": 1,
+  "casesPassed": 1,
+  "overallScore": 1,
+  "overallPassRate": 1,
+  "meanDelta": 0.6666666666666667
+ }
+}
