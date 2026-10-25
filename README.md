@@ -257,7 +257,7 @@ Limits worth knowing: agent teams exist only on Claude Code and are experimental
 
 ## Compared with
 
-GodMode grew out of [superpowers](https://github.com/obra/superpowers) and shares its shape: Markdown skills, a bootstrap at session start, a define-plan-execute-review-ship flow. The differences are the three commitments above, and this table is an attempt to be fair about when the others are the better pick.
+Plenty of skill packs teach an agent to design before it codes and to review before it ships. GodMode is built around proof. Every fact that can change is checked against a current source before the agent acts on it; every dispatch names the cheapest model that can do the job; nothing is called done without fresh output and a second model family's review. Where a neighbour is the better pick, the table says so.
 
 | Project | What it is | Use it instead when |
 |---|---|---|
@@ -318,7 +318,7 @@ Issues and pull requests are welcome. Read [AGENTS.md](AGENTS.md) first: it has 
 
 - [@ivnad95](https://github.com/ivnad95), [@g7trader](https://github.com/g7trader) and [@AdversaLLC](https://github.com/AdversaLLC) for diagnosing the 1.0 hook bug with exact reproductions; your fix is in 2.0.
 - [@urbabby](https://github.com/urbabby), whose `orchestrator-core` fork skill shaped the "rulings, not stalls" idea in `delegated-execution`.
-- [Jesse Vincent](https://github.com/obra) and the superpowers contributors for the methodology GodMode grew from, and for the cross-harness hook and manifest patterns (MIT) that 2.0 follows.
+- [Jesse Vincent](https://github.com/obra) and the superpowers contributors for the MIT-licensed Windows hook wrapper and multi-harness manifest layout that GodMode reuses.
 
 ## License
 
