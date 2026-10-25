@@ -150,6 +150,9 @@ for (const name of skillNames) {
 
   const lines = content.split('\n').length;
   if (lines > 350) err(rel, `${lines} lines; move reference material into references/ (limit 350)`);
+  // Byte cap as well as a line cap: a skill is read whole on every invocation and
+  // long skills are the first thing compaction loses.
+  if (content.length > 20000) err(rel, `${content.length} bytes; a skill is read whole on every invocation (limit 20,000)`);
   if (lines < 60) warn(rel, `${lines} lines; is this skill complete?`);
 
   // Cross-references.
