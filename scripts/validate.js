@@ -193,7 +193,7 @@ function gitMode(rel) {
   } catch { return null; }
 }
 
-for (const rel of ['hooks/run-hook.cmd', 'hooks/session-start']) {
+for (const rel of ['hooks/run-hook.cmd', 'hooks/session-start', 'hooks/prompt-nudge', 'hooks/doctor']) {
   if (!exists(rel)) { err(rel, 'missing'); continue; }
   const mode = gitMode(rel);
   if (mode === null) warn(rel, 'not tracked by git yet (exec bit cannot be checked)');
@@ -207,8 +207,8 @@ if (exists('hooks/hooks.json')) {
   const hooks = JSON.parse(raw);
   const session = hooks.hooks?.SessionStart;
   if (!Array.isArray(session) || !session.length) err('hooks/hooks.json', 'no SessionStart hook');
-  else for (const group of session) for (const h of group.hooks ?? []) {
-    if (!h.command?.includes('"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd"')) err('hooks/hooks.json', `command does not run the quoted wrapper: ${h.command}`);
+  for (const [event, groups] of Object.entries(hooks.hooks ?? {})) for (const group of groups) for (const h of group.hooks ?? []) {
+    if (!h.command?.includes('"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd"')) err('hooks/hooks.json', `${event}: command does not run the quoted wrapper: ${h.command}`);
   }
 } else err('hooks/hooks.json', 'missing');
 

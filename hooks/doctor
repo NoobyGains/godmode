@@ -41,7 +41,7 @@ echo
 n="$(find "$ROOT/skills" -mindepth 2 -maxdepth 2 -name SKILL.md 2>/dev/null | wc -l | tr -d ' ')"
 [ "${n:-0}" -gt 20 ] && ok "$n skills found" || bad "only ${n:-0} skills found under $ROOT/skills"
 
-for f in run-hook.cmd session-start doctor; do
+for f in run-hook.cmd session-start prompt-nudge doctor; do
   if [ -x "$ROOT/hooks/$f" ]; then ok "hooks/$f is executable"; else bad "hooks/$f is not executable (chmod +x; on a plugin install this means the release shipped without the bit)"; fi
   if grep -q $'\r' "$ROOT/hooks/$f" 2>/dev/null; then bad "hooks/$f has CRLF line endings (git autocrlf?)"; fi
 done

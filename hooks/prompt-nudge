@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# UserPromptSubmit hook for the GodMode plugin.
+#
+# Adds one short line of context next to every user prompt, so the mandate to
+# check for a skill is present at the moment a request arrives (and after a
+# compaction has pushed the session-start bootstrap far up the context).
+# Claude Code adds a UserPromptSubmit hook's additionalContext alongside the
+# prompt; the string is capped at 10,000 characters, this one is under 400.
+# Same portability rules as session-start: builtins only, one output shape.
+set -euo pipefail
+
+context='GodMode: before acting on this request, check the skill index in using-godmode. For a request to build, add, change or fix something, the first tool call is a skill (godmode:rationale for new work, godmode:fault-diagnosis for a bug); if a skill already governs the current step, continue it. If nobody can answer questions in this run, do the analysis visibly, take the recommended option and mark it provisional.'
+
+emit_json() {
+  # shellcheck disable=SC2059 # literal format strings only
+  if command -v cat >/dev/null 2>&1; then
+    printf "$@" | cat
+  else
+    printf "$@"
+  fi
+}
+
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  emit_json '{\n  "hookSpecificOutput": {\n    "hookEventName": "UserPromptSubmit",\n    "additionalContext": "%s"\n  }\n}\n' "$context"
+else
+  emit_json '{\n  "additionalContext": "%s"\n}\n' "$context"
+fi
+
+exit 0

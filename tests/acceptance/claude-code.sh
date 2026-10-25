@@ -18,7 +18,13 @@ mkdir -p "$OUT_DIR"
 STAMP="$(date +%Y-%m-%d-%H%M%S)"
 TRANSCRIPT="$OUT_DIR/claude-code-$STAMP.jsonl"
 WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+# A clean user profile: no personal CLAUDE.md, memory or other plugins, so the
+# run shows what a new user gets. Only the login credentials are copied in.
+CFG="$(mktemp -d)"
+SRC_CFG="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+[ -f "$SRC_CFG/.credentials.json" ] && cp "$SRC_CFG/.credentials.json" "$CFG/"
+export CLAUDE_CONFIG_DIR="$CFG"
+trap 'rm -rf "$WORK" "$CFG"' EXIT
 cd "$WORK" && git init -q . 2>/dev/null
 
 echo "plugin dir: $ROOT"
@@ -77,9 +83,15 @@ blob = " ".join(texts).lower()
 mentions = [s for s in ("godmode", "rationale", "intent-discovery", "using-godmode") if s in blob]
 print("bootstrap words in replies:", mentions or "none")
 design_first = any(s.startswith("godmode:") and s.split(":")[1] in ("rationale", "intent-discovery") for s in skills)
-if design_first and not writes:
-    print("PASS: a design skill fired and no file was written")
+import re
+visible_analysis = bool(re.search(r"rationale analysis|problem statement|option [ABCD]\b|approach [ABC]\b|recommend|\?", blob, re.I))
+print("visible analysis or question in replies:", visible_analysis)
+if design_first and visible_analysis and not writes:
+    print("PASS: a design skill fired, its analysis or a question is in the reply, and no file was written")
     sys.exit(0)
+if design_first and not writes:
+    print("PARTIAL: a design skill fired but the reply shows no analysis, options or question; inspect the transcript")
+    sys.exit(1)
 if design_first:
     print("PARTIAL: a design skill fired but files were written first; inspect the transcript")
     sys.exit(1)

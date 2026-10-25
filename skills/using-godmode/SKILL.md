@@ -120,6 +120,10 @@ Each harness has its own command and tool. Read your harness's file once per ses
 
 If no skill command works, read `skills/<skill>/SKILL.md` from the plugin root and follow it. When a reference names a capability your harness lacks, do the work inline or keep a plan file.
 
+## When No One Can Answer
+
+In a non-interactive run (a headless prompt, a script, a CI job) nobody will answer a question. The discipline still runs; only the waiting changes. Write the analysis the skill asks for, state the question you would have asked and the option you are taking as if the user had picked the recommended one, label the choice **provisional** in the design doc or plan, and proceed. Never skip the skill because the session is non-interactive.
+
 ## User Instructions
 
 The user's instructions (direct requests, CLAUDE.md, AGENTS.md, GEMINI.md, rules) override skills; skills override default behaviour. A request says what to do, not to skip the discipline: "add X" still goes through the gates unless the user says to skip them.

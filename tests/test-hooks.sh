@@ -30,7 +30,7 @@ if grep -q "'\${CLAUDE_PLUGIN_ROOT}" "$ROOT/hooks/hooks.json"; then fail "plugin
 if "$PY" -c "import json,sys; json.load(sys.stdin)" < "$ROOT/hooks/hooks.json" 2>/dev/null; then pass "valid JSON"; else fail "hooks.json is not valid JSON"; fi
 
 echo "executable bits (git index)"
-for f in hooks/run-hook.cmd hooks/session-start; do
+for f in hooks/run-hook.cmd hooks/session-start hooks/prompt-nudge hooks/doctor; do
   mode="$(cd "$ROOT" && git ls-files -s -- "$f" 2>/dev/null | awk '{print $1}')"
   if [ "$mode" = "100755" ]; then pass "$f is 100755"; elif [ -z "$mode" ]; then fail "$f is not tracked"; else fail "$f is $mode"; fi
 done
@@ -47,6 +47,11 @@ check_json "hookSpecificOutput.additionalContext present" "$out" "'EXTREMELY_IMP
 check_json "only the Claude shape is emitted" "$out" "set(d)=={'hookSpecificOutput'}"
 check_json "bootstrap carries the using-godmode skill" "$out" "'godmode:using-godmode' in d['hookSpecificOutput']['additionalContext'] and len(d['hookSpecificOutput']['additionalContext'])>2000"
 check_json "bootstrap is under the 10,000-character SessionStart cap" "$out" "len(d['hookSpecificOutput']['additionalContext'])<=10000"
+
+echo "UserPromptSubmit nudge"
+out="$(CLAUDE_PLUGIN_ROOT="$ROOT" sh -c '"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd" prompt-nudge' 2>&1)"; rc=$?
+[ $rc -eq 0 ] && pass "exit 0" || fail "exit $rc"
+check_json "nudge carries UserPromptSubmit additionalContext under 10,000 chars" "$out" "d['hookSpecificOutput']['hookEventName']=='UserPromptSubmit' and 0<len(d['hookSpecificOutput']['additionalContext'])<=10000"
 
 echo "Cursor shape (CURSOR_PLUGIN_ROOT)"
 out="$(CURSOR_PLUGIN_ROOT="$ROOT" CLAUDE_PLUGIN_ROOT="$ROOT" bash "$ROOT/hooks/session-start" 2>&1)"
