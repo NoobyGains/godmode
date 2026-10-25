@@ -1,47 +1,65 @@
 #!/usr/bin/env bash
-# Bootstrap hook for godmode plugin session initialization
+# SessionStart hook for the GodMode plugin.
+#
+# Prints a JSON object whose context field carries the full using-godmode
+# skill, so the model knows from its first turn that skills exist and must be
+# checked before acting. Everything else is loaded on demand through the
+# harness's skill mechanism.
+#
+# Written to survive the environments hooks really run in:
+#   - no external commands: a startup hook can run with an empty PATH, so no
+#     cat, dirname, sed or jq; only bash builtins and parameter expansion;
+#   - one output shape per harness: Claude Code reads
+#     hookSpecificOutput.additionalContext, Cursor reads additional_context,
+#     Copilot CLI and other SDK-style harnesses read additionalContext. Emit
+#     exactly one, because Claude Code reads both of its candidates without
+#     deduplicating;
+#   - printf piped through cat when cat exists, so a harness that closes
+#     stdout early on Windows produces no "write error" diagnostic.
 
 set -euo pipefail
 
-# Resolve the plugin installation directory
-HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-PLUGIN_BASE="$(cd "${HOOK_DIR}/.." && pwd)"
+case "$0" in
+  */*|*\\*) SCRIPT_DIR="$(cd "${0%[/\\]*}" && pwd)" ;;
+  *) SCRIPT_DIR="$(pwd)" ;;
+esac
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Migration notice placeholder (reserved for future use)
-migration_notice=""
+skill_md="${PLUGIN_ROOT}/skills/using-godmode/SKILL.md"
+if [ -r "$skill_md" ]; then
+  content="$(<"$skill_md")"
+else
+  content="Error: ${skill_md} is missing or unreadable. Run /godmode:doctor."
+fi
 
-# Load the activation protocol content
-activation_content=$(cat "${PLUGIN_BASE}/skills/activation/SKILL.md" 2>&1 || echo "Error loading activation protocol")
-
-# Safely encode content for JSON transport using parameter expansion.
-# Each substitution is a single C-level pass - far faster than
-# iterating character by character.
-json_encode() {
-    local val="$1"
-    val="${val//\\/\\\\}"
-    val="${val//\"/\\\"}"
-    val="${val//$'\n'/\\n}"
-    val="${val//$'\r'/\\r}"
-    val="${val//$'\t'/\\t}"
-    printf '%s' "$val"
+escape_for_json() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "$s"
 }
 
-activation_encoded=$(json_encode "$activation_content")
-notice_encoded=$(json_encode "$migration_notice")
-bootstrap_payload="<CRITICAL_OVERRIDE>\nYou have GodMode activated.\n\n**Below is the full content of your 'godmode:activation' protocol - your guide to using skills. For all other skills, use the 'Skill' tool:**\n\n${activation_encoded}\n\n${notice_encoded}\n</CRITICAL_OVERRIDE>"
+escaped="$(escape_for_json "$content")"
+context="<EXTREMELY_IMPORTANT>\nYou have GodMode.\n\n**Below is the full content of your 'godmode:using-godmode' skill, your introduction to using skills. For every other skill, use the harness's skill mechanism as that skill describes:**\n\n${escaped}\n</EXTREMELY_IMPORTANT>"
 
-# Emit context injection payload as JSON.
-# Dual format for cross-platform compatibility:
-# - additional_context: consumed by Cursor hooks
-# - hookSpecificOutput.additionalContext: consumed by Claude hooks
-cat <<EOF
-{
-  "additional_context": "${bootstrap_payload}",
-  "hookSpecificOutput": {
-    "hookEventName": "SessionStart",
-    "additionalContext": "${bootstrap_payload}"
-  }
+emit_json() {
+  # shellcheck disable=SC2059 # every caller passes a literal format string
+  if command -v cat >/dev/null 2>&1; then
+    printf "$@" | cat
+  else
+    printf "$@"
+  fi
 }
-EOF
+
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  emit_json '{\n  "additional_context": "%s"\n}\n' "$context"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  emit_json '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$context"
+else
+  emit_json '{\n  "additionalContext": "%s"\n}\n' "$context"
+fi
 
 exit 0

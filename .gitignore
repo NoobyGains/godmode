@@ -1,6 +1,6 @@
 .worktrees/
-.private-journal/
 .claude/
 .DS_Store
-*.png
 .playwright-mcp/
+assets/_build/
+node_modules/
